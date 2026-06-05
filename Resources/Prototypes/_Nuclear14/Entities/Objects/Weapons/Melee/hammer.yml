@@ -71,7 +71,7 @@
 - type: entity
   name: tribal heavy club
   parent: N14SledgeHammer
-  id: N14TribalBigClub
+  id: TribalBigClub
   description: A big and heavy tribal club that requires considerable strength to be wielded.
   components:
   - type: Sprite
@@ -99,7 +99,7 @@
 - type: entity
   name: tribal decorated heavy club
   parent: N14SledgeHammer
-  id: N14TribalBigClubDecorated
+  id: TribalBigClubDecorated
   description: A big and heavy tribal hammer that requires considerable strength to be wielded, animal teeth have been added to this one.
   components:
   - type: Sprite

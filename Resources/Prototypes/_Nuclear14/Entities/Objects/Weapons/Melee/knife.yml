@@ -136,7 +136,7 @@
 - type: entity
   name: tribal knife
   parent: N14BaseKnife
-  id: N14TribalKnife
+  id: TribalKnife
   description: A deadly knife intended for melee confrontations, this one is handmade by tribals.
   components:
   - type: Tag

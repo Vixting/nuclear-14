@@ -45,11 +45,12 @@
     hideLayersOnEquip:
     - Hair
     - Snout
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language # N14 language system
+    spokenLanguages:
     - English
-    understands:
+    understoodLanguages:
     - English
+    defaultLanguage: English
   - type: FootPrints
   - type: PsionicInsulation
 #  - type: Ghoulify # Forge-Change

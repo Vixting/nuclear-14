@@ -42,7 +42,7 @@
     ears: MisfitsClothingHeadsetWastelandScrap
     back: N14ClothingBackpackMilitary
     suitstorage: N14WeaponShotgunSawedOff
-    pocket1: N14TribalKnife
+    pocket1: TribalKnife
   storage:
     back:
     - N14BoxPlasticFilledWastelander

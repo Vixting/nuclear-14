@@ -399,16 +399,16 @@
     - N14WastelandTribalSpear
 
 # Misfits Change - Added: tribal club, hatchet, machete, tribal sword
-# Misfits Fix - N14TribalClub loadout already defined in _Nuclear14/Loadouts/Roles/loadouts_tribe.yml
+# Misfits Fix - TribalClub loadout already defined in _Nuclear14/Loadouts/Roles/loadouts_tribe.yml
 #- type: loadout
-#  id: N14TribalClub
+#  id: TribalClub
 #  category: Weapons
 #  cost: 2
 #  requirements:
 #    - !type:CharacterItemGroupRequirement
 #      group: N14LoadoutMelee
 #  items:
-#    - N14TribalClub
+#    - TribalClub
 
 - type: loadout
   id: N14Hatchet
@@ -454,7 +454,7 @@
     - N14Machete
 
 - type: loadout
-  id: N14TribalSword
+  id: TribalSword
   category: Weapons
   cost: 3
   requirements:
@@ -465,7 +465,7 @@
         - Wastelander
         - Tribe
   items:
-    - N14TribalSword
+    - TribalSword
 
     
 - type: loadout
@@ -524,7 +524,7 @@
     - N14Gladius
 
 - type: loadout
-  id: N14ChineseSword
+  id: ChineseSword
   category: Weapons
   cost: 5
   requirements:
@@ -535,7 +535,7 @@
     - !type:CharacterItemGroupRequirement
       group: N14LoadoutMelee
   items:
-    - N14ChineseSword
+    - ChineseSword
 
 
 - type: loadout

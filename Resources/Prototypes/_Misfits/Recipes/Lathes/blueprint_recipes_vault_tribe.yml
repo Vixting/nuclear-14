@@ -403,7 +403,7 @@
 # --- Tribe Tier 1 Weapons (Basic hunting tools) ---
 - type: latheRecipe
   id: N14BPTribeWeaponTribalKnife
-  result: N14TribalKnife
+  result: TribalKnife
   category: N14BlueprintTribeWeaponsT1
   completetime: 3
   requiresBlueprint: true
@@ -415,7 +415,7 @@
 
 - type: latheRecipe
   id: N14BPTribeWeaponTribalClub
-  result: N14TribalClub
+  result: TribalClub
   category: N14BlueprintTribeWeaponsT1
   completetime: 3
   requiresBlueprint: true
@@ -466,7 +466,7 @@
 # --- Tribe Tier 2 Weapons (Warrior weapons) ---
 - type: latheRecipe
   id: N14BPTribeWeaponTribalMachete
-  result: N14TribalMachete
+  result: TribalMachete
   category: N14BlueprintTribeWeaponsT2
   completetime: 6
   requiresBlueprint: true
@@ -479,7 +479,7 @@
 
 - type: latheRecipe
   id: N14BPTribeWeaponTribalHatchet
-  result: N14TribalHatchet
+  result: TribalHatchet
   category: N14BlueprintTribeWeaponsT2
   completetime: 5
   requiresBlueprint: true
@@ -492,7 +492,7 @@
 
 - type: latheRecipe
   id: N14BPTribeWeaponTribalSword
-  result: N14TribalSword
+  result: TribalSword
   category: N14BlueprintTribeWeaponsT2
   completetime: 7
   requiresBlueprint: true
@@ -572,7 +572,7 @@
 
 - type: latheRecipe
   id: N14BPTribeWeaponTribalBigClub
-  result: N14TribalBigClub
+  result: TribalBigClub
   category: N14BlueprintTribeWeaponsT3
   completetime: 8
   requiresBlueprint: true
@@ -639,7 +639,7 @@
 
 - type: latheRecipe
   id: N14BPTribeWeaponTribalBigClubDecorated
-  result: N14TribalBigClubDecorated
+  result: TribalBigClubDecorated
   category: N14BlueprintTribeWeaponsT4
   completetime: 12
   requiresBlueprint: true

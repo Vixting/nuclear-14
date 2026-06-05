@@ -27,7 +27,7 @@ public sealed partial class ChatSystem
         if (_sanitizer.TryGetBlockedChatResult(action, ChatSanitizationChannel.InCharacter, out var moderation))
         {
             _sanitizer.ReportBlockedChat(player, action, "admin area emote");
-            SendEntityEmote(source, moderation.ReplacementText, ChatTransmitRange.Normal, null, _language.GetLanguage(source), ignoreActionBlocker: true, author: player.UserId);
+            SendEntityEmote(source, moderation.ReplacementText, ChatTransmitRange.Normal, null, _n14Language.GetCurrentLanguage(source), ignoreActionBlocker: true, author: player.UserId);
             return;
         }
 

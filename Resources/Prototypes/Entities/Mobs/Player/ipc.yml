@@ -92,13 +92,12 @@
       path: /Audio/Effects/Silicon/startup.ogg
   - type: EmitBuzzWhileDamaged
   - type: CanHostGuardian
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - RobotTalk
+    defaultLanguage: TauCetiBasic
   - type: WeldingHealable
   - type: PsionicInsulation
   - type: OfferItem

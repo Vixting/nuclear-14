@@ -62,6 +62,7 @@
       Unsexed: UnisexIPC
   - type: TypingIndicator
     proto: robot
+<<<<<<< Updated upstream
   - type: LanguageKnowledge # #Misfits Fix - use N14 language IDs (TauCetiBasic/RobotTalk are SS14 upstream only)
     speaks:
     - English    # default spoken language; language system uses first entry
@@ -69,6 +70,23 @@
     understands:
     - English
     - N14Robot
+=======
+  - type: Language # #Misfits Fix - use N14 language IDs
+    spokenLanguages:
+    - English
+    - Robot
+    - BrotherBeep
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - English
+    - Robot
+    - BrotherBeep
+    - Latin
+    - Chinese
+    - Tribal
+    defaultLanguage: English
+>>>>>>> Stashed changes
   - type: Icon
     sprite: _Misfits/Mobs/Species/C27/parts.rsi
     state: full

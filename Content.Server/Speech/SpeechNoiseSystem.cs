@@ -1,6 +1,7 @@
 using Robust.Shared.Audio;
 using Content.Server.Chat;
 using Content.Server.Chat.Systems;
+using Content.Shared._Nuclear14.Language.Prototypes;
 using Content.Shared.Speech;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Player;
@@ -60,7 +61,11 @@ namespace Content.Server.Speech
 
         private void OnEntitySpoke(EntityUid uid, SpeechComponent component, EntitySpokeEvent args)
         {
-            if (component.SpeechSounds == null || !args.Language.SpeechOverride.RequireSpeech)
+            if (component.SpeechSounds == null)
+                return;
+
+            // Look up the N14 language prototype to check RequireSpeech.
+            if (_protoManager.TryIndex(args.Language, out var langProto) && !langProto.SpeechOverride.RequireSpeech)
                 return;
 
             var currentTime = _gameTiming.CurTime;

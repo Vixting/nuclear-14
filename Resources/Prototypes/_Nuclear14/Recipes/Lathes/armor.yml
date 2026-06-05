@@ -129,8 +129,8 @@
 
 # Shield's
 - type: latheRecipe
-  id: N14InsectShield
-  result: N14InsectShield
+  id: InsectShield
+  result: InsectShield
   category: N14Shield
   completetime: 6
   materials:

@@ -226,13 +226,14 @@
     - type: InnatePsionicPowers
       powersToAdd:
         - TelepathyPower
-    - type: LanguageKnowledge
-      speaks:
+    - type: Language
+      spokenLanguages:
         - TauCetiBasic
         - Marish
-      understands:
+      understoodLanguages:
         - TauCetiBasic
         - Marish
+      defaultLanguage: TauCetiBasic
     - type: PotentiaModifier
       potentiaMultiplier: 1.25
     - type: Tag

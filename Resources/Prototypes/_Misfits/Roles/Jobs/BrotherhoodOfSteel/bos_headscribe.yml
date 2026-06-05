@@ -31,13 +31,14 @@
         factions:
           - BrotherhoodOfSteel
       - type: CPRTraining
-      - type: LanguageKnowledge # #Misfits Add: Scribes speak and understand Brotherhood binary code by default.
-        speaks:
+      - type: Language # #Misfits Add: Scribes speak and understand Brotherhood binary code by default.
+        spokenLanguages:
           - English
-          - N14BrotherBeep
-        understands:
+          - BrotherBeep
+        understoodLanguages:
           - English
-          - N14BrotherBeep
+          - BrotherBeep
+        defaultLanguage: English
 
 - type: startingGear
   id: BoSWestScribeGear

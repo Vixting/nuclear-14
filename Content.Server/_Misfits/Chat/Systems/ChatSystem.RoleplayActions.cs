@@ -68,7 +68,7 @@ public sealed partial class ChatSystem
         if (player != null && _sanitizer.TryGetBlockedChatResult(message, ChatSanitizationChannel.InCharacter, out var doModeration))
         {
             _sanitizer.ReportBlockedChat(player, message, ".do");
-            SendEntityEmote(source, doModeration.ReplacementText, range, null, _language.GetLanguage(source), ignoreActionBlocker: ignoreActionBlocker, author: player.UserId);
+            SendEntityEmote(source, doModeration.ReplacementText, range, null, _n14Language.GetCurrentLanguage(source), ignoreActionBlocker: ignoreActionBlocker, author: player.UserId);
             return;
         }
 

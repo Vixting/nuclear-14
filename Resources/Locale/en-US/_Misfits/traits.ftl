@@ -47,5 +47,5 @@ trait-description-N14RidingPerk =
 trait-name-LanguageTribalGeneral = Tribal Language
 trait-description-LanguageTribalGeneral = You can understand and speak the local Tribal language. Were you from the Tribe?
 
-trait-name-N14TribalAccent = Tribal Accent
-trait-description-N14TribalAccent = Ya be, or musta been membaa de tribe. Bird tribe be not gawnta ondastan ya tong.
+trait-name-TribalAccent = Tribal Accent
+trait-description-TribalAccent = Ya be, or musta been membaa de tribe. Bird tribe be not gawnta ondastan ya tong.

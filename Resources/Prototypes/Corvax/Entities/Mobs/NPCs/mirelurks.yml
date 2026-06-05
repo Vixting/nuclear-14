@@ -53,19 +53,20 @@
     - id: N14FoodMeatMirelurkClaw
       amount: 2
       prob: 0.8
-  - type: LanguageKnowledge # #Misfits Add - understands common wasteland languages; speaks Crab (crustacean mutations)
-    speaks:
-    - Crab
-    understands:
-    - Crab
-    - N14Insect
+  - type: Language # #Misfits Add - understands common wasteland languages; speaks Primitive (crustacean mutations)
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    - Insect
     - English
     - Chinese
     - Latin
     - Tribal
-    - N14Robot
-    - N14BrotherBeep
-    - Sign
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Primitive
   - type: Body # #Misfits Add - override N14Animal with N14PetAnimal to include heart (Medicine/Poison metabolizer)
     prototype: N14PetAnimal
   - type: Hands # #Misfits Add - allows player-controlled mirelurk pets to drag items

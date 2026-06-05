@@ -46,10 +46,12 @@
       brain_slot: !type:ContainerSlot
   - type: Appearance
   # #Misfits Removed - GuideHelp: guide entries not present in Nuclear-14 (Cyborgs)
-  - type: LanguageSpeaker
-  - type: LanguageKnowledge
-    speaks: [TauCetiBasic, RobotTalk]
-    understands: [TauCetiBasic, RobotTalk]
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
 
 - type: entity
   parent: MMI
@@ -124,7 +126,9 @@
             On: { state: posibrain-occupied }
     # #Misfits Removed - GuideHelp: guide entries not present in Nuclear-14 (Cyborgs)
     - type: Organ # Estacao Pirata - IPCs
-    - type: LanguageSpeaker
-    - type: LanguageKnowledge
-      speaks: [RobotTalk]
-      understands: [RobotTalk]
+    - type: Language
+      spokenLanguages:
+      - English
+      understoodLanguages:
+      - English
+      defaultLanguage: English

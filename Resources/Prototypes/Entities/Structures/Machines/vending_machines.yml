@@ -108,13 +108,12 @@
     price: 100
   - type: Appearance
   - type: WiresVisuals
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    - RobotTalk
-    understands:
-    - TauCetiBasic
-    - RobotTalk
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
 
 - type: entity
   parent: VendingMachine

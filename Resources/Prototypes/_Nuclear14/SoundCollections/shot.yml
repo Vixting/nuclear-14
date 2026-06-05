@@ -125,7 +125,7 @@
   - /Audio/_Nuclear14/Weapons/Guns/Rifles/N14WeaponRifleR91/shot2.ogg
 
 - type: soundCollection
-  id: N14ChineseRifleGunshot
+  id: ChineseRifleGunshot
   files:
   - /Audio/_Nuclear14/Weapons/Guns/Rifles/N14WeaponChineseRifle/shot1.ogg
   - /Audio/_Nuclear14/Weapons/Guns/Rifles/N14WeaponChineseRifle/shot2.ogg

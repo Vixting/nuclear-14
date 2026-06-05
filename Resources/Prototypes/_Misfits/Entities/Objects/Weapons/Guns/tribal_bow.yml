@@ -5,7 +5,7 @@
 
 - type: entity
   parent: BowImprovised
-  id: N14TribalBow
+  id: TribalBow
   name: tribal bow
   description: A bone-and-sinew bow crafted using pre-war tribal techniques. Crude by Wasteland standards but surprisingly effective at close range — and completely silent.
   components:

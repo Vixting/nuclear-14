@@ -56,13 +56,14 @@
     hideLayersOnEquip:
     - Hair
     - Snout
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - SolCommon
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - SolCommon
+    defaultLanguage: TauCetiBasic
   - type: LightweightDrunk
     boozeStrengthMultiplier: 0.5
   - type: Stamina

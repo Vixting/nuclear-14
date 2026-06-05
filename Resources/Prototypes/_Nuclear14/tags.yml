@@ -67,7 +67,7 @@
   id: N14EmptyNukaBottle
 
 - type: Tag
-  id: N14TribalMedicine # #Misfits Add: used to whitelist tribal medicines (powder, poultice) in the Medical Belt
+  id: TribalMedicine # #Misfits Add: used to whitelist tribal medicines (powder, poultice) in the Medical Belt
 
 #MARK: Crafts
 - type: Tag

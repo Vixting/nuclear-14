@@ -121,13 +121,12 @@
   - type: Grammar
     attributes:
       gender: male
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    - Mouse
-    understands:
-    - TauCetiBasic
-    - Mouse
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
   - type: SurgeryTarget
   - type: UserInterface
     interfaces:
@@ -313,12 +312,13 @@
   - type: Food
   - type: Item
     size: Tiny # Delta V - Make them eatable and pickable.
-  - type: LanguageKnowledge
-    speaks:
-    - Mouse
-    understands:
-    - TauCetiBasic
-    - Mouse
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    - Primitive
+    defaultLanguage: Primitive
   - type: FireVisuals
     sprite: Mobs/Effects/onfire.rsi
     normalState: Mouse_burning

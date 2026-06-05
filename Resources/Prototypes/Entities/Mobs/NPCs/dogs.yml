@@ -83,12 +83,13 @@
   - type: Speech
     speechVerb: Canine
     speechSounds: Vulpkanin
-  - type: LanguageKnowledge
-    speaks:
-    - Dog
-    understands:
-    - Dog
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    - English
+    defaultLanguage: Primitive
 
 - type: entity
   parent: MobPibble

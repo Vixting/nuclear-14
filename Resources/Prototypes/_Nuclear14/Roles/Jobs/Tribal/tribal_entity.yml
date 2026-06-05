@@ -14,13 +14,14 @@
       factions:
       - Wastelander
       - Tribal
-    - type: LanguageKnowledge
-      speaks:
+    - type: Language
+      spokenLanguages:
       - English
       - Tribal
-      understands:
+      understoodLanguages:
       - English
       - Tribal
+      defaultLanguage: English
 
 - type: entity
   parent: N14MobHumanTribal

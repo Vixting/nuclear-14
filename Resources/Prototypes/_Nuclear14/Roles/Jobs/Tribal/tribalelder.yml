@@ -60,13 +60,13 @@
   id: TribalElderGear
   equipment:
     jumpsuit: N14ClothingUniformJumpsuitTribal
-    suitstorage: N14TribalBigClubDecorated
+    suitstorage: TribalBigClubDecorated
     outerClothing: N14ClothingOuterTribalCoat
     belt: ClothingBeltElderRevolver
     shoes: N14ClothingShoesTribal
     gloves: N14ClothingHandsGlovesTribal
     back: N14ClothingBackpackTrekker # Corvax-Change
-    pocket1: N14TribalKnife
+    pocket1: TribalKnife
     pocket2: Triballoadoutkits # Forge-Change
     id: N14IDTribeBossPendant
   innerClothingSkirt: N14ClothingUniformJumpskirtTribal

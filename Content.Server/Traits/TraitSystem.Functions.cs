@@ -8,7 +8,6 @@ using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototy
 using Content.Shared.Actions;
 using Content.Server.Abilities.Psionics;
 using Content.Shared.Psionics;
-using Content.Server.Language;
 using Content.Shared.Mood;
 using Content.Shared.Traits.Assorted.Components;
 using Content.Shared.Damage;
@@ -186,6 +185,9 @@ public sealed partial class TraitRemovePsionics : TraitFunction
 }
 
 /// Handles all modification of Known Languages. Removes languages before adding them.
+/// N14: This trait function targets the old SS14 language system. It is kept as a stub so that
+/// YAML traits using !type:TraitModifyLanguages can still deserialize without errors.
+/// Language modifications for the N14 language system use TraitModifyN14Languages instead.
 [UsedImplicitly]
 public sealed partial class TraitModifyLanguages : TraitFunction
 {
@@ -210,23 +212,8 @@ public sealed partial class TraitModifyLanguages : TraitFunction
         IEntityManager entityManager,
         ISerializationManager serializationManager)
     {
-        var language = entityManager.System<LanguageSystem>();
-
-        if (RemoveLanguagesSpoken is not null)
-            foreach (var lang in RemoveLanguagesSpoken)
-                language.RemoveLanguage(uid, lang, false, false); /// N14 change to allow multiple language trait pick.
-
-        if (RemoveLanguagesUnderstood is not null)
-            foreach (var lang in RemoveLanguagesUnderstood)
-                language.RemoveLanguage(uid, lang, false, false); /// N14 change to allow multiple language trait pick.
-
-        if (LanguagesSpoken is not null)
-            foreach (var lang in LanguagesSpoken)
-                language.AddLanguage(uid, lang, true, false);
-
-        if (LanguagesUnderstood is not null)
-            foreach (var lang in LanguagesUnderstood)
-                language.AddLanguage(uid, lang, false, true);
+        // N14: No-op. The old SS14 LanguageSystem is not used in Nuclear-14.
+        // Language traits should use TraitModifyN14Languages instead.
     }
 }
 

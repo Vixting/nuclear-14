@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Content.Server.Chat.Systems;
-using Content.Server.Language;
+using Content.Server._Nuclear14.Language.Systems;
+using Content.Shared._Nuclear14.Language.Prototypes;
 using Content.Server.Radio.Components;
 using Content.Shared._NC.CorvaxVars;
 using Content.Shared._NC.TTS;
 using Content.Shared.GameTicking;
-using Content.Shared.Language;
 using Content.Shared.Mind;
 using Content.Shared.Mind.Components;
 using Content.Shared.Players.RateLimiting;
@@ -123,7 +123,7 @@ public sealed partial class TTSSystem : EntitySystem
         if (!_prototypeManager.TryIndex<TTSVoicePrototype>(voiceId, out var protoVoice)) 
             return;
         
-        var obfuscatedMessage = _language.ObfuscateSpeech(args.Message, args.Language);
+        var obfuscatedMessage = _language.ObfuscateMessage(args.Message, args.Language);
         
         await Handle(uid, args.Message, protoVoice.Speaker, args.IsWhisper, obfuscatedMessage, args.Language);
     }
@@ -134,7 +134,7 @@ public sealed partial class TTSSystem : EntitySystem
         string speaker,
         bool isWhisper,
         string obfuscatedMessage,
-        LanguagePrototype language
+        ProtoId<LanguagePrototype> language
         )
     { 
         var fullSoundData = await GenerateTTS(message, speaker, isWhisper); 

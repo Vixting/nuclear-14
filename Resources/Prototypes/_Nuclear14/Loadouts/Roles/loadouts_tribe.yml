@@ -20,7 +20,7 @@
 
 # Misfits Change - Disabled: armor/weapons removed from roundstart loadout menu
 #- type: loadout
-#  id: N14TribalSword
+#  id: TribalSword
 #  category: Weapons
 #  cost: 4
 #  requirements:
@@ -30,7 +30,7 @@
 #      departments:
 #        - Tribe
 #  items:
-#    - N14TribalSword
+#    - TribalSword
 #
 # Misfits Change - Disabled: armor with resistance values removed from roundstart loadout menu
 #- type: loadout
@@ -297,7 +297,7 @@
 #    - N14ClothingHeadHatEldersDamagedSkullHelm
 
 - type: loadout
-  id: N14TribalHatchet
+  id: TribalHatchet
   category: Weapons
   cost: 3
   requirements:
@@ -307,10 +307,10 @@
       departments:
         - Tribe
   items:
-    - N14TribalHatchet
+    - TribalHatchet
 
 - type: loadout
-  id: N14TribalMachete
+  id: TribalMachete
   category: Weapons
   cost: 4
   requirements:
@@ -320,10 +320,10 @@
       departments:
         - Tribe
   items:
-    - N14TribalMachete
+    - TribalMachete
 
 - type: loadout
-  id: N14TribalClub
+  id: TribalClub
   category: Weapons
   cost: 4
   requirements:
@@ -333,7 +333,7 @@
       departments:
         - Tribe
   items:
-    - N14TribalClub
+    - TribalClub
 
 - type: loadout
   id: N14ClothingTribalShamanHeadband

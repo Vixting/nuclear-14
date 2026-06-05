@@ -269,7 +269,7 @@
         - Radio
         - DiscreteHealthAnalyzer
         - N14Bandage # Corvax-Change
-        - N14TribalMedicine # #Misfits Fix: allows tribal medicines (powder, poultice) in the medical belt
+        - TribalMedicine # #Misfits Fix: allows tribal medicines (powder, poultice) in the medical belt
       components:
         - SurgeryTool # Shitmed Change
         - Hypospray

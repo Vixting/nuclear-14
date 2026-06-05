@@ -1,5 +1,5 @@
 - type: trait
-  id: N14TribalAccent
+  id: TribalAccent
   category: Speech
   points: 1
   requirements:

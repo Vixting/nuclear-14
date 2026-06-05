@@ -1,0 +1,76 @@
+- type: trait
+  id: N14LanguageSpanish
+  category: Language
+  points: -2
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - Spanish
+      languagesUnderstood:
+        - Spanish
+
+- type: trait
+  id: N14LanguageRussian
+  category: Language
+  points: -2
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - Russian
+      languagesUnderstood:
+        - Russian
+
+- type: trait
+  id: N14LanguageChinese
+  category: Language
+  points: -2
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - Chinese
+      languagesUnderstood:
+        - Chinese
+
+- type: trait
+  id: N14LanguageSignLanguage
+  category: Language
+  points: -3
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - SignLanguage
+      languagesUnderstood:
+        - SignLanguage
+
+- type: trait
+  id: N14LanguageTribal
+  category: Language
+  points: -2
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - Tribal
+      languagesUnderstood:
+        - Tribal
+
+- type: trait
+  id: N14LanguageBrotherBeep
+  category: Language
+  points: -4
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - BrotherBeep
+      languagesUnderstood:
+        - BrotherBeep
+
+- type: trait
+  id: N14LanguageRobotSpeak
+  category: Language
+  points: -3
+  functions:
+    - !type:TraitModifyN14Languages
+      languagesSpoken:
+        - Robot
+      languagesUnderstood:
+        - Robot

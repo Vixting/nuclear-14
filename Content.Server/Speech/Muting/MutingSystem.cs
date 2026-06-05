@@ -1,21 +1,23 @@
 using Content.Server.Abilities.Mime;
 using Content.Server.Chat.Systems;
-using Content.Server.Language;
 using Content.Server.Popups;
 using Content.Server.Speech.Components;
 using Content.Server.Speech.EntitySystems;
+using Content.Server._Nuclear14.Language.Systems;
 using Content.Shared.CCVar;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Puppet;
 using Content.Shared.Speech;
 using Content.Shared.Speech.Muting;
 using Robust.Shared.Configuration;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Speech.Muting
 {
     public sealed class MutingSystem : EntitySystem
     {
         [Dependency] private readonly LanguageSystem _languages = default!;
+        [Dependency] private readonly IPrototypeManager _protoManager = default!;
         [Dependency] private readonly PopupSystem _popupSystem = default!;
         [Dependency] private readonly IConfigurationManager _config = default!;
 
@@ -32,7 +34,6 @@ namespace Content.Server.Speech.Muting
             if (args.Handled)
                 return;
 
-            //still leaves the text so it looks like they are pantomiming a laugh
             if (args.Emote.Category.HasFlag(EmoteCategory.Vocal))
                 args.Handled = true;
         }
@@ -44,17 +45,15 @@ namespace Content.Server.Speech.Muting
 
             if (HasComp<MimePowersComponent>(uid))
                 _popupSystem.PopupEntity(Loc.GetString("mime-cant-speak"), uid, uid);
-
             else
                 _popupSystem.PopupEntity(Loc.GetString("speech-muted"), uid, uid);
             args.Handled = true;
         }
 
-
         private void OnSpeakAttempt(EntityUid uid, MutedComponent component, SpeakAttemptEvent args)
         {
-            var language = _languages.GetLanguage(uid);
-            if (!language.SpeechOverride.RequireSpeech)
+            var langId = _languages.GetCurrentLanguage(uid);
+            if (_protoManager.TryIndex(langId, out var langProto) && !langProto.SpeechOverride.RequireSpeech)
                 return; // Cannot mute if there's no speech involved
 
             if (HasComp<MimePowersComponent>(uid))

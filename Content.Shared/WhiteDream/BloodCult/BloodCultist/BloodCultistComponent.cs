@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Content.Shared.Antag;
 using Content.Shared.FixedPoint;
-using Content.Shared.Language;
+using Content.Shared._Nuclear14.Language.Prototypes;
 using Content.Shared.Mind;
 using Content.Shared.StatusIcon;
 using Robust.Shared.GameStates;

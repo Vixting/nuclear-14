@@ -32,7 +32,7 @@
 - type: entity
   name: tribal machete
   parent: N14Machete
-  id: N14TribalMachete
+  id: TribalMachete
   description: A tribal machete, made from the materials given by nature, this long blade has the perfect balance between tool and weapon.
   components:
   - type: Clothing
@@ -193,7 +193,7 @@
 - type: entity
   name: chinese officer sword
   parent: N14Machete
-  id: N14ChineseSword
+  id: ChineseSword
   description: "An impressive double-edged sword used by pre-war chinese officers, this weapon's size and sharpness make you think it could cleave a man in two."
   components:
   - type: Clothing
@@ -245,7 +245,7 @@
 - type: entity
   name: tribal sword
   parent: N14Machete
-  id: N14TribalSword
+  id: TribalSword
   description: A tribal sword, made from teeth and claws from the hunts and bound to a piece of wood.
   components:
   - type: Clothing

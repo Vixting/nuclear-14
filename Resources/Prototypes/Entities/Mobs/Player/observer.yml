@@ -67,7 +67,6 @@
   - type: Tag
     tags:
     - BypassInteractionRangeChecks
-  - type: UniversalLanguageSpeaker # Ghosts should understand any language.
   # #Misfits Add — give ghosts a Wendover area map they can open via the action hotbar
   - type: WastelandMap
     mapTexturePath: _Misfits/Maps/wendover_map.png

@@ -50,11 +50,12 @@
     flavorKind: station-event-random-sentience-flavor-organic
   - type: Bloodstream
     bloodMaxVolume: 50
-  - type: LanguageKnowledge
-    speaks:
-    - Mouse
-    understands:
-    - Mouse
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: MeleeWeapon
     soundHit:
         path: /Audio/Effects/bite.ogg
@@ -255,11 +256,12 @@
   - type: EggLayer
     eggSpawn:
     - id: FoodEgg
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - Chicken
-    understands:
+    understoodLanguages:
     - Chicken
+    defaultLanguage: Chicken
   - type: SentienceTarget
     flavorKind: station-event-random-sentience-flavor-organic
   - type: NpcFactionMember
@@ -412,9 +414,12 @@
       - !type:GibBehavior
         gibContents: Skip
   - type: NonSpreaderZombie
-  - type: LanguageKnowledge
-    speaks: [Hissing]
-    understands: [Hissing]
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
 
 - type: entity
   parent: MobCockroach
@@ -558,11 +563,12 @@
       prob: 0.5
   - type: Extractable
     grindableSolutionName: food
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - Moffic
-    understands:
+    understoodLanguages:
     - Moffic
+    defaultLanguage: Moffic
   - type: ZombieAccentOverride
     accent: zombieMoth
   - type: Vocal
@@ -686,11 +692,12 @@
   - type: EggLayer
     eggSpawn:
     - id: FoodEgg
-  - type: LanguageKnowledge
-    speaks:
-    - Duck
-    understands:
-    - Duck
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: SentienceTarget
     flavorKind: station-event-random-sentience-flavor-organic
   - type: NpcFactionMember
@@ -936,11 +943,12 @@
     interactSuccessSpawn: EffectHearts
     interactSuccessSound:
       path: /Audio/Voice/Arachnid/arachnid_chitter.ogg
-  - type: LanguageKnowledge
-    speaks:
-    - Crab
-    understands:
-    - Crab
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: Bloodstream
     bloodMaxVolume: 50
     bloodReagent: CopperBlood
@@ -1195,11 +1203,12 @@
   - type: Inventory
     speciesId: kangaroo
     templateId: kangaroo
-  - type: LanguageKnowledge
-    speaks:
-    - Kangaroo
-    understands:
-    - Kangaroo
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: InventorySlots
   - type: Strippable
   - type: Butcherable
@@ -1428,12 +1437,12 @@
   - type: Speech
     speechSounds: Monkey
     speechVerb: Monkey
-  - type: LanguageKnowledge
-    speaks:
-    - Monkey
-    understands:
-    - Monkey
-    - Kobold
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: SentienceTarget
     flavorKind: station-event-random-sentience-flavor-primate
   - type: AlwaysRevolutionaryConvertible
@@ -1467,13 +1476,13 @@
   - type: Speech
     speechSounds: Monkey
     speechVerb: Monkey
-  - type: LanguageKnowledge
-    speaks:
-    - Monkey
-    understands:
-    - Monkey
-    - Kobold
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
     - TauCetiBasic
+    defaultLanguage: Primitive
   - type: NpcFactionMember
     factions:
     - Syndicate
@@ -1514,12 +1523,12 @@
   - type: NameIdentifier
     group: Kobold
   - type: LizardAccent
-  - type: LanguageKnowledge
-    speaks:
-    - Kobold
-    understands:
-    - Kobold
-    - Monkey
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: Speech
     speechSounds: Lizard
     speechVerb: Reptilian
@@ -1758,11 +1767,12 @@
     spawned:
     - id: FoodMeatRat
       amount: 1
-  - type: LanguageKnowledge
-    speaks:
-    - Mouse
-    understands:
-    - Mouse
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: Tag
     tags:
     - Trash
@@ -2174,11 +2184,12 @@
       path: /Audio/Animals/parrot_raught.ogg
   - type: Bloodstream
     bloodMaxVolume: 50
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
 
 - type: entity
   name: penguin
@@ -2243,9 +2254,12 @@
   - type: RandomBark
     barkType: penguin
     barkMultiplier: 0.6
-  - type: LanguageKnowledge
-    speaks: [Penguin]
-    understands: [Penguin]
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
 
 - type: entity
   name: grenade penguin
@@ -2369,9 +2383,12 @@
     minTime: 10
     maxTime: 50 # It's a sssnake...
     barkType: hissing
-  - type: LanguageKnowledge
-    speaks: [Hissing]
-    understands: [Hissing]
+  - type: Language
+    spokenLanguages:
+    - Hissing
+    understoodLanguages:
+    - Hissing
+    defaultLanguage: Hissing
 
 # Code unique spider prototypes or combine them all into one spider and get a
 # random sprite state when you spawn it.
@@ -2417,11 +2434,12 @@
   - type: MeleeChemicalInjector
     transferAmount: 0.75
     solution: melee
-  - type: LanguageKnowledge
-    speaks:
-    - Xeno
-    understands:
-    - Xeno
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: InteractionPopup
     successChance: 0.5
     interactSuccessString: petting-success-tarantula
@@ -2667,11 +2685,12 @@
   - type: Tag
     tags:
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Hissing
-    understands:
-    - Hissing
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: RandomBark
     barkType: possum
 
@@ -2751,11 +2770,12 @@
   - type: Tag
     tags:
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Hissing
-    understands:
-    - Hissing
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: RandomBark
     barkType: raccoon
 
@@ -2841,11 +2861,12 @@
   - type: Tag
     tags:
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Fox
-    understands:
-    - Fox
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: RandomBark
     barkType: fox
     barkMultiplier: 0.5 # Talkative <3
@@ -2896,11 +2917,12 @@
     spawned:
     - id: FoodMeat
       amount: 2
-  - type: LanguageKnowledge
-    speaks:
-    - Dog
-    understands:
-    - Dog
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: InteractionPopup
     interactSuccessString: petting-success-dog
     interactFailureString: petting-failure-generic
@@ -3058,17 +3080,18 @@
     spawned:
     - id: FoodMeat
       amount: 3
-  - type: LanguageKnowledge # #Misfits Add - understands common wasteland languages; speaks Cat (native meow sounds)
-    speaks:
-    - Cat
-    understands:
-    - Cat
+  - type: Language # #Misfits Add - understands common wasteland languages; speaks Cat (native meow sounds)
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
     - English
     - Chinese
     - Spanish
     - Latin
-    - N14Robot
-    - N14BrotherBeep
+    - Robot
+    - BrotherBeep
+    defaultLanguage: Primitive
   - type: InteractionPopup
     successChance: 0.7
     interactSuccessString: petting-success-cat
@@ -3157,12 +3180,13 @@
         Slash: 6
         Piercing: 6
         Structural: 15
-  - type: LanguageKnowledge
-    speaks:
-      - Cat
-    understands:
-    - Cat
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+      - Primitive
+    understoodLanguages:
+    - Primitive
+    - English
+    defaultLanguage: Primitive
 
 - type: entity
   name: space cat
@@ -3335,11 +3359,12 @@
   - type: Tag
     tags:
     - VimPilot
-  - type: LanguageKnowledge # WHAT DOES THE SLOTH SAY???????
-    speaks:
-    - Hissing
-    understands:
-    - Hissing
+  - type: Language # WHAT DOES THE SLOTH SAY???????
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
 
 - type: entity
   name: ferret
@@ -3399,11 +3424,12 @@
   - type: Tag
     tags:
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Hissing
-    understands:
-    - Hissing
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
 
 - type: entity
   name: hamster
@@ -3503,11 +3529,12 @@
     spawned:
     - id: FoodMeat
       amount: 1
-  - type: LanguageKnowledge
-    speaks:
-    - Mouse
-    understands:
-    - Mouse
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: Tag
     tags:
     - VimPilot
@@ -3636,11 +3663,12 @@
     interactSuccessSpawn: EffectHearts
     interactSuccessSound:
       path: /Audio/Animals/pig_oink.ogg
-  - type: LanguageKnowledge
-    speaks:
-    - Pig
-    understands:
-    - Pig
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: SentienceTarget
     flavorKind: station-event-random-sentience-flavor-organic
   - type: NpcFactionMember
@@ -3727,12 +3755,14 @@
     reformTime: 10
     popupText: diona-reform-attempt
     reformPrototype: MobDionaReformed
-  - type: LanguageKnowledge
-    speaks:
-    - RootSpeak
-    understands:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - RootSpeak
+    understoodLanguages:
+    - TauCetiBasic
+    - RootSpeak
+    defaultLanguage: TauCetiBasic
 
 - type: entity
   parent: MobDionaNymph

@@ -100,14 +100,12 @@
     - CannotSuicide
     - DoorBumpOpener
   - type: Appearance
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    - Eldritch
-    understands:
-    - TauCetiBasic
-    - Eldritch
-  - type: LanguageSpeaker
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
   - type: StatusIcon
 
 - type: entity

@@ -112,11 +112,12 @@
     factions:
     - PsionicInterloper
     - NanoTrasen
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
   - type: GhostTakeoverAvailable
   - type: GhostRole
     name: ghost-role-information-ifrit-name

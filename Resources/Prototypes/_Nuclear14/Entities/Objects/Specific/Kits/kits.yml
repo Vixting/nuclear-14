@@ -1534,7 +1534,7 @@
     size: Huge
   - type: SpawnItemsOnUse
     items:
-      - id: N14TribalBigClub
+      - id: TribalBigClub
       - id: ClothingBeltQuiverSpear
       - id: N14WastelandTribalJavelin
         amount: 4
@@ -1572,7 +1572,7 @@
   - type: SpawnItemsOnUse
     items:
       - id: N14WeaponSniper308Tribal
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: MagazineBox308
 
 #tribal rifle
@@ -1589,7 +1589,7 @@
   - type: SpawnItemsOnUse
     items:
       - id: N14WeaponSniper556Tribal
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: MagazineBox556
 
 #boomstick

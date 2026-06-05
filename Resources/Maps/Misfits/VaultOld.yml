@@ -111562,7 +111562,7 @@ entities:
     - type: Transform
       pos: 25.5,28.5
       parent: 2
-- proto: N14TribalKnife
+- proto: TribalKnife
   entities:
   - uid: 1557
     components:

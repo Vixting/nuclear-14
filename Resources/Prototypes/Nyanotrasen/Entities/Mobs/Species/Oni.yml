@@ -39,13 +39,12 @@
     decay: 3.45 # 3 base decay multiplied by 1.15 = 3.45
   - type: TypingIndicator
     proto: oni
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - Nekomimetic
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - Nekomimetic
+    defaultLanguage: TauCetiBasic
   - type: PotentiaModifier
     potentiaMultiplier: 0.5
 

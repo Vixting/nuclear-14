@@ -105,13 +105,12 @@
     proto: robot
   - type: ZombieImmune
   - type: StepTriggerImmune
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - RobotTalk
+    defaultLanguage: TauCetiBasic
   - type: PsionicInsulation
 
 - type: entity

@@ -112,13 +112,14 @@
       types:
         Asphyxiation: -1.0
     maxSaturation: 15
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - Bubblish
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - Bubblish
+    defaultLanguage: TauCetiBasic
   - type: FootPrints
     leftBarePrint: "footprint-left-bare-slime"
     rightBarePrint: "footprint-right-bare-slime"

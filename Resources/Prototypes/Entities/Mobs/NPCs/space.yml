@@ -168,11 +168,12 @@
   - type: FootstepModifier
     footstepSoundCollection:
       collection: FootstepBounce
-  - type: LanguageKnowledge
-    speaks:
-    - Kangaroo
-    understands:
-    - Kangaroo
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: InventorySlots
   - type: Strippable
   - type: UserInterface
@@ -254,11 +255,12 @@
   - type: MeleeChemicalInjector
     solution: melee
     transferAmount: 4
-  - type: LanguageKnowledge
-    speaks:
-    - Xeno
-    understands:
-    - Xeno
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: InteractionPopup
     successChance: 0.20
     interactSuccessString: petting-success-tarantula
@@ -366,11 +368,12 @@
     - type: MeleeChemicalInjector
       solution: melee
       transferAmount: 6
-    - type: LanguageKnowledge
-      speaks:
-      - Xeno
-      understands:
-      - Xeno
+    - type: Language
+      spokenLanguages:
+      - Primitive
+      understoodLanguages:
+      - Primitive
+      defaultLanguage: Primitive
     - type: InteractionPopup
       successChance: 0.2
       interactSuccessString: petting-success-snake

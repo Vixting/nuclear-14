@@ -106,18 +106,19 @@
     spawned:
     - id: N14FoodMeatRadRaw
       amount: 3
-  - type: LanguageKnowledge # #Misfits Add - understands common wasteland languages; speaks N14Insect (FEV-mutant tentacle sounds)
-    speaks:
-    - N14Insect
-    understands:
-    - N14Insect
+  - type: Language # #Misfits Add - understands common wasteland languages; speaks Insect (FEV-mutant tentacle sounds)
+    spokenLanguages:
+    - Insect
+    understoodLanguages:
+    - Insect
     - English
     - Chinese
     - Latin
     - Tribal
-    - N14Robot
-    - N14BrotherBeep
-    - Sign
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Insect
   - type: Body # #Misfits Add - override N14Animal with N14PetAnimal to include heart (Medicine/Poison metabolizer for stimpaks/healing powder)
     prototype: N14PetAnimal
   - type: Hands # #Misfits Add - allows player-controlled centaur pets to drag items

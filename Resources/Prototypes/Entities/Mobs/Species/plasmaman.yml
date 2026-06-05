@@ -139,13 +139,14 @@
     - Snout
   - type: TypingIndicator
     proto: plasmaman
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - Calcic
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - Calcic
+    defaultLanguage: TauCetiBasic
   - type: FootPrints
 
 - type: entity

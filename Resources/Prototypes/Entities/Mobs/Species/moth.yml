@@ -24,13 +24,14 @@
   - type: Speech
     speechVerb: Moth
     allowedEmotes: ['Chitter', 'Squeak']
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - Moffic
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - Moffic
+    defaultLanguage: TauCetiBasic
   - type: TypingIndicator
     proto: moth
   - type: Butcherable

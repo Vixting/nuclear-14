@@ -96,12 +96,13 @@
     spawned:
     - id: FoodMeat
       amount: 1
-  - type: LanguageKnowledge
-    speaks:
-    - Mouse
-    understands:
-    - Mouse
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
     - TauCetiBasic
+    defaultLanguage: Primitive
   - type: Tag
     tags:
     - VimPilot

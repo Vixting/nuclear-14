@@ -127,7 +127,7 @@
     id: N14ClothingHeadHatCombatHelmet
     weight: 1
   - type: Item
-    id: N14ChineseSword
+    id: ChineseSword
     weight: 2
   - type: Item
     id: N14WeaponRifle762SKS
@@ -469,7 +469,7 @@
     id: N14WeaponRifle762SKS
     weight: 1
   - type: Item
-    id: N14ChineseSword
+    id: ChineseSword
     weight: 1
   - type: Item
     id: N14ClothingOuterCombatArmor

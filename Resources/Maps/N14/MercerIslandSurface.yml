@@ -78034,7 +78034,7 @@ entities:
     - type: Transform
       pos: 92.5,183.5
       parent: 2
-- proto: N14TribalBigClub
+- proto: TribalBigClub
   entities:
   - uid: 5878
     components:
@@ -78072,7 +78072,7 @@ entities:
       linearDamping: 0
       canCollide: False
     - type: InsideEntityStorage
-- proto: N14TribalBigClubDecorated
+- proto: TribalBigClubDecorated
   entities:
   - uid: 12145
     components:
@@ -78082,7 +78082,7 @@ entities:
     - type: Physics
       angularDamping: 0
       linearDamping: 0
-- proto: N14TribalClub
+- proto: TribalClub
   entities:
   - uid: 8954
     components:
@@ -78097,7 +78097,7 @@ entities:
     - type: Transform
       pos: 62.68508,59.480988
       parent: 2
-- proto: N14TribalHatchet
+- proto: TribalHatchet
   entities:
   - uid: 2861
     components:
@@ -78135,7 +78135,7 @@ entities:
     - type: Transform
       pos: 62.56008,58.715363
       parent: 2
-- proto: N14TribalKnife
+- proto: TribalKnife
   entities:
   - uid: 12063
     components:
@@ -78150,7 +78150,7 @@ entities:
     - type: Transform
       pos: 66.35677,62.44655
       parent: 2
-- proto: N14TribalMachete
+- proto: TribalMachete
   entities:
   - uid: 157
     components:

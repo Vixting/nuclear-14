@@ -136,11 +136,12 @@
   - type: InnatePsionicPowers
     powersToAdd:
       - TelepathyPower
-  - type: LanguageKnowledge
-    speaks:
-    - Xeno
-    understands:
-    - Xeno
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
+    defaultLanguage: Primitive
   - type: ThermalVision
     isActive: true
     lightRadius: 15
@@ -259,13 +260,12 @@
   - type: Tag
     tags:
     - CannotSuicide
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    - Xeno
-    understands:
-    - TauCetiBasic
-    - Xeno
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
 
 - type: entity
   name: Ravager

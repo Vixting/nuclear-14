@@ -240,6 +240,24 @@
       params:
         volume: -3
         maxDistance: 12
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotHostileMelee
@@ -306,6 +324,25 @@
       params:
         volume: -3
         maxDistance: 12
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotProtectronHostile
@@ -326,6 +363,25 @@
       shader: unshaded
       map: ["light"]
       visible: false
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotProtectronHostile
@@ -346,6 +402,25 @@
       shader: unshaded
       map: ["light"]
       visible: false
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotProtectronHostile
@@ -392,6 +467,25 @@
     blackboard:
       NavSmash: !type:Bool
         true
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotHostileMelee
@@ -483,6 +577,24 @@
       params:
         volume: -3
         maxDistance: 10
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotMrHandyClaw
@@ -519,6 +631,25 @@
       params:
         volume: -3
         maxDistance: 10
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotHostile
@@ -593,6 +724,24 @@
       params:
         volume: -3
         maxDistance: 10
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotHostile
@@ -664,6 +813,24 @@
       params:
         volume: -3
         maxDistance: 10
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotHostile
@@ -726,6 +893,24 @@
       params:
         volume: -3
         maxDistance: 12
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+>>>>>>> Stashed changes
 
 - type: entity
   parent: N14MobRobotHostile
@@ -819,6 +1004,24 @@
       params:
         volume: -3
         maxDistance: 12
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+>>>>>>> Stashed changes
 
 - type: entity
   id: N14SentryBotOverloadLightEmitter
@@ -1012,6 +1215,25 @@
           path: /Audio/Machines/warning_buzzer.ogg
           params:
             volume: 2
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes
 
 # Misfits Change /Add: Ballistic Sentry Bot - same chassis as the laser variant but armed with a
 # 5mm minigun instead of a gatling laser. Once the drum empties the HTN falls back to a heavy stomp.
@@ -1191,3 +1413,22 @@
           path: /Audio/Machines/warning_buzzer.ogg
           params:
             volume: 2
+<<<<<<< Updated upstream
+=======
+  # Misfits Add - robot/broadcast languages when player-controlled.
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
+    - English
+    - Latin
+    - Chinese
+    defaultLanguage: BrotherBeep
+
+>>>>>>> Stashed changes

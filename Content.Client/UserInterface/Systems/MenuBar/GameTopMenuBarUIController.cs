@@ -10,7 +10,7 @@ using Content.Client.UserInterface.Systems.Guidebook;
 using Content.Client.UserInterface.Systems.MenuBar.Widgets;
 using Content.Client.UserInterface.Systems.Sandbox;
 using Robust.Client.UserInterface.Controllers;
-using Content.Client.UserInterface.Systems.Language;
+using Content.Client._Nuclear14.UserInterface.Systems.Language;
 
 namespace Content.Client.UserInterface.Systems.MenuBar;
 
@@ -25,7 +25,7 @@ public sealed class GameTopMenuBarUIController : UIController
     [Dependency] private readonly SandboxUIController _sandbox = default!;
     [Dependency] private readonly GuidebookUIController _guidebook = default!;
     [Dependency] private readonly EmotesUIController _emotes = default!;
-    [Dependency] private readonly LanguageMenuUIController _language = default!;
+    [Dependency] private readonly LanguageUIController _language = default!;
 
     private GameTopMenuBar? GameTopMenuBar => UIManager.GetActiveUIWidgetOrNull<GameTopMenuBar>();
 

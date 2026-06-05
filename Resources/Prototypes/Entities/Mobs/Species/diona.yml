@@ -104,13 +104,14 @@
     actionPrototype: DionaGibAction
     allowedStates:
     - Dead
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - RootSpeak
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - RootSpeak
+    defaultLanguage: TauCetiBasic
   - type: TraitSpeedModifier
     sprintModifier: 0.75
     walkModifier: 0.75

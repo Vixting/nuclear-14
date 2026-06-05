@@ -1,13 +1,12 @@
 using Content.Server.Administration.Logs;
 using Content.Server.Chat.Systems;
-using Content.Server.Language;
 using Content.Server.Power.Components;
 using Content.Server.Radio.Components;
 using Content.Shared._Misfits.Special;
+using Content.Shared._Nuclear14.Language.Prototypes;
+using Content.Shared._Nuclear14.Language.Systems;
 using Content.Shared.Chat;
 using Content.Shared.Database;
-using Content.Shared.Language;
-using Content.Shared.Language.Systems;
 using Content.Shared.Radio;
 using Content.Shared.Radio.Components;
 using Content.Shared.Speech;
@@ -19,6 +18,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Replays;
 using Robust.Shared.Utility;
+using N14LangProto = Content.Shared._Nuclear14.Language.Prototypes.LanguagePrototype;
 
 namespace Content.Server.Radio.EntitySystems;
 
@@ -33,7 +33,7 @@ public sealed class RadioSystem : EntitySystem
     [Dependency] private readonly IPrototypeManager _prototype = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly ChatSystem _chat = default!;
-    [Dependency] private readonly LanguageSystem _language = default!;
+    [Dependency] private readonly SharedLanguageSystem _language = default!;
     [Dependency] private readonly SharedSpecialSystem _special = default!;
 
     // set used to prevent radio feedback loops.
@@ -92,7 +92,7 @@ public sealed class RadioSystem : EntitySystem
             var listener = component.Owner;
             var msg = args.OriginalChatMsg;
 
-            if (listener != null && !_language.CanUnderstand(listener, args.Language.ID))
+            if (listener != null && !_language.CanUnderstand(listener, args.Language))
                 msg = args.LanguageObfuscatedChatMsg;
 
             _netMan.ServerSendMessage(new MsgChatMessage { Message = msg}, actor.PlayerSession.Channel);
@@ -108,7 +108,7 @@ public sealed class RadioSystem : EntitySystem
         ProtoId<RadioChannelPrototype> channel,
         EntityUid radioSource,
         int? frequency = null,
-        LanguagePrototype? language = null,
+        ProtoId<N14LangProto>? language = null,
         bool escapeMarkup = true
         ) =>
         SendRadioMessage(messageSource, message, _prototype.Index(channel), radioSource, escapeMarkup: escapeMarkup, frequency: frequency, language: language);
@@ -121,14 +121,14 @@ public sealed class RadioSystem : EntitySystem
         string message,
         RadioChannelPrototype channel,
         EntityUid radioSource,
-        LanguagePrototype? language = null,
+        ProtoId<N14LangProto>? language = null,
         int? frequency = null,
         bool escapeMarkup = true)
     {
         if (language == null)
-            language = _language.GetLanguage(messageSource);
+            language = _language.GetCurrentLanguage(messageSource);
 
-        if (!language.SpeechOverride.AllowRadio)
+        if (_prototype.TryIndex(language.Value, out var langProto) && !langProto.SpeechOverride.AllowRadio)
             return;
 
         // TODO if radios ever garble / modify messages, feedback-prevention needs to be handled better than this.
@@ -146,15 +146,15 @@ public sealed class RadioSystem : EntitySystem
             ? FormattedMessage.EscapeText(message)
             : message;
 
-        var wrappedMessage = WrapRadioMessage(messageSource, channel, name, content, language, frequency);
+        var wrappedMessage = WrapRadioMessage(messageSource, channel, name, content, language.Value, frequency);
         var msg = new ChatMessage(ChatChannel.Radio, content, wrappedMessage, NetEntity.Invalid, null);
 
         // ... you guess it
-        var obfuscated = _language.ObfuscateSpeech(content, language);
-        var obfuscatedWrapped = WrapRadioMessage(messageSource, channel, name, obfuscated, language, frequency);
+        var obfuscated = _language.ObfuscateMessage(content, language.Value);
+        var obfuscatedWrapped = WrapRadioMessage(messageSource, channel, name, obfuscated, language.Value, frequency);
         var notUdsMsg = new ChatMessage(ChatChannel.Radio, obfuscated, obfuscatedWrapped, NetEntity.Invalid, null);
 
-        var ev = new RadioReceiveEvent(messageSource, channel, msg, notUdsMsg, language, radioSource);
+        var ev = new RadioReceiveEvent(messageSource, channel, msg, notUdsMsg, language.Value, radioSource);
 
         var sendAttemptEv = new RadioSendAttemptEvent(channel, radioSource);
         RaiseLocalEvent(ref sendAttemptEv);
@@ -218,12 +218,12 @@ public sealed class RadioSystem : EntitySystem
         string emoteText,
         RadioChannelPrototype channel,
         EntityUid radioSource,
-        LanguagePrototype? language = null)
+        ProtoId<N14LangProto>? language = null)
     {
         if (language == null)
-            language = _language.GetLanguage(messageSource);
+            language = _language.GetCurrentLanguage(messageSource);
 
-        if (!language.SpeechOverride.AllowRadio)
+        if (_prototype.TryIndex(language.Value, out var langProtoEmote) && !langProtoEmote.SpeechOverride.AllowRadio)
             return;
 
         // Use the same feedback-prevention guard as SendRadioMessage
@@ -252,7 +252,7 @@ public sealed class RadioSystem : EntitySystem
             ("emote", content));
 
         var msg = new ChatMessage(ChatChannel.Radio, content, wrappedMessage, NetEntity.Invalid, null);
-        var ev = new RadioReceiveEvent(messageSource, channel, msg, msg, language, radioSource);
+        var ev = new RadioReceiveEvent(messageSource, channel, msg, msg, language.Value, radioSource);
 
         var sendAttemptEv = new RadioSendAttemptEvent(channel, radioSource);
         RaiseLocalEvent(ref sendAttemptEv);
@@ -307,19 +307,28 @@ public sealed class RadioSystem : EntitySystem
         RadioChannelPrototype channel,
         string name,
         string message,
-        LanguagePrototype language,
+        ProtoId<N14LangProto> languageId,
         int? frequency = null)
     {
         // TODO: code duplication with ChatSystem.WrapMessage
         var speech = _chat.GetSpeechVerb(source, message);
         var languageColor = channel.Color;
-        if (language.SpeechOverride.Color is { } colorOverride)
-            languageColor = Color.InterpolateBetween(languageColor, colorOverride, colorOverride.A);
-        var languageDisplay = language.IsVisibleLanguage
-            ? Loc.GetString("chat-manager-language-prefix", ("language", language.ChatName))
-            : "";
-        var messageColor = language.IsVisibleLanguage ? languageColor : channel.Color;
-        var fontSize = _special.GetCharismaChatFontSize(source, language.SpeechOverride.FontSize ?? speech.FontSize);
+        string? languageDisplay = "";
+        string? fontType = speech.FontId;
+        int fontSize = speech.FontSize;
+
+        if (_prototype.TryIndex(languageId, out var language))
+        {
+            if (language.SpeechOverride.Color is { } colorOverride)
+                languageColor = Color.InterpolateBetween(languageColor, colorOverride, colorOverride.A);
+            languageDisplay = language.IsVisibleLanguage
+                ? Loc.GetString("chat-manager-language-prefix", ("language", language.Name))
+                : "";
+            fontType = language.SpeechOverride.FontId ?? speech.FontId;
+            fontSize = _special.GetCharismaChatFontSize(source, language.SpeechOverride.FontSize ?? speech.FontSize);
+        }
+
+        var messageColor = (language != null && language.IsVisibleLanguage) ? languageColor : channel.Color;
 
         string channelText;
         if (channel.ShowFrequency && frequency.HasValue)
@@ -331,7 +340,7 @@ public sealed class RadioSystem : EntitySystem
             ("color", channel.Color),
             ("languageColor", languageColor),
             ("messageColor", messageColor),
-            ("fontType", language.SpeechOverride.FontId ?? speech.FontId),
+            ("fontType", fontType),
             ("fontSize", fontSize),
             ("verb", Loc.GetString(_random.Pick(speech.SpeechVerbStrings))),
             ("channel", channelText),

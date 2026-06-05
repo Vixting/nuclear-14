@@ -36,12 +36,13 @@
     - VimPilot
   - type: StealTarget
     stealGroup: AnimalIan
-  - type: LanguageKnowledge
-    speaks:
-    - Dog
-    understands:
-    - TauCetiBasic
-    - Dog
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    - Primitive
+    defaultLanguage: Primitive
 
 - type: entity
   name: Old Ian
@@ -130,11 +131,12 @@
     tags:
     - CannotSuicide
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Cat
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    defaultLanguage: Primitive
     - Cat
 
 - type: entity
@@ -154,11 +156,12 @@
     tags:
     - CannotSuicide
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Cat
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    defaultLanguage: Primitive
     - Cat
 
 - type: entity
@@ -309,12 +312,13 @@
     spawned:
     - id: FoodMeat
       amount: 2
-  - type: LanguageKnowledge
-    speaks:
-    - Dog
-    understands:
-    - TauCetiBasic
-    - Dog
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    - Primitive
+    defaultLanguage: Primitive
   - type: InteractionPopup
     successChance: 0.5
     interactSuccessString: petting-success-dog
@@ -415,12 +419,13 @@
     spawned:
     - id: FoodMeat
       amount: 3
-  - type: LanguageKnowledge
-    speaks:
-    - Dog
-    understands:
-    - TauCetiBasic
-    - Dog
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    - Primitive
+    defaultLanguage: Primitive
   - type: InteractionPopup
     successChance: 0.7
     interactSuccessString: petting-success-dog
@@ -581,11 +586,12 @@
     - VimPilot
   - type: StealTarget
     stealGroup: AnimalRenault
-  - type: LanguageKnowledge
-    speaks:
-    - Fox
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    defaultLanguage: Primitive
     - Fox
 
 - type: entity
@@ -634,11 +640,12 @@
     - CannotSuicide
     - Hamster
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Mouse
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    defaultLanguage: Primitive
     - Mouse
 
 - type: entity
@@ -817,11 +824,12 @@
     attributes:
       proper: true
       gender: female
-  - type: LanguageKnowledge
-    speaks:
-    - Bubblish
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
     - Bubblish
   - type: TTS # Corvax-TTS
     voice: Dryad
@@ -852,11 +860,12 @@
     attributes:
       proper: true
       gender: male
-  - type: LanguageKnowledge
-    speaks:
-    - Monkey
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    defaultLanguage: Primitive
     - Monkey
     - Kobold
   - type: Punpun
@@ -887,9 +896,10 @@
 #  - type: AlwaysRevolutionaryConvertible
   - type: StealTarget
     stealGroup: AnimalTropico
-  - type: LanguageKnowledge
-    speaks:
-    - Crab
-    understands:
-    - TauCetiBasic
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - English
+    defaultLanguage: Primitive
     - Crab

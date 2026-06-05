@@ -577,8 +577,13 @@
   - proto: N14WastelandTribalJavelin
     price: 20
   - proto: N14BaseAxe
+<<<<<<< Updated upstream
     price: 50
 #  - proto: N14ChineseSword
+=======
+    price: 120
+#  - proto: ChineseSword
+>>>>>>> Stashed changes
 #    price: 200
   - proto: N14CeremonialSword
     price: 250
@@ -1131,7 +1136,7 @@
     price: 5
   - proto: N14ScrapMachete
     price: 10
-  - proto: N14ChineseSword
+  - proto: ChineseSword
     price: 110
   - proto: N14CeremonialSword
     price: 110

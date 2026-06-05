@@ -126,11 +126,12 @@
   abstract: true
   description: It looks so much like jelly. I wonder what it tastes like?
   components:
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - Bubblish
-    understands:
+    understoodLanguages:
     - Bubblish
+    defaultLanguage: Bubblish
   - type: GhostTakeoverAvailable
   - type: GhostRole
     makeSentient: true

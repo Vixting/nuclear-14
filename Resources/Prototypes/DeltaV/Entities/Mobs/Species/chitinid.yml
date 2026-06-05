@@ -144,13 +144,14 @@
   - type: Chitinid
   - type: BlockInjection
     blockReason: chitinid
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - Chittin
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - Chittin
+    defaultLanguage: TauCetiBasic
 
 - type: entity
   parent: BaseSpeciesDummy

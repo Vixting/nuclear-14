@@ -82,15 +82,14 @@
   - type: StaticPrice
     price: 100
   - type: Appearance
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - English
     - Chinese
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - English
     - Chinese
-    - RobotTalk
+    defaultLanguage: English
   - type: InteractionOutline
 
 #MARK: Nuka Vending

@@ -61,13 +61,12 @@
     rewardEntities:
     - OracleRewardDisks
     - OracleRewardCrystals
-  - type: LanguageSpeaker
-    currentLanguage: TauCetiBasic
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    understands:
+    understoodLanguages:
     - TauCetiBasic
+    defaultLanguage: TauCetiBasic
   # #Misfits Removed - GuideHelp: guide entries not present in Nuclear-14 (Psionics)
 
 

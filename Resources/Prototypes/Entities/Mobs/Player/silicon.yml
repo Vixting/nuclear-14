@@ -374,22 +374,13 @@
         unshaded:
           Empty: { state: ai_empty }
           Occupied: { state: ai }
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    - Sign # It's intentional that they don't "Speak" sign language.
+    - SignLanguage # It's intentional that they don't "Speak" sign language.
+    defaultLanguage: TauCetiBasic
   - type: Telephone
     compatibleRanges:
     - Grid
@@ -463,22 +454,13 @@
     - HideContextMenu
     - StationAi
     - NoConsoleSound
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    - Sign # It's intentional that they don't "Speak" sign language.
+    - SignLanguage # It's intentional that they don't "Speak" sign language.
+    defaultLanguage: TauCetiBasic
 
 # Hologram projection that the AI's eye tracks.
 - type: entity
@@ -504,22 +486,13 @@
     - state: ai_camera
       shader: unshaded
       map: ["base"]
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    - Sign # It's intentional that they don't "Speak" sign language.
+    - SignLanguage # It's intentional that they don't "Speak" sign language.
+    defaultLanguage: TauCetiBasic
 
 # The holographic representation of the AI that is projected from a holopad.
 - type: entity

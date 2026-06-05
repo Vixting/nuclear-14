@@ -549,7 +549,7 @@
         - id: N14SuperSledgeHammer
           prob: 0.1
           orGroup: Weapon
-        - id: N14TribalMachete
+        - id: TribalMachete
           prob: 0.4
           orGroup: Weapon
         - id: N14ScrapMachete

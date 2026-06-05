@@ -55,7 +55,7 @@
     shoes: N14ClothingShoesTribal
     gloves: N14ClothingHandsGlovesTribal
     back: N14ClothingBackpackTrekker # Corvax-Change
-    pocket1: N14TribalKnife
+    pocket1: TribalKnife
     pocket2: Triballoadoutkits
     id: N14IDTribeBulletsPendant
   innerClothingSkirt: N14ClothingUniformJumpskirtTribal

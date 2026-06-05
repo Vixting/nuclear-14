@@ -636,7 +636,7 @@
   components:
   - type: Tag
     tags:
-    - N14TribalMedicine # #Misfits Fix: tag allows storage in the Medical Belt
+    - TribalMedicine # #Misfits Fix: tag allows storage in the Medical Belt
   - type: Sprite
     sprite: _Nuclear14/Objects/Specific/Medical/drugs.rsi
     state: healingpowder

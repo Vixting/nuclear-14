@@ -88,13 +88,12 @@
         - Landmine
         - Mousetrap
         - SlipEntity
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - SiikMaas
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - SiikMaas
+    defaultLanguage: TauCetiBasic
   - type: Tag
     tags:
     - CanPilot

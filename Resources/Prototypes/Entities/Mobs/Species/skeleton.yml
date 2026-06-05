@@ -107,13 +107,14 @@
     alternateState: Standing
   - type: TypingIndicator
     proto: skeleton
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
     - Calcic
-    understands:
+    understoodLanguages:
     - TauCetiBasic
     - Calcic
+    defaultLanguage: TauCetiBasic
   - type: FootPrints
   - type: LayingDown
 

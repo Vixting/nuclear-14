@@ -60,7 +60,7 @@
     altDisarm: false
     hidden: true
     soundHit:
-      collection: N14DogAttack #Misfits Change
+      collection: DogAttack #Misfits Change
     angle: 60
     animation: WeaponArcBite
     wideAnimation: WeaponArcBite
@@ -73,7 +73,7 @@
     minInterval: 10
     maxInterval: 60
     sound:
-      collection: N14DogIdle
+      collection: DogIdle
       params:
         volume: -10
         maxDistance: 5
@@ -122,22 +122,36 @@
     interactFailureString: petting-failure-generic
     interactSuccessSpawn: EffectHearts
     interactSuccessSound:
-      collection: N14DogBark #Misfits Change
+      collection: DogBark #Misfits Change
   - type: ReplacementAccent
     accent: dog
-  - type: LanguageKnowledge
-    speaks:
-    - N14Dog
-    understands:
-    - N14Dog
-    - N14Insect
+  - type: Language
+    spokenLanguages:
+    - Dog
+    understoodLanguages:
+    - Dog
+    - Insect
     - English
     - Chinese
     - Latin
     - Tribal
+<<<<<<< Updated upstream
     - N14Robot
     - N14BrotherBeep
     - Sign
+=======
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Dog
+  - type: GhostRole
+    name: ghost-role-information-n14pet-dog-name
+    description: ghost-role-information-n14pet-generic-description
+    rules: ghost-role-component-default-rules
+    makeSentient: false
+    allowMovement: true
+  - type: GhostTakeoverAvailable
+>>>>>>> Stashed changes
   - type: Speech # Corvax-Change
     speechSounds: Dog
   #- type: DogVision # Corvax-Change | #Misfits Change: Disabled — greyscale shader should not apply to players inhabiting pet mobs
@@ -211,20 +225,21 @@
         Base: dead
       Dead:
         Base: dead
-  - type: LanguageKnowledge
-    speaks:
-    - N14Dog
-    - N14BrotherBeep
-    understands:
-    - N14Dog
-    - N14Insect
+  - type: Language
+    spokenLanguages:
+    - Dog
+    - BrotherBeep
+    understoodLanguages:
+    - Dog
+    - Insect
     - English
     - Chinese
     - Latin
     - Tribal
-    - N14Robot
-    - N14BrotherBeep
-    - Sign
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Dog
 
 - type: entity
   name: NCR Mutt
@@ -421,19 +436,36 @@
   - type: NpcFactionMember # Corvax-Change
     factions:
     - Passive
+<<<<<<< Updated upstream
   - type: LanguageKnowledge
     speaks:
     - N14Insect
     understands:
     - N14Dog
     - N14Insect
+=======
+  - type: GhostRole
+    name: ghost-role-information-n14pet-roach-name
+    description: ghost-role-information-n14pet-generic-description
+    rules: ghost-role-component-default-rules
+    makeSentient: false
+    allowMovement: true
+  - type: GhostTakeoverAvailable
+  - type: Language
+    spokenLanguages:
+    - Insect
+    understoodLanguages:
+    - Dog
+    - Insect
+>>>>>>> Stashed changes
     - English
     - Chinese
     - Latin
     - Tribal
-    - N14Robot
-    - N14BrotherBeep
-    - Sign
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Insect
 
 - type: entity
   name: Pet Ant

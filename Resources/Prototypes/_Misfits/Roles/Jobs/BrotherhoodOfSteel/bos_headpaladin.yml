@@ -37,6 +37,16 @@
         factions:
           - BrotherhoodOfSteel
       - type: PowerArmorProficiency
+<<<<<<< Updated upstream
+=======
+      - type: Language # #Misfits Add: Heads understand Brotherhood binary code by default.
+        spokenLanguages:
+        - English
+        understoodLanguages:
+        - English
+        - BrotherBeep
+        defaultLanguage: English
+>>>>>>> Stashed changes
 
 - type: startingGear
   id: BoSMidPaladinCommanderGear

@@ -541,7 +541,7 @@
 #        - N14IronFist
 #        - N14PillowKnuckles
 #        - N14SilentTakedown
-#        - N14BrotherBeep
+#        - BrotherBeep
 #    - !type:CharacterSpeciesRequirement
 #      species:
 #        - Human
@@ -558,9 +558,9 @@
 #          damage: 6
 #    - !type:TraitModifyLanguages
 #      languagesSpoken:
-#        - N14BrotherBeep
+#        - BrotherBeep
 #      languagesUnderstood:
-#        - N14BrotherBeep
+#        - BrotherBeep
 #Misfits Removed — converted to a physical item (TrainingManualPowerArmor). Paladin/Senior Paladin/Head Paladin
 # get PowerArmorProficiency innately via AddComponentSpecial in their job specials.
 #- type: trait
@@ -586,7 +586,7 @@
 #        - N14GammaShield
 #        - N14GooglyEyes
 #        - N14HandyTools
-#        - N14BrotherBeep
+#        - BrotherBeep
 #    - !type:CharacterSpeciesRequirement
 #      species:
 #        - Human
@@ -600,9 +600,9 @@
 #          speedModifier: 1.33
 #    - !type:TraitModifyLanguages
 #      languagesSpoken:
-#        - N14BrotherBeep
+#        - BrotherBeep
 #      languagesUnderstood:
-#        - N14BrotherBeep
+#        - BrotherBeep
 #
 #- type: trait
 #  id: N14ExtremeAugPaladin
@@ -624,7 +624,7 @@
 #        - N14PillowKnuckles
 #        - N14RadClaws
 #        - N14SilentTakedown
-#        - N14BrotherBeep
+#        - BrotherBeep
 #    - !type:CharacterSpeciesRequirement
 #      species:
 #        - Human
@@ -642,6 +642,6 @@
 #          damage: 6
 #    - !type:TraitModifyLanguages
 #      languagesSpoken:
-#        - N14BrotherBeep
+#        - BrotherBeep
 #      languagesUnderstood:
-#        - N14BrotherBeep
+#        - BrotherBeep

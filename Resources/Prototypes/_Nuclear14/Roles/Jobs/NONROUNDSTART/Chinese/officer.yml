@@ -29,7 +29,7 @@
 #     outerClothing: N14ClothingOuterVestChinese
 #     pocket1: N14WeaponPistol9mmChinese
 #     pocket2: N14CombatKnife
-#     suitstorage: N14ChineseSword
+#     suitstorage: ChineseSword
 
 # - type: playTimeTracker
 #   id: ChineseOfficer

@@ -21,9 +21,8 @@ using Content.Shared.SSDIndicator;
 using Content.Shared.Damage.ForceSay;
 using Content.Shared.Chat;
 using Content.Server.Body.Components;
-using Content.Server.Language;
 using Content.Shared.Abilities.Psionics;
-using Content.Shared.Language.Components;
+using Content.Shared._Nuclear14.Language.Components;
 using Content.Shared.Nutrition.Components;
 using Robust.Shared.Enums;
 
@@ -209,17 +208,10 @@ public sealed partial class CloningSystem
             AddComp(uid, newPsionic, true);
         }
 
-        if (TryComp<LanguageKnowledgeComponent>(bodyToClone, out var oldKnowLangs))
+        if (TryComp<LanguageComponent>(bodyToClone, out var oldLangComp))
         {
-            var newKnowLangs = _serialization.CreateCopy(oldKnowLangs, null, false, true);
-            AddComp(uid, newKnowLangs, true);
-        }
-
-
-        if (TryComp<LanguageSpeakerComponent>(bodyToClone, out var oldSpeakLangs))
-        {
-            var newSpeakLangs = _serialization.CreateCopy(oldSpeakLangs, null, false, true);
-            AddComp(uid, newSpeakLangs, true);
+            var newLangComp = _serialization.CreateCopy(oldLangComp, null, false, true);
+            AddComp(uid, newLangComp, true);
         }
 
         if (doMetempsychosis)

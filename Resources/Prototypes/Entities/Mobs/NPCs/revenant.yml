@@ -107,8 +107,6 @@
     powersToAdd:
       - XenoglossyPower
       - TelepathyPower
-  - type: LanguageSpeaker
-  - type: UniversalLanguageSpeaker
   - type: Tag
     tags:
       - NoPaint

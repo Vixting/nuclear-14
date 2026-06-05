@@ -110836,7 +110836,16 @@ entities:
     - type: Transform
       pos: -32,4
       parent: 2
+<<<<<<< Updated upstream
 - proto: N14TribalKnife
+=======
+  - uid: 14598
+    components:
+    - type: Transform
+      pos: 95.5,33
+      parent: 2
+- proto: TribalKnife
+>>>>>>> Stashed changes
   entities:
   - uid: 1496
     components:

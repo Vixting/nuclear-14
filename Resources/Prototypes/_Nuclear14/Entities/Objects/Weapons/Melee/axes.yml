@@ -40,7 +40,7 @@
 - type: entity
   name: tribal hatchet
   parent: BaseItem
-  id: N14TribalHatchet
+  id: TribalHatchet
   description: A tool that's just as useful as a weapon. Used for chopping things.
   components:
   - type: Clothing

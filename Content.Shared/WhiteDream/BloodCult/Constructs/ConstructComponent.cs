@@ -1,5 +1,5 @@
 ﻿using Content.Shared.Antag;
-using Content.Shared.Language;
+using Content.Shared._Nuclear14.Language.Prototypes;
 using Content.Shared.StatusIcon;
 using Robust.Shared.Prototypes;
 

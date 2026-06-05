@@ -30,10 +30,10 @@
     - type: loadout
       id: N14WastelandTribalSpear
     - type: loadout
-      id: N14TribalSword
+      id: TribalSword
     - type: loadout
-      id: N14TribalHatchet
+      id: TribalHatchet
     - type: loadout
-      id: N14TribalMachete
+      id: TribalMachete
     - type: loadout
-      id: N14TribalClub
+      id: TribalClub

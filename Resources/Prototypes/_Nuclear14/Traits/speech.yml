@@ -45,18 +45,18 @@
     - Tribal
 
 - type: trait
-  id: N14SignLanguage
+  id: SignLanguage
   category: Speech
   points: -2
   functions:
   - !type:TraitModifyLanguages
     languagesSpoken:
-    - Sign
+    - SignLanguage
     languagesUnderstood:
-    - Sign
+    - SignLanguage
 
 - type: trait
-  id: N14BrotherBeep
+  id: BrotherBeep
   category: Speech
   points: -2
   requirements:
@@ -74,7 +74,7 @@
   - !type:TraitModifyLanguages
     languagesSpoken:
     languagesUnderstood:
-    - N14BrotherBeep
+    - BrotherBeep
 
 - type: trait
   id: N14Muted
@@ -174,7 +174,7 @@
     - N14Stutter
     - N14ScottishAccent
     - N14Liar
-    - N14TribalAccent # Misfits
+    - TribalAccent # Misfits
   functions:
   - !type:TraitAddComponent
     components:
@@ -191,7 +191,7 @@
     - N14Stutter
     - N14FrontalLisp
     - N14Liar
-    - N14TribalAccent # Misfits
+    - TribalAccent # Misfits
   functions:
   - !type:TraitAddComponent
     components:

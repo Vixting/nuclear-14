@@ -1,7 +1,6 @@
 using System.Linq;
 using Content.Server.Chat.Systems;
 using Content.Server.Interaction;
-using Content.Server.Language;
 using Content.Server.Popups;
 using Content.Server.Power.Components;
 using Content.Server.Power.EntitySystems;
@@ -41,7 +40,6 @@ public sealed class RadioDeviceSystem : EntitySystem
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly UserInterfaceSystem _ui = default!;
     [Dependency] private readonly INetManager _netMan = default!;
-    [Dependency] private readonly LanguageSystem _language = default!;
     [Dependency] private readonly IConfigurationManager _cfg = default!; // Forge-Change
     [Dependency] private readonly SharedPowerReceiverSystem _power = default!; // Goob
 

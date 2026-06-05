@@ -32,19 +32,20 @@
         Base: dead
       Dead:
         Base: dead
-  - type: LanguageKnowledge # Legion mongrel understands Latin so it can follow Houndmaster commands
-    speaks:
-    - N14Dog
-    understands:
-    - N14Dog
-    - N14Insect
+  - type: Language # Legion mongrel understands Latin so it can follow Houndmaster commands
+    spokenLanguages:
+    - Dog
+    understoodLanguages:
+    - Dog
+    - Insect
     - English
     - Chinese
     - Latin
     - Tribal
-    - N14Robot
-    - N14BrotherBeep
-    - Sign
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Dog
   - type: MeleeWeapon
     altDisarm: false
     hidden: true

@@ -526,7 +526,7 @@
       - id: N14Hydra
       - id: N14HealingPowder
         amount: 2
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: N14FoodTinK
         amount: 2
       - id: N14JunkCeramicFlask
@@ -612,7 +612,7 @@
     size: Huge
   - type: SpawnItemsOnUse
     items:
-      - id: N14TribalBigClubDecorated
+      - id: TribalBigClubDecorated
       - id: N14WeaponRifleSKS # #Misfits Change by BILL CLINTON!: Small number role made to be paired with the NCR sarge or basic ranger kits.
       - id: SKSEnbloc308 # #Misfits Change - replaced GarandEnbloc308
         amount: 4
@@ -937,7 +937,7 @@
       - id: N14WeaponPistol45Colt # #Misfits Change: .45 revolver Legion sidearm
       - id: N14MagazinePistol45
         amount: 2
-      - id: N14TribalMachete
+      - id: TribalMachete
       #- id: N14ClothingBeltMedicalFilled #Misfits Change /Remove/: Legion does not use stimpak medical belts
       - id: N14HealingPowder
         amount: 2
@@ -975,7 +975,7 @@
       - id: N14WeaponPistol45Colt # #Misfits Change: .45 revolver Legion sidearm
       - id: N14MagazinePistol45
         amount: 2
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: N14HealingPowder #Misfits Change /Tweak/: replaces dirty stimpak, Legion uses tribal medicine
       - id: N14FoodTinK
         amount: 2
@@ -1033,7 +1033,7 @@
       - id: N14WeaponSMGGreaseGun
       - id: Magazine45SubMachineGun
         amount: 2
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: N14LegionnaireBuckler
       - id: N14HealingPowder #Misfits Change /Tweak/: replaces dirty stimpak, Legion uses tribal medicine
       - id: N14FoodTinK
@@ -1107,7 +1107,7 @@
   - type: SpawnItemsOnUse
     items:
       - id: N14ClothingOuterLegionnaireRecruitArmor
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: ClothingBeltMedical
       - id: N14Bandage
         amount: 2
@@ -1135,7 +1135,7 @@
   - type: SpawnItemsOnUse
     items:
       - id: N14ClothingOuterLegionnaireRecruitArmor
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: N14LegionnaireBuckler
       - id: N14HealingPowder
       - id: N14FoodTinK
@@ -1183,7 +1183,7 @@
     items:
       - id: N14ClothingOuterLegionnaireRecruitArmor
       - id: ClothingBeltMedical
-      - id: N14TribalMachete
+      - id: TribalMachete
       - id: N14Bandage
         amount: 2
       - id: Ointment

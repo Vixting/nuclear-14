@@ -7,16 +7,16 @@ trait-description-LanguageChinese = You can understand and speak the Chinese lan
 trait-name-LanguageSpanish = Spanish Language
 trait-description-LanguageSpanish = You can understand and speak the Spanish language, whether through learning or backstory.
 
-trait-name-N14SignLanguage = Sign Language
-trait-description-N14SignLanguage =
+trait-name-SignLanguage = Sign Language
+trait-description-SignLanguage =
     You can understand and use a basic and generally accepted sign language.
     If you are mute for any reason, you can still communicate with sign language.
 
 trait-name-LanguageTribalRanger = Tribal Language
 trait-description-LanguageTribalRanger = You can understand and speak the local Tribal language, whether through learning or backstory.
 
-trait-name-N14SignLanguageRanger = Sign Language
-trait-description-N14SignLanguageRanger =
+trait-name-SignLanguageRanger = Sign Language
+trait-description-SignLanguageRanger =
     You can understand and use a basic and generally accepted sign language.
     If you are mute for any reason, you can still communicate with sign language.
 
@@ -33,8 +33,8 @@ trait-description-N14FrontalLisp =
     An abnormality in the development of your speech has caused you to pronounce the "s" and "z" sounds similarly to "th".
     In other words, you thpeak with a lithp.
 
-trait-name-N14BrotherBeep = Brotherhood Code
-trait-description-N14BrotherBeep =
+trait-name-BrotherBeep = Brotherhood Code
+trait-description-BrotherBeep =
     You have learned the coding language of your chapter, those beeps and boops, you can understand them all.
     But due to your lack of augmentations [color=red]you are still unable to speak it[/color] yourself!
 
@@ -368,3 +368,29 @@ trait-description-N14SpecialAgility =
 trait-name-N14SpecialLuck = Luck
 trait-description-N14SpecialLuck =
     Deal slightly more ranged and melee damage, but lose a little stamina resilience.
+
+# N14 Language system traits
+trait-name-N14LanguageSpanish = Spanish Language
+trait-description-N14LanguageSpanish = You can understand and speak Spanish, whether through learning or backstory.
+
+trait-name-N14LanguageRussian = Russian Language
+trait-description-N14LanguageRussian = You can understand and speak Russian, whether through learning or backstory.
+
+trait-name-N14LanguageChinese = Chinese Language
+trait-description-N14LanguageChinese = You can understand and speak Chinese, whether through learning or backstory.
+
+trait-name-N14LanguageSignLanguage = Sign Language
+trait-description-N14LanguageSignLanguage =
+    You can understand and use sign language.
+    If you are mute, you can still communicate with sign language.
+
+trait-name-N14LanguageTribal = Tribal Language
+trait-description-N14LanguageTribal = You can understand and speak the rough tribal dialect of wasteland communities.
+
+trait-name-N14LanguageBrotherBeep = Brotherhood Code
+trait-description-N14LanguageBrotherBeep =
+    You have received augmentations and training to use the Brotherhood's encoded binary language.
+    Required to communicate with Brotherhood machines and other augmented members.
+
+trait-name-N14LanguageRobotSpeak = Robot Speak
+trait-description-N14LanguageRobotSpeak = You can understand and communicate in the binary language of robots and automatons.

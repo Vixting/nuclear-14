@@ -1,13 +1,13 @@
 using Robust.Shared.Prototypes;
 using Robust.Shared.Localization;
-using Content.Shared.Language;
+using Content.Shared._Nuclear14.Language.Prototypes;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace Content.IntegrationTests.Tests.Traits;
 
 /// <summary>
-///    Checks if every language has a valid name, chatname, and description localization string.
+///    Checks if every n14language prototype has a valid name and description localization string.
 /// </summary>
 [TestFixture]
 [TestOf(typeof(LanguagePrototype))]
@@ -27,7 +27,7 @@ public sealed class LanguageLocalizationTest
             var missingStrings = new List<string>();
 
             foreach (var langProto in proto.EnumeratePrototypes<LanguagePrototype>().OrderBy(a => a.ID))
-                foreach (var locString in new List<string> { $"language-{langProto.ID}-name", $"chat-language-{langProto.ID}-name", $"language-{langProto.ID}-description" })
+                foreach (var locString in new List<string> { $"language-{langProto.ID}-name", $"language-{langProto.ID}-description" })
                     if (!locale.HasString(locString))
                         missingStrings.Add($"\"{langProto.ID}\", \"{locString}\"");
 

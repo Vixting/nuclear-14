@@ -74,22 +74,13 @@
           Searching: { state: pai-searching-overlay }
           On: { state: pai-on-overlay }
   - type: StationMap
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    understands:
+    understoodLanguages:
     - TauCetiBasic
-    - SolCommon
-    - Tradeband
-    - Freespeak
-    - Elyran
-    - RobotTalk
-    - Sign # It's intentional that they don't "Speak" sign language.
+    - SignLanguage # It's intentional that they don't "Speak" sign language.
+    defaultLanguage: TauCetiBasic
   - type: DamageOtherOnHit
     damage:
       types:

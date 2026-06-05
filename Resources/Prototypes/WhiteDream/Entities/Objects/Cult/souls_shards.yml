@@ -35,14 +35,12 @@
   - type: Speech
   - type: IsDeadIC
   - type: SoulShard
-  - type: LanguageKnowledge
-    speaks:
-    - TauCetiBasic
-    - Eldritch
-    understands:
-    - TauCetiBasic
-    - Eldritch
-  - type: LanguageSpeaker
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
 
 - type: entity
   parent: SoulShard

@@ -103,10 +103,11 @@
         reagents:
         - ReagentId: Nothing
           Quantity: 1
-  - type: LanguageSpeaker
-  - type: LanguageKnowledge
-    speaks: [TauCetiBasic] # So that them foreigners can't understand what the broken mail is saying
-    understands: []
+  - type: Language # So that them foreigners can't understand what the broken mail is saying
+    spokenLanguages:
+    - TauCetiBasic
+    understoodLanguages: []
+    defaultLanguage: TauCetiBasic
 
 # This empty parcel is allowed to exist and evade the tests for the admin
 # mailto command.

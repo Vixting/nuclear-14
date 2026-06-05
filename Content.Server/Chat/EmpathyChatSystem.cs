@@ -1,15 +1,15 @@
 using System.Linq;
 using Robust.Shared.Utility;
 using Content.Server.Chat.Managers;
-using Content.Server.Language;
 using Content.Server.Chat.Systems;
 using Content.Server.Administration.Managers;
+using Content.Server._Nuclear14.Language.Systems;
+using Content.Shared._Nuclear14.Language.Components;
+using Content.Shared._Nuclear14.Language.Prototypes;
+using Content.Shared.Chat;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
-using Content.Shared.Chat;
-using Content.Shared.Language;
 using Robust.Shared.Prototypes;
-using Content.Shared.Language.Components;
 
 namespace Content.Server.Chat;
 
@@ -23,33 +23,26 @@ public sealed partial class EmpathyChatSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LanguageSpeakerComponent, EntitySpokeEvent>(OnSpeak);
+        SubscribeLocalEvent<LanguageComponent, EntitySpokeEvent>(OnSpeak);
     }
 
-    private void OnSpeak(EntityUid uid, LanguageSpeakerComponent component, EntitySpokeEvent args)
+    private void OnSpeak(EntityUid uid, LanguageComponent component, EntitySpokeEvent args)
     {
-        if (args.Source != uid
-            || !args.Language.SpeechOverride.EmpathySpeech
-            || args.IsWhisper)
+        if (args.Source != uid || args.IsWhisper)
+            return;
+
+        if (!_prototype.TryIndex(args.Language, out var langProto) || !langProto.SpeechOverride.EmpathySpeech)
             return;
 
         SendEmpathyChat(args.Source, args.Message, false);
     }
 
-    /// <summary>
-    /// Send a Message in the Shadowkin Empathy Chat.
-    /// </summary>
-    /// <param name="source">The entity making the message</param>
-    /// <param name="message">The contents of the message</param>
-    /// <param name="hideChat">Set the ChatTransmitRange</param>
     public void SendEmpathyChat(EntityUid source, string message, bool hideChat)
     {
         var clients = GetEmpathChatClients();
-        string wrappedMessage;
-
-        wrappedMessage = Loc.GetString("chat-manager-send-empathy-chat-wrap-message",
-                ("source", source),
-                ("message", FormattedMessage.EscapeText(message)));
+        var wrappedMessage = Loc.GetString("chat-manager-send-empathy-chat-wrap-message",
+            ("source", source),
+            ("message", FormattedMessage.EscapeText(message)));
 
         _chatManager.ChatMessageToMany(ChatChannel.Telepathic, message, wrappedMessage, source, hideChat, true, clients.ToList(), Color.FromHex("#be3cc5"));
     }
@@ -57,25 +50,18 @@ public sealed partial class EmpathyChatSystem : EntitySystem
     private IEnumerable<INetChannel> GetEmpathChatClients()
     {
         return Filter.Empty()
-            .AddWhereAttachedEntity(entity =>
-            CanHearEmpathy(entity))
+            .AddWhereAttachedEntity(CanHearEmpathy)
             .Recipients
             .Union(_adminManager.ActiveAdmins)
             .Select(p => p.Channel);
     }
 
-    /// <summary>
-    /// Check if an entity can hear Empathy.
-    /// (Admins will always be able to hear Empathy)
-    /// </summary>
-    /// <param name="entity">The entity to check</param>
     public bool CanHearEmpathy(EntityUid entity)
     {
-        var understood = _language.GetUnderstoodLanguages(entity);
-        for (int i = 0; i < understood.Count; i++)
+        var spokenLanguages = _language.GetSpokenLanguages(entity);
+        foreach (var langId in spokenLanguages)
         {
-            var language = _prototype.Index<LanguagePrototype>(understood[i]);
-            if (language.SpeechOverride.EmpathySpeech)
+            if (_prototype.TryIndex(langId, out var proto) && proto.SpeechOverride.EmpathySpeech)
                 return true;
         }
         return false;

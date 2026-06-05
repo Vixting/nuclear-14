@@ -170,19 +170,20 @@
     channels:
     - Binary
     - Common
-  - type: LanguageKnowledge
-    speaks:
-    - N14BrotherBeep
-    - N14Robot
+  - type: Language
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
     - English
     - Latin
-    - Chinese # #Misfits Fix: 'Spanish' is not a valid LanguagePrototype id; N14 uses 'Chinese' as the legacy id for Spanish
-    understands:
-    - N14BrotherBeep
-    - N14Robot
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
     - English
     - Latin
-    - Chinese # #Misfits Fix: 'Spanish' is not a valid LanguagePrototype id; N14 uses 'Chinese' as the legacy id for Spanish
+    - Chinese
+    defaultLanguage: BrotherBeep
   - type: HandheldLight
     toggleOnInteract: false
     addPrefix: true
@@ -270,23 +271,20 @@
     - map: ["enum.DamageStateVisualLayers.Base"]
       state: icon
     - state: shadow_eyebot
-  - type: UniversalLanguageSpeaker # Corvax-Change
-    enabled: false
-  - type: LanguageSpeaker # Corvax-Change
-    currentLanguage: N14BrotherBeep
-  - type: LanguageKnowledge # Corvax-Change | #Misfits Change: standardised to match base eyebot language set
-    speaks:
-    - N14BrotherBeep
-    - N14Robot
+  - type: Language # Corvax-Change | #Misfits Change: standardised to match base eyebot language set
+    spokenLanguages:
+    - BrotherBeep
+    - Robot
     - English
     - Latin
-    - Chinese # #Misfits Fix: 'Spanish' is not a valid LanguagePrototype id; N14 uses 'Chinese' as the legacy id for Spanish
-    understands:
-    - N14BrotherBeep
-    - N14Robot
+    - Chinese
+    understoodLanguages:
+    - BrotherBeep
+    - Robot
     - English
     - Latin
-    - Chinese # #Misfits Fix: 'Spanish' is not a valid LanguagePrototype id; N14 uses 'Chinese' as the legacy id for Spanish
+    - Chinese
+    defaultLanguage: BrotherBeep
 
 - type: entity
   name: Washington BoS Eyebot

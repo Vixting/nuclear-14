@@ -1,6 +1,7 @@
+using Content.Shared._Nuclear14.Language.Prototypes;
 using Content.Shared.Chat;
-using Content.Shared.Language;
 using Content.Shared.Radio;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Radio;
 
@@ -14,7 +15,7 @@ public readonly record struct RadioReceiveEvent(
     RadioChannelPrototype Channel,
     ChatMessage OriginalChatMsg,
     ChatMessage LanguageObfuscatedChatMsg,
-    LanguagePrototype Language,
+    ProtoId<LanguagePrototype> Language,
     EntityUid RadioSource
 );
 

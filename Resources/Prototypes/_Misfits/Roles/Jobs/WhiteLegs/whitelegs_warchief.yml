@@ -41,7 +41,7 @@
     head: N14ClothingHeadHatBeanie
     ears: MisfitsClothingHeadsetWastelandScrap
     back: N14ClothingBackpackMilitary
-    suitstorage: N14TribalBigClubDecorated
+    suitstorage: TribalBigClubDecorated
     pocket1: N14WeaponRevolver44TribalUpgraded
     belt: ClothingBeltMilitary
   storage:

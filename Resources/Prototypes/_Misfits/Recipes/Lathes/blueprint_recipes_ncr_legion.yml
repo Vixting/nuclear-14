@@ -1393,7 +1393,7 @@
 # --- Legion Tier 1 Weapons (Slave/Recruit arms - tribal melee focus) ---
 - type: latheRecipe
   id: N14BPLegionWeaponTribalKnife
-  result: N14TribalKnife
+  result: TribalKnife
   category: N14BlueprintLegionWeaponsT1
   completetime: 3
   requiresBlueprint: true
@@ -1407,7 +1407,7 @@
 
 - type: latheRecipe
   id: N14BPLegionWeaponTribalClub
-  result: N14TribalClub
+  result: TribalClub
   category: N14BlueprintLegionWeaponsT1
   completetime: 3
   requiresBlueprint: true
@@ -1482,7 +1482,7 @@
 # --- Legion Tier 2 Weapons (Legionnaire grade) ---
 - type: latheRecipe
   id: N14BPLegionWeaponTribalMachete
-  result: N14TribalMachete
+  result: TribalMachete
   category: N14BlueprintLegionWeaponsT2
   completetime: 6
   requiresBlueprint: true
@@ -1514,7 +1514,7 @@
 
 - type: latheRecipe
   id: N14BPLegionWeaponTribalHatchet
-  result: N14TribalHatchet
+  result: TribalHatchet
   category: N14BlueprintLegionWeaponsT2
   completetime: 5
   requiresBlueprint: true
@@ -1530,7 +1530,7 @@
 
 - type: latheRecipe
   id: N14BPLegionWeaponTribalSword
-  result: N14TribalSword
+  result: TribalSword
   category: N14BlueprintLegionWeaponsT2
   completetime: 7
   requiresBlueprint: true
@@ -1661,7 +1661,7 @@
 
 - type: latheRecipe
   id: N14BPLegionWeaponTribalBigClub
-  result: N14TribalBigClub
+  result: TribalBigClub
   category: N14BlueprintLegionWeaponsT3
   completetime: 8
   requiresBlueprint: true
@@ -1844,7 +1844,7 @@
 
 - type: latheRecipe
   id: N14BPLegionWeaponTribalBigClubDecorated
-  result: N14TribalBigClubDecorated
+  result: TribalBigClubDecorated
   category: N14BlueprintLegionWeaponsT4
   completetime: 14
   requiresBlueprint: true

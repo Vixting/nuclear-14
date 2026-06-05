@@ -17,14 +17,15 @@
   id: N14MMI
   suffix: N14
   components:
-  - type: LanguageKnowledge
-    speaks:
-    - N14Robot
+  - type: Language
+    spokenLanguages:
+    - Robot
     - English
-    understands:
-    - N14Robot
+    understoodLanguages:
+    - Robot
     - English
-    - N14BrotherBeep
+    - BrotherBeep
+    defaultLanguage: Robot
 
 # Blueprint item — a Pre-War technical document
 # Insert into a weapon workbench to unlock the N14MMI fabrication recipe

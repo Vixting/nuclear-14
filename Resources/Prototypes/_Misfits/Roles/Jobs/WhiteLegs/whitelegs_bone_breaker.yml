@@ -42,8 +42,8 @@
     head: N14ClothingHeadHatBeanie
     ears: MisfitsClothingHeadsetWastelandScrap
     back: N14ClothingBackpackMilitary
-    suitstorage: N14TribalBigClub
-    pocket1: N14TribalMachete
+    suitstorage: TribalBigClub
+    pocket1: TribalMachete
   storage:
     back:
     - N14BoxPlasticFilledWastelander

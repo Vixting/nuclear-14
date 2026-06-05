@@ -1,0 +1,647 @@
+## Nuclear-14 n14language prototypes (new language system)
+## Uses type: n14language and the N14Language component on entities.
+
+- type: n14language
+  id: English
+  name: "English"
+  description: "The standard language spoken by most wastelanders."
+  isVisibleLanguage: true
+  showLanguageName: false
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 150
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["a","aan","aas","ab","aba","ad","aee","aft","ag","ai","aise","ak","akee","aq","ar","ata","aur","aus",
+      "ba","baat","bach","bad","bahe","band","be","ben","ber","bhaa","bhu","bra","burt",
+      "cap","cer","ch","cha","chaar","chale","chalo","chil","com",
+      "da","daa","daaj","dat","de","dee","dhaa","di","die","dik","din","diz","do","dos","dosh","durch",
+      "eer","ek","er","es","fal","fang","fra","fun",
+      "ga","gan","gao","gee","geet","gern","gir","gon","gren","gri","gu","guda",
+      "ha","haa","hai","hain","har","hat","he","hee","heer","hekt","heu","hit","hn","ho","hua","huk","hul",
+      "ich","ig","in","isch","ja","jaa","jad","jan","jao","jar","jas","jee","un",
+      "ka","kaha","kana","kar","kara","karo","ke","kee","keln","kha","khada","khe","khi","ko","koo","ky",
+      "la","laa","laat","lad","lada","lana","lane","le","lee","leiden","leis","len","lie","lo",
+      "maa","maan","mod","most","muj","mujhe","mukt",
+      "na","naya","ne","nee","net","neta","nir","nka","oon","oop",
+      "pa","paa","pet","phen","phot","pi","plo","pra","que",
+      "ra","raa","rahe","raho","ran","rana","rar","re","ri","rie","rin","ro","rona","rosh","rtiv",
+      "saa","saal","saath","san","santu","sch","se","sen","sh","sha","shee","shi","shn","sht","shuo","soch","sol","soo","ssa","ster","suk","sur",
+      "ta","taan","tak","taka","tal","tan","tar","ten","tend","th","tho","tili","to","ton","tr","tu","tum","tung",
+      "udaa","ugr","unge","ut","va","vaa","vaad","vaib","ve","ven","ver","vi","vis","vol",
+      "wic","wut","ya","yah","yon","you","zas","ze","zorn","zt"]
+
+- type: n14language
+  id: Spanish
+  name: "Spanish"
+  description: "A pre-war Earth language still spoken in parts of the wasteland."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 120
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["a","al","an","ar","as","ca","ce","ci","co","da","de","di","do","el","en","er","es",
+      "la","le","lo","los","ma","me","mi","mo","na","ne","no","nos","pa","pe","po","por",
+      "que","qui","ra","re","ro","se","si","so","ta","te","to","tra","una","uno","va","ve","ya",
+      "lle","lla","llo","rio","ria","con","del","esta","esto","para","bueno","vamos",
+      "amigo","amiga","nada","donde","pero","hasta","luego"]
+
+- type: n14language
+  id: Chinese
+  name: "Chinese"
+  description: "A pre-war Earth language."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 140
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["ay","an","ba","bay","ban","bey","bo","bu","vey","ga","gan","go","gu","guy","gun",
+      "da","dan","dao","den","di","din","do","du","dun","zhan","zhe","zhen","zhi","zho","zhu","zi","zyan","zyao",
+      "kay","kan","kao","ke","ki","ko","ku","kun","la","lay","lan","le","li","lin","lo","lu","lun",
+      "ma","may","man","me","mi","min","mo","mu","na","nay","nan","ne","ni","nin","no","nu","nyu",
+      "pa","pan","pe","pi","po","pu","ran","ro","ru","sa","san","so","su","sun",
+      "ta","tan","te","ti","to","tu","tun","fa","fan","fey","fo","fu",
+      "khay","khan","khao","khe","khi","kho","khu","khua","khuan","khun",
+      "tsay","tsan","tse","tsi","tso","tsu","cha","chan","chao","che","chi","cho","chu",
+      "shan","shao","she","shi","sho","shu","shchi","shchu","yuan","yuy","ya","yan","yao","e","yo"]
+
+- type: n14language
+  id: Russian
+  name: "Russian"
+  description: "A pre-war Earth language."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 130
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["да","нет","что","как","где","кто","все","это","был","она","они","там","так","вот",
+      "раз","ещё","уже","или","при","без","над","под","про","для","его","её","нас","вас","вам","ему","нам"]
+
+- type: n14language
+  id: Tribal
+  name: "Tribal"
+  description: "A rough, guttural language spoken by wasteland tribal communities."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 80
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["rar","ya","ken","raur","bar","kuk","tek","kat","uk","vu","vakh","takh","tch","shchz",
+      "aukh","ist","ayn","ench","zviks","tut","mir","vo","bis","es","vor","nik","gro","enem","zandt",
+      "tstch","nokh","khel","isht","far","va","baram","ireng","tekh","lakh","sam","mak","lich","gen",
+      "or","ag","ekk","gek","stag","onn","bin","ket","yarl","vulf","aynekh","kreshchz","azunayn","gkhztkh"]
+
+- type: n14language
+  id: BrotherBeep
+  name: "Brotherhood Code"
+  description: "An encoded binary language used by Brotherhood of Steel augmented members."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 10
+    replacement: ["0","1","00","01","10","11","000","001","010","011","100","101","110","111"]
+
+- type: n14language
+  id: Robot
+  name: "Robot Speak"
+  description: "A machine language spoken by robots and automatons."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 10
+    replacement: ["1","0"]
+
+- type: n14language
+  id: Dog
+  name: "Dog"
+  description: "The language of man's best friend."
+  isVisibleLanguage: false
+  showLanguageName: false
+  showLanguageIcon: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 20
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 2
+    replacement: ["woof","bark","ruff","bork","raff","garr"]
+
+- type: n14language
+  id: Insect
+  name: "Insect"
+  description: "The chittering of insects."
+  isVisibleLanguage: false
+  showLanguageName: false
+  showLanguageIcon: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 15
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["click","clack","ti","pi","tap","cli","ick"]
+
+- type: n14language
+  id: SignLanguage
+  name: "Sign Language"
+  description: "A visual language using hand gestures and body movements."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: false
+  needsSpeech: false
+  needsLOS: true
+  expectedVocabularySize: 100
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 1
+    replacement: ["*waves*","*gestures*","*points*","*nods*","*shakes head*","*thumbs up*","*claps*","*motions*","*indicates*","*signals*"]
+
+- type: n14language
+  id: Latin
+  name: "Latin"
+  description: "An ancient Earth language used as a formal tongue by some factions."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 100
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["a","ab","ac","ad","al","am","an","ar","as","at","ae","am","ante","aut",
+      "be","bi","ca","can","cap","car","ce","ci","co","com","con","cor","cum",
+      "de","di","dis","do","du","e","ea","ed","ei","en","er","es","et","ex",
+      "fa","fe","fi","fo","fu","ge","gi","glo","gra","gre","gri","gro","gu",
+      "ha","hi","ho","hu","ia","ib","ic","id","ie","ig","il","im","in","io","ip","ir","is","it","iu",
+      "la","le","li","lo","lu","ma","me","mi","mo","mu","na","ne","ni","no","nu",
+      "ob","oc","od","of","om","on","op","or","os","ot","pa","pe","pi","po","pu",
+      "qua","que","qui","quo","ra","re","ri","ro","ru","sa","sc","se","si","so","sp","st","su",
+      "ta","te","ti","to","tu","ul","um","un","ur","us","ut","va","ve","vi","vo","vu"]
+
+- type: n14language
+  id: Cow
+  name: "Cow"
+  description: "The language of brahmin and cattle."
+  isVisibleLanguage: false
+  showLanguageName: false
+  showLanguageIcon: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 10
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 2
+    replacement: ["moo","moo-oo","mmm","mrrr","moo!"]
+
+- type: n14language
+  id: Chicken
+  name: "Chicken"
+  description: "The clucking of radchickens."
+  isVisibleLanguage: false
+  showLanguageName: false
+  showLanguageIcon: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 10
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["cluck","bawk","bok","cock","cluk"]
+
+- type: n14language
+  id: Eldritch
+  name: "Eldritch"
+  description: "A dark, otherworldly language spoken by blood cultists."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  randomizeObfuscation: true
+  expectedVocabularySize: 60
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["agh","ugh","eph","oth","ulm","kha","ghor","zoth","nth","yog","ryl","ehx","fhta","gnai",
+      "idk","nai","rhan","teg","uvl","wgah","xan","yig","zin","oth","azz","bho","cth","dun","eph"]
+
+- type: n14language
+  id: Primitive
+  name: "Primitive"
+  description: "A primitive language of screeches, hoots, and emphatic gestures."
+  isVisibleLanguage: true
+  showLanguageName: true
+  showLanguageIcon: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 40
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["ook","eek","aa","hoo","ooka","kee","rah","ik","uh","chit"]
+
+## SS14 species languages — ported to n14language type
+
+- type: n14language
+  id: TauCetiBasic
+  name: "Tau Ceti Basic"
+  description: "The interstellar common tongue."
+  isVisibleLanguage: false
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 150
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["a","ado","ago","aj","ajn","al","alt","am","amas","an","ang","ante","ap","ard","arma","aro","as","aur","aut","aw",
+      "ba","bal","bao","be","beau","bel","bi","bit","blu","bo","bod","boj","bojn","bu","but",
+      "ca","caj","ce","cer","chun","ci","cion","coj","cor","da","daj","dan","de","den","dis","do","dor","dorm",
+      "eco","ego","ek","eks","en","ero","es","est","et","eve","fa","fe","fel","fla","foj","fra","fraz","fros","ful","fut",
+      "ga","gan","gar","gi","gis","go","gran","ha","han","hav","hom","hong","hu","hum","hushi",
+      "ia","iaj","ica","id","idon","il","in","ing","io","is","iton","iza","ja","ji","jirou","joj",
+      "ka","kaj","kajo","kan","ke","ket","ki","kna","krio","ku","kui","kuk","kun","kur",
+      "la","laca","leng","les","li","liao","lib","ling","lis","lo","lon","long","lu","lud",
+      "ma","mal","man","me","mego","mero","mi","mia","min","mo","moj","mola","mon","mul",
+      "ne","ner","ni","nio","nu","of","oj","om","ou","pe","pi","plan","pli","po","por","post","pre","prin","pru","pu","pur",
+      "qiu","que","ra","ras","re","ri","rig","ril","ro","roj","ron","roso","rou","ru",
+      "sa","san","sci","sek","shi","shiia","shiue","shiwu","shu","shui","si","siaj","sku","so","som","sti","str","stre","su","suno",
+      "ta","tan","tas","te","tel","tem","the","ti","tian","tita","tiu","to","toj","ton","tran","tre","tri","trin","tro","trus",
+      "un","undo","uno","uz","va","var","varm","vas","ve","vek","ven","ves","vi","via","vin","vino","vint","vir","von","vu",
+      "whe","wu","yong","zem","zo","zoj","zon"]
+
+- type: n14language
+  id: SolCommon
+  name: "Sol Common"
+  description: "A language of the Sol system."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 120
+  speechOverride:
+    color: "#8282fbaa"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["a","abe","ade","ai","an","ana","ba","bae","bai","bang","bao","bei","ben","beo","bi","bian","bing","bo","bu","bugu","bun",
+      "cai","can","cao","cau","chan","chen","cheong","chiu","chong","chyo","da","dan","dao","de","deun","duo",
+      "eon","eun","eusi","feng","fu","ga","gak","gan","gang","gao","ge","gei","gen","geo","gil","go","gou","gu","gua","gui","gul","gun","guo","gwi",
+      "ha","hai","hal","han","hap","hara","he","hego","hen","hon","hoo","hu","hua","hun","hyeong",
+      "i","jae","jeo","jeon","ji","jia","jian","jiang","jie","jong","ju","jue","juede","jung","juzi",
+      "ka","kang","kawa","ke","keun","ki","kin","ko","kore","kou","ku","kuda","kun","kyu",
+      "lang","lao","leng","leung","li","lian","liang","lie","ling","lizi","lleo","long","lu",
+      "ma","mah","me","mei","meinu","men","meng","meog","meoni","mi","mian","min","mo","mot","mu","mun",
+      "na","nae","nai","nari","ne","ni","nii","nim","nin","nop","nu","o","oba","oga","oji","oka","ong","op","oto",
+      "pa","pai","pang","pin","ping","pong","pu","pum","pye","qi","qie","qing",
+      "ra","rei","ren","ri","ru","ruan","sa","sai","sama","san","sang","se","sei","sen","seo","seon","seong",
+      "shang","shen","sheng","shi","sho","shui","si","su","sui","sum","sun","swi",
+      "ta","tae","tai","tame","tamen","tan","te","tei","ti","tian","to","ton","tsu",
+      "ul","wa","wan","wang","wei","wo","xi","xian","xiao","xing","xiong","xiu","xu","xuan","xue",
+      "ya","yan","yang","yeong","yi","yige","yin","ying","yiqi","yong","you","yu","yuli","yuyi",
+      "zai","zao","zhan","zhang","zhe","zhen","zheng","zhuo","zi","zo","zu","zun","zuo"]
+
+- type: n14language
+  id: Freespeak
+  name: "Freespeak"
+  description: "A free interstellar dialect."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 120
+  speechOverride:
+    color: "#597d35"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["a","aan","aas","ab","aba","ad","aee","aft","ag","ai","aise","ak","akee","aq","ar","ata","aur","aus",
+      "ba","baat","bach","bad","bahe","band","be","ben","ber","bhaa","bhu","bra","burt","cap","cer","ch","cha","chaar","chale","chalo","chil","com",
+      "da","daa","daaj","dat","de","dee","dhaa","di","die","dik","din","diz","do","dos","dosh","durch",
+      "eer","ek","er","es","fal","fang","fra","fun","ga","gan","gao","gee","geet","gern","gir","gon","gren","gri","gu","guda",
+      "ha","haa","hai","hain","har","hat","he","hee","heer","hekt","heu","hit","hn","ho","hua","huk","hul",
+      "ich","ig","in","isch","ja","jaa","jad","jan","jao","jar","jas","jee","jiao","jin","jing","un",
+      "ka","kaha","kana","kar","kara","karo","ke","kee","keln","kha","khada","khe","khi","ko","koo","ky",
+      "la","laa","laat","lad","lada","lana","lane","le","lee","leiden","leis","len","lie","lo",
+      "maa","maan","mod","most","muj","mujhe","mukt","na","naya","ne","nee","net","neta","nir","nka","oon","oop",
+      "pa","paa","pet","phen","phot","pi","plo","pra","que","ra","raa","rahe","raho","ran","rana","rar","re","ri","rie","rin","ro","rona","rosh","rtiv",
+      "saa","saal","saath","san","santu","sch","se","sen","sh","sha","shee","shi","shn","sht","shuo","soch","sol","soo","ssa","ster","suk","sur",
+      "ta","taan","tak","taka","tal","tan","tar","ten","tend","th","tho","tili","to","ton","tr","tu","tum","tung",
+      "udaa","ugr","unge","ut","va","vaa","vaad","vaib","ve","ven","ver","vi","vis","vol",
+      "wic","wu","wut","xi","xiao","ya","yah","yon","you","zas","ze","zhu","zi","zo","zorn","zt"]
+
+- type: n14language
+  id: Elyran
+  name: "Elyran Standard"
+  description: "The formal language of the Elyran people."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 100
+  speechOverride:
+    color: "#8282fbaa"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["af","if","ba","ta","tha","id","jem","ha","kha","dal","dhl","ra","zay","sen","um","shn","sid","ad","za",
+      "ayn","gha","zir","yn","fa","qaf","iam","mim","al","ja","non","waw","ya","hem","zah","hml","ks","ini","da","iga","ih",
+      "la","ulf","xe","ayw","sit","ah","aarah","jalaa","sirt","kurt","turhk","ust","irk","kir","mir","ach","oglu","bolu","shek","she",
+      "ghoz","miya","ejdan","haaz","quq","taab","shanha","an","saa","seh"]
+
+- type: n14language
+  id: Tradeband
+  name: "Tradeband"
+  description: "A mercantile trade language."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 100
+  speechOverride:
+    color: "#597d35"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["a","acc","ai","al","ali","am","ama","ami","amo","an","ang","arme","ave","ba","bai","bar","bat","bi","blie","bris",
+      "ca","can","cant","car","care","ce","ci","cis","cit","cla","co","cul","cur","curt","da","dam","dans","de","di","dier","dim","dins","dorm","du","duro",
+      "e","eaux","ec","ecto","ees","ego","el","en","ent","er","ere","eres","eri","ero","es","et","ex",
+      "far","fi","fic","fine","fol","foll","fri","fro","gen","gil","go","gran","hab","ho","huc",
+      "ia","iam","ibus","idor","ie","iens","ier","ieur","iis","il","in","ine","int","ir","is","ise","it","itt",
+      "jar","je","jo","jor","la","lar","lav","le","lees","ler","les","li","lib","lie","lo","lu",
+      "ma","man","manu","mar","mari","mas","me","mea","mee","mejo","men","mes","meum","meus","mi","mier","min","mine","mit","mo","moi","mon","mons","mors","mou","mul",
+      "na","nam","ne","nee","nent","nes","ni","nit","nom","nu","num","o","oc","occ","oja","om","omni","or","ori","oro","os","ou","oub",
+      "pa","par","pars","pas","plu","pluv","po","pol","pos","pou","pous","pre","pu","pug","pus","que","qui",
+      "re","ri","ric","riga","rito","ro","rom","sa","sal","se","ser","sers","ses","sim","sion","so","sol","som","sou","sper","sse","ste","su","suis","sul","sur",
+      "ta","tar","te","teau","tem","temp","ten","tene","tes","ti","tibus","tien","tion","to","tol","ton","tons","tout","tra","trai","tre","trou","tuo","tus","tut",
+      "ues","ui","ul","um","un","upa","us","ut","ux","va","vail","ve","ven","veni","vi","viam","vie","vo","xus","za","zio"]
+
+- type: n14language
+  id: RootSpeak
+  name: "RootSpeak"
+  description: "The rustling language of the Diona."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  speechOverride:
+    color: "#ce5e14dd"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 5
+    replacement: ["hs","zt","kr","st","sh"]
+
+- type: n14language
+  id: Moffic
+  name: "Moffic"
+  description: "The fluttering tongue of the moth people."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  speechOverride:
+    color: "#c7df2edd"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 4
+    replacement: ["år","i","går","sek","mo","ff","ok","gj","ø","gå","la","le","lit","ygg","van"]
+
+- type: n14language
+  id: ValyrianStandard
+  name: "Valyrian Standard"
+  description: "The musical language of the Harpy people."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 80
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 5
+    replacement: ["š","ž","ź","ż","ö","ü","çi","bü","ca","çu","dü","do","fa","fe","fi","gü","ha","je","jü","la","le","li","me","mi","mo","çe","nj","ba","ce","da","go","ji","ka","na","pa"]
+
+- type: n14language
+  id: Draconic
+  name: "Draconic"
+  description: "The sibilant tongue of the Draconic people."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 80
+  speechOverride:
+    color: "#2aca2add"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 4
+    replacement: ["za","az","ze","ez","zi","iz","zo","oz","zu","uz","zs","sz","ha","ah","he","eh","hi","ih","ho","oh","hu","uh","hs","sh","la","al","le","el","li","il"]
+
+- type: n14language
+  id: Azaziba
+  name: "Azaziba"
+  description: "The ancient reptilian dialect."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  speechOverride:
+    color: "#2aca2add"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 4
+    replacement: ["azs","zis","zau","azua","skiu","zuakz","izo","aei","ki","kut","zo","zak","ias","kazi"]
+
+- type: n14language
+  id: Hissing
+  name: "Hissing"
+  description: "The primal hissing of serpentine creatures."
+  isVisibleLanguage: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 20
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 4
+    replacement: ["hss","iss","ss","is"]
+
+- type: n14language
+  id: Bubblish
+  name: "Bubblish"
+  description: "The bubbly language of the Slime people."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 30
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["blob","plop","pop","bop","boop","blurp","gloop","squelch"]
+
+- type: n14language
+  id: Marish
+  name: "Marish"
+  description: "The eerie resonant language of the Shadowkin."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  speechOverride:
+    color: "#be3cc5"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 5
+    replacement: ["mar","mwrrr","maaAr","aarrr","wrurrl","mmar","mwar","mlar","mlwar","mwaarr","mAaAr","lmwar","wlurrl","wlmwar","arrmaw","mwAlwar","wrlurll","wlarrul","wlAmur","AlwuRm","mrrrAw","wurlMur","uuRlmmr"]
+
+- type: n14language
+  id: Nekomimetic
+  name: "Nekomimetic"
+  description: "The broken, kawaii-infused speech of felinids."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 60
+  speechOverride:
+    color: "#df57aaee"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 3
+    replacement: ["neko","nyan","mimi","moe","mofu","fuwa","kyaa","kawaii","poka","munya","puni","munyu","ufufu","icha","doki","kyun","kusu","nya","nyaa","desu","kis","ama","chuu","baka","hewo","boop","gato","kit","sune","yori","sou","chan","san","kun","mahou","yatta","suki","usagi","domo","ori","uwa","zaazaa","shiku","puru","ira","heto","etto"]
+
+- type: n14language
+  id: Canilunzt
+  name: "Canilunzt"
+  description: "The energetic bark-speech of the Vulpkanin."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 80
+  speechOverride:
+    color: "#d69b3dcc"
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["rur","ya","cen","rawr","bar","kuk","tek","qat","uk","wu","vuh","tah","tch","schz","auch","ist","ein","entch","zwichs","tut","mir","wo","bis","es","vor","nic","gro","enem","zandt","tzch","noch","hel","ischt","far","wa","baram","iereng","tech","lach","sam","mak","lich","gen","or","ag","eck","gec","stag","onn","bin","ket","jarl","vulf","einech","cresthz","azunein","ghzth"]
+
+- type: n14language
+  id: Calcic
+  name: "Calcic"
+  description: "The bone-dry clicking language of skeletons."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 40
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 4
+    replacement: ["k","ck","ack","ick","cl","tk","sk","isk","tak","kl","hs","ss","ks","lk","dk","kek","clk","tck","skk"]
+
+- type: n14language
+  id: Chittin
+  name: "Chittin"
+  description: "The sharp-clicking language of the Chitinids."
+  isVisibleLanguage: true
+  showLanguageName: true
+  canUseRadio: true
+  needsSpeech: true
+  expectedVocabularySize: 40
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 2
+    replacement: ["click","tck","ick","ki","tik","clk","kk","cht","chk"]
+
+- type: n14language
+  id: Cat
+  name: "Cat"
+  description: "The language of felines."
+  isVisibleLanguage: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 10
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 1
+    maxSyllables: 2
+    replacement: ["murr","meow","purr","mrow"]
+
+- type: n14language
+  id: Mouse
+  name: "Mouse"
+  description: "The high-pitched squeaks of mice."
+  isVisibleLanguage: false
+  canUseRadio: false
+  needsSpeech: true
+  expectedVocabularySize: 10
+  obfuscationMethod:
+    !type:N14SyllableObfuscation
+    minSyllables: 2
+    maxSyllables: 3
+    replacement: ["squ","eak","pi","ep","chuu","ee"]

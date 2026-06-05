@@ -162,9 +162,10 @@
     tags:
     - DoorBumpOpener
     - VimPilot
-  - type: LanguageKnowledge
-    speaks:
-    - Dog
-    understands:
-    - Dog
+  - type: Language
+    spokenLanguages:
+    - Primitive
+    understoodLanguages:
+    - Primitive
     - TauCetiBasic
+    defaultLanguage: Primitive

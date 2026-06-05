@@ -285,7 +285,6 @@
   initializeFunctions:
     - !type:AddPsionicPowerComponents
       components:
-        - type: UniversalLanguageSpeaker
     - !type:PsionicFeedbackPopup
     - !type:PsionicFeedbackSelfChat
       feedbackMessage: xenoglossy-power-initialization-feedback

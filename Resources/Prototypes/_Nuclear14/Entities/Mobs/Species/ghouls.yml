@@ -84,6 +84,12 @@
       0: Alive
       100: Critical
       150: Dead
+  - type: Language
+    spokenLanguages:
+    - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
 #  - type: FeralGhoulify # Forge-Change
   # - type: Special
 

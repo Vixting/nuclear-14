@@ -217,7 +217,7 @@
     altDisarm: false
     hidden: true
     soundHit:
-      collection: N14DogAttack #Misfits Change
+      collection: DogAttack #Misfits Change
     angle: 60
     animation: WeaponArcBite
     wideAnimation: WeaponArcBite
@@ -229,13 +229,13 @@
     minInterval: 10
     maxInterval: 60
     sound:
-      collection: N14DogIdle
+      collection: DogIdle
       params:
         volume: -8
         maxDistance: 5
   - type: AggroSound #Misfits Change
     sound:
-      collection: N14DogBark
+      collection: DogBark
       params:
         volume: -3
         maxDistance: 10
@@ -442,19 +442,20 @@
     pack: N14BrahminSays
     minimumWait: 120
     maximumWait: 300
-  - type: LanguageKnowledge # #Misfits Add - understands common wasteland languages; speaks Cow (native moo sounds)
-    speaks:
+  - type: Language # #Misfits Add - understands common wasteland languages; speaks Cow (native moo sounds)
+    spokenLanguages:
     - Cow
-    understands:
+    understoodLanguages:
     - Cow
-    - N14Insect
+    - Insect
     - English
     - Chinese
     - Latin
     - Tribal
-    - N14Robot
-    - N14BrotherBeep
-    - Sign
+    - Robot
+    - BrotherBeep
+    - SignLanguage
+    defaultLanguage: Cow
   # #Misfits Add - pack animal inventory: 4 backpack slots via brahmin template; Strippable lets players equip/remove packs
   - type: Inventory
     templateId: brahmin
@@ -724,17 +725,18 @@
     - id: N14FoodEggChicken
   - type: MobPrice
     price: 200
-  - type: LanguageKnowledge # #Misfits Add - understands common wasteland languages; speaks Chicken (native cluck sounds)
-    speaks:
+  - type: Language # #Misfits Add - understands common wasteland languages; speaks Chicken (native cluck sounds)
+    spokenLanguages:
     - Chicken
-    understands:
+    understoodLanguages:
     - Chicken
     - English
     - Chinese
     - Spanish
     - Latin
-    - N14Robot
-    - N14BrotherBeep
+    - Robot
+    - BrotherBeep
+    defaultLanguage: Chicken
 
 #MARK: Iguana
 - type: entity

@@ -7,7 +7,7 @@ using Content.Server.Body.Systems;
 using Content.Server.GameTicking;
 using Content.Server.GameTicking.Rules;
 using Content.Server.Hands.Systems;
-using Content.Server.Language;
+using Content.Server._Nuclear14.Language.Systems;
 using Content.Server.Mind;
 using Content.Server.NPC.Systems;
 using Content.Server.Pinpointer;

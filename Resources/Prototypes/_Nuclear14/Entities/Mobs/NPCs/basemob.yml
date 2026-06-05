@@ -188,7 +188,7 @@
   components:
   - type: Damageable
     damageContainer: Biological
-    damageModifierSet: N14Insect
+    damageModifierSet: Insect
   - type: NoSlip
   - type: NpcFactionMember
     factions:
@@ -222,11 +222,12 @@
   - type: NpcFactionMember
     factions:
     - Raider
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - English
-    understands:
+    understoodLanguages:
     - English
+    defaultLanguage: English
   - type: Fixtures
     fixtures:
       fix1:
@@ -285,11 +286,12 @@
     speedModifierThresholds:
       60: 0.8
       80: 0.6
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - English
-    understands:
+    understoodLanguages:
     - English
+    defaultLanguage: English
   - type: Appearance
   - type: Clumsy
     clumsySound:
@@ -357,11 +359,12 @@
     speedModifierThresholds:
       60: 0.85
       80: 0.7
-  - type: LanguageKnowledge
-    speaks:
+  - type: Language
+    spokenLanguages:
     - English
-    understands:
+    understoodLanguages:
     - English
+    defaultLanguage: English
   - type: IdleSound #Misfits Change
   - type: SpamEmitSound #Misfits Change
     minInterval: 15
@@ -451,6 +454,9 @@
   - type: HTN
     rootTask:
       task: SimpleFollowHostileCompound # HTN compound must include FollowCompound so pet can follow its owner
-  - type: LanguageKnowledge
-    understands:
+  - type: Language
+    spokenLanguages:
     - English
+    understoodLanguages:
+    - English
+    defaultLanguage: English
