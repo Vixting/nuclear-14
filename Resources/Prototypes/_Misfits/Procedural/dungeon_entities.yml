@@ -1,0 +1,6 @@
+- type: entity
+  id: DungeonConnectionMarker
+  name: dungeon connection marker
+  noSpawn: true
+  components:
+    - type: DungeonConnectionMarker

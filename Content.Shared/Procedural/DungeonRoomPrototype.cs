@@ -24,4 +24,17 @@ public sealed partial class DungeonRoomPrototype : IPrototype
     /// Tile offset into the atlas to use for the room.
     /// </summary>
     [DataField("offset", required: true)] public Vector2i Offset;
+
+    [DataField]
+    public float Weight = 1f;
+
+    [DataField]
+    public DungeonRoomRole Role = DungeonRoomRole.Normal;
+}
+
+public enum DungeonRoomRole : byte
+{
+    Normal,
+    Start,
+    End,
 }

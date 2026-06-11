@@ -1,0 +1,54 @@
+- type: dungeonConfig
+  id: EnclaveDungeon
+  generator: !type:RandomPrefabDunGen
+    roomWhitelist:
+      - Enclave
+    roomCount: 10
+    minRoomDistance: 10
+    maxRoomDistance: 20
+    padding: 2
+    branchChance: 0.25
+    directionBias: 0.7
+    loopChance: 0.2
+  postGeneration:
+    - !type:CorridorPostGen
+      width: 3
+      tile: FloorSteel
+
+    - !type:BoundaryWallPostGen
+      tile: FloorSteel
+      wall: WallSolid
+      cornerWall: WallReinforced
+
+    - !type:RoomEntrancePostGen
+      entities:
+        - CableApcExtension
+        - AirlockGlass
+
+    - !type:EntranceFlankPostGen
+      entities:
+        - Grille
+        - Window
+
+    - !type:JunctionPostGen
+      width: 1
+
+    - !type:JunctionPostGen
+
+    - !type:AutoCablingPostGen
+
+    - !type:WallMountPostGen
+      spawns:
+        - id: RandomPosterLegit
+          orGroup: content
+        - id: ExtinguisherCabinetFilled
+          prob: 0.2
+          orGroup: content
+
+    - !type:CornerClutterPostGen
+      contents:
+        - id: PottedPlantRandom
+          amount: 1
+
+    - !type:DungeonEntrancePostGen
+      count: 1

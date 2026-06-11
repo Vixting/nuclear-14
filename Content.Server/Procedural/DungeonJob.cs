@@ -100,6 +100,10 @@ public sealed partial class DungeonJob : Job<Dungeon>
                 dungeon = await GeneratePrefabDungeon(prefab, _gridUid, _grid, _seed);
                 DebugTools.Assert(dungeon.RoomExteriorTiles.Count > 0);
                 break;
+            case RandomPrefabDunGen randomPrefab:
+                dungeon = await GenerateRandomPrefabDungeon(randomPrefab, _gridUid, _grid, _seed);
+                DebugTools.Assert(dungeon.RoomExteriorTiles.Count > 0);
+                break;
             default:
                 throw new NotImplementedException();
         }
