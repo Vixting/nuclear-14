@@ -89,6 +89,10 @@ trait-description-N14CPRTraining =
    Using this you can remove Airloss damage from people and have a chance to restart their heart.
    (This trait is automatically given for free to medical doctors, and is intended for non-medical characters)
 
+trait-name-N14BotanistEye = Botanical Eye
+trait-description-N14BotanistEye =
+    todo
+
 trait-name-N14SelfAware = Self-Aware
 trait-description-N14SelfAware =
     You possess a keen intuition of your body and senses.
