@@ -448,8 +448,8 @@
   components:
   - type: Mail
     contents:
-    - id: N14ChemicalPayload
-    - id: N14ModularGrenade
+    - id: ChemicalPayload
+    - id: ModularGrenade
     - id: TimerTrigger
 
 - type: entity
@@ -632,7 +632,7 @@
   components:
   - type: Mail
     contents:
-    - id: smokeableJoint
+    - id: Joint
       maxAmount: 4
 
 - type: entity
