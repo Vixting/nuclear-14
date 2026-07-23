@@ -199,9 +199,9 @@
           damage:
           # todo scale with temp like SS13
             groups:
-              Airloss: -10
+              Airloss: -20
         - !type:ModifyBloodLevel
-          amount: 5
+          amount: 10
 
 - type: reagent
   id: Doxarubixadone
@@ -221,7 +221,7 @@
             max: 213.0
           damage:
             types:
-             Cellular: -4
+             Cellular: -8
             groups:
                 Brute: 1
 
@@ -1153,7 +1153,7 @@
     Medicine:
       effects:
         - !type:ReduceRotting
-          seconds: 20
+          seconds: 40
           conditions:
           #Patient must be dead and in a cryo tube (or something cold)
           - !type:Temperature
@@ -1185,10 +1185,10 @@
             max: 213.0
           damage:
             groups:
-              Brute: -4
-              Burn: -5
+              Brute: -8
+              Burn: -10
             types:
-              Poison: -2
+              Poison: -4
 
 - type: reagent
   id : Aloxadone
@@ -1208,10 +1208,27 @@
           max: 213.0
         damage:
           types:
-            Heat: -3.0
-            Shock: -3.0
-            Cold: -3.0
-            Caustic: -1.0
+            Heat: -6.0
+            Shock: -6.0
+            Cold: -6.0
+            Caustic: -2.0
+
+- type: reagent
+  id: Regenidone
+  name: reagent-name-regenidone
+  group: Medicine
+  desc: reagent-desc-regenidone
+  physicalDesc: reagent-physical-desc-fizzy
+  flavor: medicine
+  color: "#c9f7ff"
+  worksOnTheDead: true
+  metabolisms:
+    Medicine:
+      effects:
+        - !type:RegrowBodyPart
+          conditions:
+          - !type:Temperature
+            max: 100.0
 
 - type: reagent
   id : Mannitol # currently this is just a way to create psicodine

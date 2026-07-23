@@ -1,4 +1,5 @@
-﻿using Robust.Shared.Containers;
+using Content.Shared.FixedPoint;
+using Robust.Shared.Containers;
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
@@ -8,6 +9,8 @@ namespace Content.Shared.Medical.Cryogenics;
 [RegisterComponent, NetworkedComponent]
 public sealed partial class CryoPodComponent : Component
 {
+    public const float HealingTemperatureThreshold = 213f;
+
     /// <summary>
     /// Specifies the name of the atmospherics port to draw gas from.
     /// </summary>
@@ -16,29 +19,58 @@ public sealed partial class CryoPodComponent : Component
     public string PortName { get; set; } = "port";
 
     /// <summary>
-    /// Specifies the name of the atmospherics port to draw gas from.
+    /// Name of the item slot a beaker is inserted into to fill/drain the internal buffer tank.
     /// </summary>
     [ViewVariables(VVAccess.ReadWrite)]
     [DataField("solutionContainerName")]
     public string SolutionContainerName { get; set; } = "beakerSlot";
 
     /// <summary>
-    /// How often (seconds) are chemicals transferred from the beaker to the body?
+    /// Name of the pod's single internal reagent buffer tank
     /// </summary>
-    [ViewVariables(VVAccess.ReadWrite)]
-    [DataField("beakerTransferTime")]
-    public float BeakerTransferTime = 1f;
-
-    [ViewVariables(VVAccess.ReadWrite)]
-    [DataField("nextInjectionTime", customTypeSerializer:typeof(TimeOffsetSerializer))]
-    public TimeSpan? NextInjectionTime;
+    public const string BufferSolutionName = "buffer";
 
     /// <summary>
-    /// How many units to transfer per tick from the beaker to the mob?
+    /// Capacity of the internal buffer tank.
     /// </summary>
     [ViewVariables(VVAccess.ReadWrite)]
-    [DataField("beakerTransferAmount")]
-    public float BeakerTransferAmount = 1f;
+    [DataField("bufferVolume")]
+    public FixedPoint2 BufferVolume = FixedPoint2.New(100);
+
+    /// <summary>
+    /// How often (seconds) chemicals are dosed from the buffer into the patient, and how often
+    /// passive cooling is applied.
+    /// </summary>
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("doseInterval")]
+    public float DoseInterval = 1f;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("nextDoseTime", customTypeSerializer:typeof(TimeOffsetSerializer))]
+    public TimeSpan? NextDoseTime;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("doseAmount")]
+    public FixedPoint2 DoseAmount = FixedPoint2.New(1);
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("passiveCoolingTarget")]
+    public float PassiveCoolingTarget = 160f;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("passiveCoolingFraction")]
+    public float PassiveCoolingFraction = 0.2f;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("passiveCoolingMinimum")]
+    public float PassiveCoolingMinimum = 4f;
+
+    /// <summary>
+    /// Whether the pod is actively dosing the patient from the buffer.
+    /// </summary>
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField("running")]
+    public bool Running;
 
     /// <summary>
     ///     Delay applied when inserting a mob in the pod.

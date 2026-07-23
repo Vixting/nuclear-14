@@ -8,6 +8,7 @@ using Content.Shared.Chemistry.Reagent;
 using Content.Shared.Database;
 using Content.Shared.EntityEffects;
 using Content.Shared.FixedPoint;
+using Content.Shared.Medical.Cryogenics;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
 using Robust.Shared.Collections;
@@ -188,7 +189,8 @@ namespace Content.Server.Body.Systems
                     // still remove reagents
                     if (TryComp<MobStateComponent>(solutionEntityUid.Value, out var state))
                     {
-                        if (!proto.WorksOnTheDead && _mobStateSystem.IsDead(solutionEntityUid.Value, state))
+                        var forceMetabolizeDead = HasComp<InsideCryoPodComponent>(solutionEntityUid.Value);
+                        if (!proto.WorksOnTheDead && !forceMetabolizeDead && _mobStateSystem.IsDead(solutionEntityUid.Value, state))
                             continue;
                     }
 

@@ -590,6 +590,24 @@
     Necrosol: 2
 
 - type: reaction
+  id: Regenidone
+  impact: High
+  maxTemp: 100
+  reactants:
+    Cryoxadone:
+      amount: 5
+    Doxarubixadone:
+      amount: 5
+    Necrosol:
+      amount: 5
+    Aloxadone:
+      amount: 5
+    Blood:
+      amount: 10
+  products:
+    Regenidone: 1
+
+- type: reaction
   id: Aloxadone
   impact: Medium
   reactants:

@@ -203,6 +203,9 @@ reagent-effect-guidebook-cure-disease =
         *[other] cure
     } diseases
 
+reagent-effect-guidebook-regrow-body-part =
+    Regrows one missing body part per dose, if the patient's body temperature is extremely low
+
 reagent-effect-guidebook-cure-eye-damage =
     { $chance ->
         [1] { $deltasign ->

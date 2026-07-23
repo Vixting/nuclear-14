@@ -1,0 +1,201 @@
+<controls:FancyWindow xmlns="https://spacestation14.io"
+    xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
+    xmlns:gfx="clr-namespace:Robust.Client.Graphics;assembly=Robust.Client"
+    Title="{Loc 'cryo-pod-window-title'}"
+    MinSize="640 680">
+    <ScrollContainer VerticalExpand="True">
+        <BoxContainer Name="RootContainer" Orientation="Vertical" HorizontalExpand="True" Margin="6 6 6 6">
+            <Label Name="NoPatientLabel" Text="{Loc 'cryo-pod-window-no-patient'}" Visible="False"/>
+
+            <PanelContainer>
+                <Label Text="{Loc 'cryo-pod-window-header-patient'}" Margin="6 2"/>
+            </PanelContainer>
+
+            <BoxContainer Name="PatientContainer" Orientation="Horizontal" Margin="0 6 0 6">
+                <BoxContainer Orientation="Vertical" HorizontalAlignment="Left">
+                    <Label Name="PatientNameLabel"/>
+                    <Label Name="PatientStateLabel" StyleClasses="LabelSubText"/>
+                    <Label Name="PartNameLabel" StyleClasses="LabelSubText"/>
+
+                    <BoxContainer Orientation="Horizontal" Margin="0 4 0 0">
+                        <PanelContainer>
+                            <SpriteView OverrideDirection="South"
+                                        Scale="1 1"
+                                        Name="PatientSprite"
+                                        Access="Public"
+                                        SetSize="96 96"/>
+                            <PanelContainer
+                                Name="PartView"
+                                SetSize="57 96"
+                                Margin="18 0 0 0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left">
+                                <PanelContainer
+                                    SetSize="15 33"
+                                    Margin="4 0 0 0"
+                                    HorizontalAlignment="Left">
+                                    <TextureButton
+                                        Name="RightArmButton"
+                                        MinSize="15 25"
+                                        StyleClasses="TargetDollButtonRightArm"
+                                        VerticalAlignment="Top">
+                                    </TextureButton>
+                                    <TextureButton
+                                        Name="RightHandButton"
+                                        MinSize="15 15"
+                                        VerticalAlignment="Bottom"
+                                        StyleClasses="TargetDollButtonRightHand">
+                                    </TextureButton>
+                                </PanelContainer>
+                                <PanelContainer
+                                    SetSize="43 75"
+                                    Margin="0 0 0 0"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center">
+                                    <TextureButton
+                                        Name="HeadButton"
+                                        MinSize="28 23"
+                                        VerticalAlignment="Top"
+                                        HorizontalAlignment="Center"
+                                        StyleClasses="TargetDollButtonHead">
+                                    </TextureButton>
+                                    <TextureButton
+                                        Name="ChestButton"
+                                        SetSize="28 30"
+                                        Margin="0 18 0 0"
+                                        VerticalAlignment="Top"
+                                        HorizontalAlignment="Center"
+                                        StyleClasses="TargetDollButtonChest">
+                                    </TextureButton>
+                                    <PanelContainer
+                                        MinSize="38 35"
+                                        VerticalAlignment="Bottom"
+                                        HorizontalAlignment="Center">
+                                        <TextureButton
+                                            Name="GroinButton"
+                                            MinSize="28 15"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Center"
+                                            StyleClasses="TargetDollButtonGroin">
+                                        </TextureButton>
+                                        <PanelContainer
+                                            MinSize="20 30"
+                                            VerticalAlignment="Bottom"
+                                            HorizontalAlignment="Right">
+                                            <TextureButton
+                                                Name="LeftLegButton"
+                                                MinSize="15 28"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Left"
+                                                StyleClasses="TargetDollButtonLeftLeg">
+                                            </TextureButton>
+                                            <TextureButton
+                                                Name="LeftFootButton"
+                                                MinSize="20 10"
+                                                VerticalAlignment="Bottom"
+                                                StyleClasses="TargetDollButtonLeftFoot">
+                                            </TextureButton>
+                                        </PanelContainer>
+                                        <PanelContainer
+                                            MinSize="20 30"
+                                            VerticalAlignment="Bottom"
+                                            HorizontalAlignment="Left">
+                                            <TextureButton
+                                                Name="RightLegButton"
+                                                MinSize="15 28"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Right"
+                                                StyleClasses="TargetDollButtonRightLeg">
+                                            </TextureButton>
+                                            <TextureButton
+                                                Name="RightFootButton"
+                                                MinSize="20 10"
+                                                VerticalAlignment="Bottom"
+                                                HorizontalAlignment="Center"
+                                                StyleClasses="TargetDollButtonRightFoot">
+                                            </TextureButton>
+                                        </PanelContainer>
+                                    </PanelContainer>
+                                </PanelContainer>
+                                <PanelContainer
+                                    SetSize="15 33"
+                                    Margin="0 0 4 0"
+                                    HorizontalAlignment="Right">
+                                    <TextureButton
+                                        Name="LeftArmButton"
+                                        MinSize="15 25"
+                                        StyleClasses="TargetDollButtonLeftArm"
+                                        VerticalAlignment="Top">
+                                    </TextureButton>
+                                    <TextureButton
+                                        Name="LeftHandButton"
+                                        MinSize="15 15"
+                                        VerticalAlignment="Bottom"
+                                        StyleClasses="TargetDollButtonLeftHand">
+                                    </TextureButton>
+                                </PanelContainer>
+                            </PanelContainer>
+                        </PanelContainer>
+                        <TextureRect Name="NoDataTex"
+                                     Access="Public"
+                                     SetSize="64 64"
+                                     Visible="false"
+                                     Stretch="KeepAspectCentered"
+                                     TexturePath="/Textures/Interface/Misc/health_analyzer_out_of_range.png"/>
+                    </BoxContainer>
+                </BoxContainer>
+
+                <BoxContainer Orientation="Vertical" Margin="12 0 0 0" HorizontalExpand="True">
+                    <GridContainer Columns="2">
+                        <Label Text="{Loc 'cryo-pod-window-temperature-label'}"/>
+                        <Label Name="TemperatureLabel"/>
+                        <Label Text="{Loc 'cryo-pod-window-total-damage-label'}"/>
+                        <Label Name="TotalDamageLabel"/>
+                    </GridContainer>
+                    <Label Name="BleedingLabel" Visible="False" Margin="0 4 0 0"/>
+                    <BoxContainer Name="DamageGroupsContainer" Orientation="Vertical" Margin="0 4 0 0"/>
+                </BoxContainer>
+            </BoxContainer>
+
+            <PanelContainer>
+                <BoxContainer Orientation="Horizontal" Margin="6 2">
+                    <Label Text="{Loc 'cryo-pod-window-header-treatment'}" HorizontalExpand="True" VerticalAlignment="Center"/>
+                    <Button Name="RunningButton" Access="Public" ToggleMode="True" MinSize="120 0"/>
+                </BoxContainer>
+            </PanelContainer>
+
+            <PanelContainer Margin="0 6 0 0">
+                <BoxContainer Orientation="Horizontal" Margin="6 2">
+                    <Label Text="{Loc 'cryo-pod-window-beaker-label'}" VerticalAlignment="Center"/>
+                    <Label Name="BeakerNameLabel" Margin="6 0 0 0" StyleClasses="LabelSubText" VerticalAlignment="Center"/>
+                    <Control HorizontalExpand="True"/>
+                    <Button Name="BeakerEjectButton" Access="Public" MinSize="80 0" StyleClasses="OpenLeft"/>
+                </BoxContainer>
+            </PanelContainer>
+            <PanelContainer VerticalExpand="True" HorizontalExpand="True" MinSize="0 120" Margin="0 2 0 0">
+                <PanelContainer.PanelOverride>
+                    <gfx:StyleBoxFlat BackgroundColor="#1B1B1E"/>
+                </PanelContainer.PanelOverride>
+                <ScrollContainer HorizontalExpand="True" MinSize="0 120">
+                    <BoxContainer Name="BeakerReagentsContainer" Orientation="Vertical" HorizontalExpand="True"/>
+                </ScrollContainer>
+            </PanelContainer>
+
+            <PanelContainer Margin="0 8 0 0">
+                <BoxContainer Orientation="Horizontal" Margin="6 2">
+                    <Label Text="{Loc 'cryo-pod-window-buffer-label'}" VerticalAlignment="Center"/>
+                    <Control HorizontalExpand="True"/>
+                    <Label Name="BufferVolumeLabel" StyleClasses="LabelSubText" VerticalAlignment="Center"/>
+                </BoxContainer>
+            </PanelContainer>
+            <PanelContainer VerticalExpand="True" HorizontalExpand="True" MinSize="0 160" Margin="0 2 0 0">
+                <PanelContainer.PanelOverride>
+                    <gfx:StyleBoxFlat BackgroundColor="#1B1B1E"/>
+                </PanelContainer.PanelOverride>
+                <ScrollContainer HorizontalExpand="True" MinSize="0 160">
+                    <BoxContainer Name="BufferReagentsContainer" Orientation="Vertical" HorizontalExpand="True"/>
+                </ScrollContainer>
+            </PanelContainer>
+        </BoxContainer>
+    </ScrollContainer>
+</controls:FancyWindow>
