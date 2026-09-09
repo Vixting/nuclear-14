@@ -1,15 +1,16 @@
+using System.Linq;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Containers.ItemSlots;
 using JetBrains.Annotations;
 using Robust.Client.Audio;
 using Robust.Client.Graphics;
-using Robust.Client.ResourceManagement;
 using Robust.Client.UserInterface;
 using Robust.Client.UserInterface.Controls;
 using Robust.Shared.Audio;
 using Robust.Shared.Maths;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 
@@ -18,32 +19,73 @@ namespace Content.Client._Misfits.Reactor;
 [UsedImplicitly]
 public sealed class ReactorBui : BoundUserInterface
 {
-    private static readonly SoundSpecifier KeystrokeSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/keystroke_blip.ogg");
+    private static readonly SoundSpecifier[] KeystrokeSounds =
+    {
+        new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/ui_hacking_charsingle_01.ogg"),
+        new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/ui_hacking_charsingle_02.ogg"),
+        new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/ui_hacking_charsingle_03.ogg"),
+        new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/ui_hacking_charsingle_04.ogg"),
+        new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/ui_hacking_charsingle_05.ogg"),
+        new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/ui_hacking_charsingle_06.ogg"),
+    };
+
     private static readonly SoundSpecifier ConfirmSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/confirm_blip.ogg");
+    private static readonly SoundSpecifier ErrorSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_error.ogg");
     private static readonly SoundSpecifier BootSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/poweron.ogg");
     private static readonly SoundSpecifier BootLineSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/keyboard1.ogg");
     private static readonly SoundSpecifier LoginGrantedSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_prompt_confirm.ogg");
     private static readonly SoundSpecifier LoginDeniedSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_prompt_deny.ogg");
+    private static readonly SoundSpecifier StartSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_on.ogg");
+    private static readonly SoundSpecifier ShutdownSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_shutdown.ogg");
+    private static readonly SoundSpecifier ModeSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/switch.ogg");
+    private static readonly SoundSpecifier HelpSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_processing.ogg");
+    private static readonly SoundSpecifier ScramArmSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Reactor/warning-buzzer.ogg");
+    private static readonly SoundSpecifier ScramConfirmSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Reactor/lockdownalarm.ogg");
 
     private static readonly Color BootTextColor = Color.FromHex("#33FF66");
+    private static readonly Color EchoColor = Color.FromHex("#33FF66");
+    private static readonly Color ResponseColor = Color.FromHex("#1E9C3D");
+    private static readonly Color ErrorColor = Color.FromHex("#FF5555");
 
     private const string CrtShaderId = "ReactorCrt";
+    private const int MaxLogLines = 80;
+
+    private readonly record struct CommandInfo(string Name, string Usage, string Description);
+
+    private static readonly CommandInfo[] Commands =
+    {
+        new("HELP", "HELP [command]", "Lists all commands, or shows detail for one command."),
+        new("START", "START", "Begins the reactor startup sequence."),
+        new("SHUTDOWN", "SHUTDOWN", "Begins a normal shutdown sequence."),
+        new("SCRAM", "SCRAM", "Emergency shutdown. Type twice to confirm."),
+        new("MODE", "MODE [AUTO|MANUAL]", "Switches between automatic and manual control, or shows the current mode if given no argument."),
+        new("FUEL", "FUEL [0-100]", "Sets the fueling (deuterium-tritium injection) rate, or shows the current/target reading if given no argument. Setting requires manual mode."),
+        new("HEAT", "HEAT [0-100]", "Sets the auxiliary heating power, or shows the current/target reading if given no argument. Setting requires manual mode."),
+        new("CURRENT", "CURRENT [0-100]", "Sets the plasma current target, or shows the current/target reading if given no argument. Setting requires manual mode."),
+        new("DIVERTOR", "DIVERTOR [0-100]", "Sets the divertor exhaust rate, or shows the current/target reading if given no argument. Setting requires manual mode."),
+        new("COIL", "COIL [index] [0-100]", "Sets one confinement coil segment's target strength. With no value, shows that coil's reading; with no arguments at all, shows every coil. Setting requires manual mode."),
+    };
 
     private enum TerminalPhase { Boot, Login, Main }
 
     [Dependency] private readonly IEntityManager _entities = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly IResourceCache _resourceCache = default!;
     [Dependency] private readonly IPrototypeManager _prototypes = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     private AudioSystem _audio = default!;
 
     private ReactorWindow? _window;
     private ReactorComponent? _state;
     private bool _confirmScram;
+    private bool _welcomed;
+    private int _logLineCount;
 
     private TerminalPhase _phase = TerminalPhase.Boot;
     private string _bootBuffer = string.Empty;
+
+    private ReactorState? _lastState;
+    private ReactorStartupStep? _lastStartupStep;
+    private ReactorShutdownStep? _lastShutdownStep;
 
     private ReactorLineChart _outputChart = default!;
     private ReactorLineChart _fuelingChart = default!;
@@ -64,19 +106,14 @@ public sealed class ReactorBui : BoundUserInterface
 
         _window = this.CreateWindow<ReactorWindow>();
 
-        _window.AutoButton.OnPressed += _ => SendMessage(new ReactorSetModeMsg(ReactorMode.Automatic));
-        _window.ManualButton.OnPressed += _ => SendMessage(new ReactorSetModeMsg(ReactorMode.Manual));
-
-        WireRateInput(_window.FuelingInput, v => new ReactorSetFuelingRateMsg(v));
-        WireRateInput(_window.HeatingInput, v => new ReactorSetHeatingPowerMsg(v));
-        WireRateInput(_window.CurrentInput, v => new ReactorSetPlasmaCurrentMsg(v));
-        WireRateInput(_window.DivertorInput, v => new ReactorSetDivertorRateMsg(v));
-
-        _window.StartButton.OnPressed += _ => SendMessage(new ReactorStartMsg());
-        _window.ShutdownButton.OnPressed += _ => SendMessage(new ReactorShutdownMsg());
-        _window.ScramButton.OnPressed += _ => PressScram();
-
         _window.IdSlotButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent(ReactorComponent.IdCardSlotId));
+
+        _window.CommandInput.OnTextTyped += _ => PlayKeystroke();
+        _window.CommandInput.OnTextEntered += args =>
+        {
+            ExecuteCommand(args.Text);
+            _window.CommandInput.Text = string.Empty;
+        };
 
         SetupCharts();
         ApplyCrtShader();
@@ -92,6 +129,10 @@ public sealed class ReactorBui : BoundUserInterface
         if (_window == null)
             return;
 
+        // TextureRect.Draw() bails out before ever touching ShaderOverride if Texture is null - the
+        // shader needs *something* to draw over, so give it a plain white texture to tint/replace.
+        _window.CrtOverlay.Texture = Texture.White;
+
         if (_prototypes.TryIndex<ShaderPrototype>(CrtShaderId, out var proto))
             _window.CrtOverlay.ShaderOverride = proto.Instance().Duplicate();
     }
@@ -101,18 +142,18 @@ public sealed class ReactorBui : BoundUserInterface
         if (_window == null)
             return;
 
-        _outputChart = NewChart(Loc.GetString("reactor-chart-output"));
-        _fuelingChart = NewChart(Loc.GetString("reactor-chart-fueling"));
-        _heatingChart = NewChart(Loc.GetString("reactor-chart-heating"));
-        _currentChart = NewChart(Loc.GetString("reactor-chart-current"));
-        _divertorChart = NewChart(Loc.GetString("reactor-chart-divertor"));
-        _coilChart = NewChart(Loc.GetString("reactor-chart-coils"));
+        _outputChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-output"));
+        _fuelingChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-fueling"));
+        _heatingChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-heating"));
+        _currentChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-current"));
+        _divertorChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-divertor"));
+        _coilChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-coils"));
     }
 
-    private ReactorLineChart NewChart(string title)
+    private static ReactorLineChart NewChart(BoxContainer row, string title)
     {
-        var chart = new ReactorLineChart(_resourceCache, title);
-        _window!.ChartsContainer.AddChild(chart);
+        var chart = new ReactorLineChart(title);
+        row.AddChild(chart);
         return chart;
     }
 
@@ -194,6 +235,13 @@ public sealed class ReactorBui : BoundUserInterface
 
             _phase = TerminalPhase.Main;
             SetLayerVisibility();
+
+            if (!_welcomed)
+            {
+                _welcomed = true;
+                Log(Loc.GetString("reactor-terminal-welcome"), ResponseColor);
+            }
+
             Refresh();
         });
     }
@@ -213,20 +261,247 @@ public sealed class ReactorBui : BoundUserInterface
         _window.LoginStatusLabel.Text = Loc.GetString("reactor-login-revoked");
     }
 
-    /// <summary>Wires a "type a 0-100 value, press Enter" terminal input to a rate-setting message, with a keystroke blip per character and a confirm blip on submit.</summary>
-    private void WireRateInput(LineEdit input, Func<float, BoundUserInterfaceMessage> makeMessage)
+    // --- Terminal command line ---
+
+    private void ExecuteCommand(string raw)
     {
-        input.OnTextTyped += _ => PlayKeystroke();
-        input.OnTextEntered += args =>
+        var text = raw.Trim();
+        if (text.Length == 0)
+            return;
+
+        Log($"> {text}", EchoColor);
+
+        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var name = parts[0].ToUpperInvariant();
+
+        if (name != "SCRAM" && _confirmScram)
         {
-            if (TryParsePercent(args.Text, out var normalized))
+            _confirmScram = false;
+            Log("SCRAM cancelled.", ResponseColor);
+        }
+
+        switch (name)
+        {
+            case "HELP":
+                HandleHelp(parts);
+                break;
+            case "START":
+                SendMessage(new ReactorStartMsg());
+                _audio.PlayGlobal(StartSound, Filter.Local(), false);
+                Log("Startup command sent.", ResponseColor);
+                break;
+            case "SHUTDOWN":
+                SendMessage(new ReactorShutdownMsg());
+                _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
+                Log("Shutdown command sent.", ResponseColor);
+                break;
+            case "SCRAM":
+                HandleScram();
+                break;
+            case "MODE":
+                HandleMode(parts);
+                break;
+            case "FUEL":
+                HandleRate(parts, "FUEL", c => c.FuelingRate, c => c.FuelingTarget, v => new ReactorSetFuelingRateMsg(v));
+                break;
+            case "HEAT":
+                HandleRate(parts, "HEAT", c => c.HeatingPower, c => c.HeatingTarget, v => new ReactorSetHeatingPowerMsg(v));
+                break;
+            case "CURRENT":
+                HandleRate(parts, "CURRENT", c => c.PlasmaCurrent, c => c.PlasmaCurrentTarget, v => new ReactorSetPlasmaCurrentMsg(v));
+                break;
+            case "DIVERTOR":
+                HandleRate(parts, "DIVERTOR", c => c.DivertorRate, c => c.DivertorTarget, v => new ReactorSetDivertorRateMsg(v));
+                break;
+            case "COIL":
+                HandleCoil(parts);
+                break;
+            default:
+                PlayError();
+                Log($"Unknown command: {name}. Type HELP for a list of commands.", ErrorColor);
+                break;
+        }
+    }
+
+    private void HandleHelp(string[] parts)
+    {
+        if (parts.Length >= 2)
+        {
+            var target = parts[1].ToUpperInvariant();
+            var info = Commands.FirstOrDefault(c => c.Name == target);
+            if (info.Name == null)
             {
-                SendMessage(makeMessage(normalized));
-                PlayConfirm();
+                PlayError();
+                Log($"No such command: {target}", ErrorColor);
+                return;
             }
 
-            Refresh();
-        };
+            _audio.PlayGlobal(HelpSound, Filter.Local(), false);
+            Log($"{info.Usage} — {info.Description}", ResponseColor);
+            return;
+        }
+
+        _audio.PlayGlobal(HelpSound, Filter.Local(), false);
+        Log("Available commands (HELP <command> for details):", ResponseColor);
+
+        var half = (Commands.Length + 1) / 2;
+        var row1 = string.Join("   ", Commands.Take(half).Select(c => c.Name));
+        var row2 = string.Join("   ", Commands.Skip(half).Select(c => c.Name));
+        Log(row1, ResponseColor);
+        if (row2.Length > 0)
+            Log(row2, ResponseColor);
+    }
+
+    private void HandleMode(string[] parts)
+    {
+        if (parts.Length < 2)
+        {
+            if (_state is { } comp)
+            {
+                var currentMode = comp.Mode;
+                Log($"MODE: {currentMode.ToString().ToUpperInvariant()}", ResponseColor);
+            }
+            return;
+        }
+
+        ReactorMode mode;
+        switch (parts[1].ToUpperInvariant())
+        {
+            case "AUTO":
+            case "AUTOMATIC":
+                mode = ReactorMode.Automatic;
+                break;
+            case "MANUAL":
+                mode = ReactorMode.Manual;
+                break;
+            default:
+                PlayError();
+                Log($"Unknown mode: {parts[1]}. Use AUTO or MANUAL.", ErrorColor);
+                return;
+        }
+
+        if (_state == null || _state.State != ReactorState.Online)
+        {
+            PlayError();
+            Log("REACTOR MUST BE ONLINE to change mode.", ErrorColor);
+            return;
+        }
+
+        SendMessage(new ReactorSetModeMsg(mode));
+        _audio.PlayGlobal(ModeSound, Filter.Local(), false);
+        Log($"Mode set to {mode.ToString().ToUpperInvariant()}.", ResponseColor);
+    }
+
+    /// <summary>
+    /// Mirrors the server's own gate on manual-edit BUI messages (CanManuallyEdit in
+    /// Content.Server/_Misfits/Reactor/ReactorSystem.cs) so the terminal can tell the operator
+    /// *why* a command did nothing instead of optimistically claiming success for a message the
+    /// server is about to silently reject.
+    /// </summary>
+    private bool CheckManualEditable()
+    {
+        if (_state == null)
+            return false;
+
+        if (_state.State != ReactorState.Online)
+        {
+            PlayError();
+            Log("REACTOR MUST BE ONLINE to adjust this.", ErrorColor);
+            return false;
+        }
+
+        if (_state.Mode != ReactorMode.Manual)
+        {
+            PlayError();
+            Log("MANUAL MODE REQUIRED. Use MODE MANUAL first.", ErrorColor);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void HandleRate(string[] parts, string label, Func<ReactorComponent, float> current,
+        Func<ReactorComponent, float> target, Func<float, BoundUserInterfaceMessage> makeMessage)
+    {
+        if (parts.Length < 2)
+        {
+            if (_state != null)
+                Log($"{label}: {Percent(current(_state))} current / {Percent(target(_state))} target", ResponseColor);
+            return;
+        }
+
+        if (!TryParsePercent(parts[1], out var normalized))
+        {
+            PlayError();
+            Log($"Usage: {label} <0-100>", ErrorColor);
+            return;
+        }
+
+        if (!CheckManualEditable())
+            return;
+
+        SendMessage(makeMessage(normalized));
+        PlayConfirm();
+        Log($"{label} set to {(int) (normalized * 100)}%.", ResponseColor);
+    }
+
+    private void HandleCoil(string[] parts)
+    {
+        var comp = _state;
+        var coilCount = comp?.CoilTargets.Count ?? 0;
+
+        if (parts.Length < 2)
+        {
+            if (comp == null || coilCount == 0)
+                return;
+
+            for (var i = 0; i < coilCount; i++)
+                Log($"COIL {i + 1}: {Percent(comp.CoilStrength[i])} current / {Percent(comp.CoilTargets[i])} target", ResponseColor);
+            return;
+        }
+
+        if (!int.TryParse(parts[1], out var oneBasedIndex) || oneBasedIndex < 1 || oneBasedIndex > coilCount)
+        {
+            PlayError();
+            Log($"Usage: COIL <1-{Math.Max(coilCount, 1)}> [0-100]", ErrorColor);
+            return;
+        }
+
+        if (parts.Length < 3)
+        {
+            Log($"COIL {oneBasedIndex}: {Percent(comp!.CoilStrength[oneBasedIndex - 1])} current / {Percent(comp.CoilTargets[oneBasedIndex - 1])} target", ResponseColor);
+            return;
+        }
+
+        if (!TryParsePercent(parts[2], out var normalized))
+        {
+            PlayError();
+            Log($"Usage: COIL <1-{coilCount}> <0-100>", ErrorColor);
+            return;
+        }
+
+        if (!CheckManualEditable())
+            return;
+
+        SendMessage(new ReactorSetCoilTargetMsg(oneBasedIndex - 1, normalized));
+        PlayConfirm();
+        Log($"Coil {oneBasedIndex} target set to {(int) (normalized * 100)}%.", ResponseColor);
+    }
+
+    private void HandleScram()
+    {
+        if (!_confirmScram)
+        {
+            _confirmScram = true;
+            _audio.PlayGlobal(ScramArmSound, Filter.Local(), false);
+            Log("SCRAM ARMED. Type SCRAM again to confirm emergency shutdown.", ErrorColor);
+            return;
+        }
+
+        _confirmScram = false;
+        SendMessage(new ReactorScramMsg());
+        _audio.PlayGlobal(ScramConfirmSound, Filter.Local(), false);
+        Log("SCRAM CONFIRMED. Emergency shutdown executing.", ErrorColor);
     }
 
     private static bool TryParsePercent(string text, out float normalized)
@@ -239,23 +514,32 @@ public sealed class ReactorBui : BoundUserInterface
         return true;
     }
 
-    private void PlayKeystroke() => _audio.PlayGlobal(KeystrokeSound, Filter.Local(), false);
-    private void PlayConfirm() => _audio.PlayGlobal(ConfirmSound, Filter.Local(), false);
-
-    private static float Clamp(float value) => Math.Clamp(value, 0f, 1f);
-
-    private void PressScram()
+    private void Log(string text, Color color)
     {
-        if (!_confirmScram)
-        {
-            _confirmScram = true;
-            _window!.ScramButton.Text = Loc.GetString("reactor-scram-confirm");
+        if (_window == null)
             return;
+
+        var msg = new FormattedMessage();
+        msg.PushColor(color);
+        msg.AddText(text);
+        msg.Pop();
+        _window.CommandLog.AddMessage(msg);
+
+        _logLineCount++;
+        if (_logLineCount > MaxLogLines)
+        {
+            _window.CommandLog.RemoveEntry(0);
+            _logLineCount--;
         }
 
-        _confirmScram = false;
-        SendMessage(new ReactorScramMsg());
+        _window.CommandLog.ScrollToBottom();
     }
+
+    private void PlayKeystroke() => _audio.PlayGlobal(_random.Pick(KeystrokeSounds), Filter.Local(), false);
+    private void PlayConfirm() => _audio.PlayGlobal(ConfirmSound, Filter.Local(), false);
+    private void PlayError() => _audio.PlayGlobal(ErrorSound, Filter.Local(), false);
+
+    private static float Clamp(float value) => Math.Clamp(value, 0f, 1f);
 
     public void Refresh()
     {
@@ -330,47 +614,30 @@ public sealed class ReactorBui : BoundUserInterface
         var outputFraction = comp.MaxOutput > 0f ? comp.PowerOutput / comp.MaxOutput : 0f;
         var demandFraction = comp.MaxOutput > 0f ? comp.LoadFactor / comp.MaxOutput : 0f;
         window.OutputLabel.Text = Loc.GetString("reactor-output", ("value", (int) (outputFraction * 100)));
+        window.OutputLabel.FontColorOverride = ThresholdColor(outputFraction);
         window.DemandLabel.Text = Loc.GetString("reactor-demand", ("value", (int) (demandFraction * 100)));
-
-        var manual = comp.Mode == ReactorMode.Manual;
-        window.AutoButton.Disabled = !manual;
-        window.ManualButton.Disabled = manual;
-
-        var online = comp.State == ReactorState.Online;
-        var canEdit = online && manual;
-
-        SetRateInput(window.FuelingInput, comp.FuelingRate, canEdit);
-        SetRateInput(window.HeatingInput, comp.HeatingPower, canEdit);
-        SetRateInput(window.CurrentInput, comp.PlasmaCurrent, canEdit);
-        SetRateInput(window.DivertorInput, comp.DivertorRate, canEdit);
+        window.DemandLabel.FontColorOverride = ThresholdColor(demandFraction);
 
         window.BetaLabel.Text = Loc.GetString("reactor-beta", ("value", (int) (comp.Beta * 100)));
         window.BetaLabel.FontColorOverride = ThresholdColor(comp.Beta);
         window.DensityLabel.Text = Loc.GetString("reactor-density", ("value", (int) (comp.Density * 100)));
         window.DensityLabel.FontColorOverride = ThresholdColor(comp.Density);
         window.AshLabel.Text = Loc.GetString("reactor-ash", ("value", (int) (comp.AshLevel * 100)));
+        window.AshLabel.FontColorOverride = ThresholdColor(comp.AshLevel);
         window.IntegrityLabel.Text = Loc.GetString("reactor-integrity", ("value", (int) comp.Integrity));
         window.IntegrityLabel.FontColorOverride = SeverityColor(SharedReactorSystem.GetSeverity(comp.Integrity));
 
-        window.CoilsContainer.DisposeAllChildren();
-        for (var i = 0; i < comp.CoilStrength.Count; i++)
-            window.CoilsContainer.AddChild(BuildCoilRow(i, comp, canEdit));
+        window.FuelReadout.Text = $"FUEL {Percent(comp.FuelingRate)}/{Percent(comp.FuelingTarget)}";
+        window.FuelReadout.FontColorOverride = ThresholdColor(comp.FuelingRate);
+        window.HeatReadout.Text = $"HEAT {Percent(comp.HeatingPower)}/{Percent(comp.HeatingTarget)}";
+        window.HeatReadout.FontColorOverride = ThresholdColor(comp.HeatingPower);
+        window.CurrentReadout.Text = $"CURRENT {Percent(comp.PlasmaCurrent)}/{Percent(comp.PlasmaCurrentTarget)}";
+        window.CurrentReadout.FontColorOverride = ThresholdColor(comp.PlasmaCurrent);
+        window.DivertorReadout.Text = $"DIVERTOR {Percent(comp.DivertorRate)}/{Percent(comp.DivertorTarget)}";
+        window.DivertorReadout.FontColorOverride = ThresholdColor(comp.DivertorRate);
 
-        var canStart = comp.State is ReactorState.Offline or ReactorState.Scrammed;
-        var locked = comp.LockedUntil is { } lockedUntil && lockedUntil > _timing.CurTime;
-        window.StartButton.Disabled = !canStart || locked;
-        window.StartButton.Text = locked
-            ? Loc.GetString("reactor-start-locked", ("seconds", (int) (comp.LockedUntil!.Value - _timing.CurTime).TotalSeconds))
-            : Loc.GetString("reactor-start");
-
-        window.ShutdownButton.Disabled = comp.State != ReactorState.Online;
-
-        var canScram = comp.State is ReactorState.Starting or ReactorState.Online or ReactorState.ShuttingDown;
-        window.ScramButton.Disabled = !canScram;
-        if (!canScram)
-            _confirmScram = false;
-        if (!_confirmScram)
-            window.ScramButton.Text = Loc.GetString("reactor-scram");
+        RefreshCoils(comp, window.CoilsContainer);
+        TrackSequenceEvents(comp);
 
         if (comp.State is ReactorState.Starting or ReactorState.ShuttingDown)
         {
@@ -386,56 +653,128 @@ public sealed class ReactorBui : BoundUserInterface
         {
             window.SequenceLabel.Visible = false;
         }
+
+        if (comp.State is not (ReactorState.Starting or ReactorState.Online or ReactorState.ShuttingDown))
+            _confirmScram = false;
     }
 
-    /// <summary>Syncs a rate LineEdit to the live value, unless the player is actively typing in it.</summary>
-    private static void SetRateInput(LineEdit input, float value, bool canEdit)
+    /// <summary>
+    /// Prints the reactor's startup/shutdown sequence to the terminal log as it actually happens,
+    /// step by step, plus the major state transitions - so a full START/SHUTDOWN reads like a real
+    /// terminal boot log rather than a single instantaneous message.
+    /// </summary>
+    private void TrackSequenceEvents(ReactorComponent comp)
     {
-        input.Editable = canEdit;
-        if (!input.HasKeyboardFocus())
-            input.Text = ((int) (value * 100)).ToString();
-    }
+        var startupStep = comp.StartupStep;
+        var shutdownStep = comp.ShutdownStep;
 
-    private Control BuildCoilRow(int index, ReactorComponent comp, bool canEdit)
-    {
-        var row = new BoxContainer { Orientation = BoxContainer.LayoutOrientation.Horizontal, VerticalAlignment = Control.VAlignment.Center };
-
-        row.AddChild(new Label { Text = Loc.GetString("reactor-coil", ("index", index + 1)), MinWidth = 60, StyleClasses = { "PipBoyLabel" } });
-        row.AddChild(new Label { Text = Percent(comp.CoilStrength[index]), HorizontalAlignment = Control.HAlignment.Center, MinWidth = 50, StyleClasses = { "PipBoyLabel" } });
-
-        row.AddChild(new Label { Text = "▸", Margin = new Thickness(4, 0), StyleClasses = { "PipBoyLabel" } });
-
-        var targetInput = new LineEdit
+        if (comp.State == ReactorState.Starting)
         {
-            Text = ((int) (comp.CoilTargets[index] * 100)).ToString(),
-            Editable = canEdit,
-            MinWidth = 60,
-            StyleClasses = { "PipBoyLineEdit" },
-        };
-        targetInput.OnTextTyped += _ => PlayKeystroke();
-        targetInput.OnTextEntered += args =>
-        {
-            if (TryParsePercent(args.Text, out var normalized))
+            if (startupStep != _lastStartupStep)
             {
-                SendMessage(new ReactorSetCoilTargetMsg(index, normalized));
-                PlayConfirm();
+                if (_lastStartupStep is { } prev && prev != ReactorStartupStep.None)
+                    Log($"{FormatStepName(prev.ToString())}... OK", ResponseColor);
+                if (startupStep != ReactorStartupStep.None)
+                    Log($"{FormatStepName(startupStep.ToString())}...", ResponseColor);
+                _lastStartupStep = startupStep;
             }
-
-            Refresh();
-        };
-        row.AddChild(targetInput);
-
-        var heat = comp.CoilLocalHeat[index];
-        var heatLabel = new Label
+        }
+        else
         {
-            Text = Loc.GetString("reactor-coil-heat", ("value", (int) (heat * 100))),
-            HorizontalExpand = true,
-            HorizontalAlignment = Control.HAlignment.Right,
-            FontColorOverride = heat > 0.5f ? Color.OrangeRed : Color.Gray,
-        };
-        row.AddChild(heatLabel);
+            _lastStartupStep = null;
+        }
 
-        return row;
+        if (comp.State == ReactorState.ShuttingDown)
+        {
+            if (shutdownStep != _lastShutdownStep)
+            {
+                if (_lastShutdownStep is { } prev && prev != ReactorShutdownStep.None)
+                    Log($"{FormatStepName(prev.ToString())}... OK", ResponseColor);
+                if (shutdownStep != ReactorShutdownStep.None)
+                    Log($"{FormatStepName(shutdownStep.ToString())}...", ResponseColor);
+                _lastShutdownStep = shutdownStep;
+            }
+        }
+        else
+        {
+            _lastShutdownStep = null;
+        }
+
+        if (_lastState is { } lastState && lastState != comp.State)
+        {
+            switch (comp.State)
+            {
+                case ReactorState.Online:
+                    Log("STARTUP SEQUENCE COMPLETE. REACTOR ONLINE.", ResponseColor);
+                    break;
+                case ReactorState.Offline when lastState == ReactorState.ShuttingDown:
+                    Log("SHUTDOWN SEQUENCE COMPLETE. REACTOR SECURED.", ResponseColor);
+                    break;
+                case ReactorState.Scrammed:
+                    Log("REACTOR SCRAMMED. RESTART LOCKED OUT.", ErrorColor);
+                    break;
+                case ReactorState.Melted:
+                    Log("CONTAINMENT LOST.", ErrorColor);
+                    break;
+            }
+        }
+
+        _lastState = comp.State;
+    }
+
+    /// <summary>Turns a PascalCase enum name like "SystemsCheck" into "SYSTEMS CHECK" for console output.</summary>
+    private static string FormatStepName(string pascalCase)
+    {
+        var spaced = new System.Text.StringBuilder();
+        foreach (var c in pascalCase)
+        {
+            if (char.IsUpper(c) && spaced.Length > 0)
+                spaced.Append(' ');
+            spaced.Append(c);
+        }
+
+        return spaced.ToString().ToUpperInvariant();
+    }
+
+    private void RefreshCoils(ReactorComponent comp, BoxContainer coilsContainer)
+    {
+        coilsContainer.DisposeAllChildren();
+
+        var count = comp.CoilStrength.Count;
+        if (count == 0)
+            return;
+
+        var half = (count + 1) / 2;
+        var row1 = NewCoilRow();
+        var row2 = NewCoilRow();
+        coilsContainer.AddChild(row1);
+        if (count > half)
+            coilsContainer.AddChild(row2);
+
+        for (var i = 0; i < count; i++)
+            (i < half ? row1 : row2).AddChild(BuildCoilCell(i, comp));
+    }
+
+    private static BoxContainer NewCoilRow() => new()
+    {
+        Orientation = BoxContainer.LayoutOrientation.Horizontal,
+        SeparationOverride = 4,
+        HorizontalExpand = true,
+    };
+
+    private Control BuildCoilCell(int index, ReactorComponent comp)
+    {
+        var heat = comp.CoilLocalHeat[index];
+        return new Label
+        {
+            Text = Loc.GetString("reactor-coil-readout",
+                ("index", index + 1),
+                ("current", (int) (comp.CoilStrength[index] * 100)),
+                ("target", (int) (comp.CoilTargets[index] * 100))),
+            HorizontalExpand = true,
+            StyleClasses = { "PipBoyLabel" },
+            FontColorOverride = ThresholdColor(heat),
+        };
     }
 
     private static string Percent(float value) => $"{(int) (value * 100)}%";
