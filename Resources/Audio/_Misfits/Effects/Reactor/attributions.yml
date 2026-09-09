@@ -1,0 +1,14 @@
+- files: [
+    "generator_start.ogg",
+    "generator_mid1.ogg",
+    "generator_end.ogg",
+    "turbine_on.ogg",
+    "turbine_off.ogg",
+    "Alarm.ogg",
+    "lockdownalarm.ogg",
+    "warning-buzzer.ogg",
+    "twobeep.ogg"
+  ]
+  license: "CC-BY-SA-3.0"
+  copyright: "taken from CM-SS13"
+  source: "https://github.com/cmss13-devs/cmss13/tree/master/sound/machines"
