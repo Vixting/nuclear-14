@@ -1,0 +1,23 @@
+const highp float ScanlineCount = 240.0;
+const highp float ScanlineStrength = 0.35;
+const highp float VignetteStrength = 0.55;
+const highp float FlickerStrength = 0.04;
+const highp vec3 TintColor = vec3(0.55, 1.0, 0.68);
+
+void fragment() {
+    highp vec2 uv = UV;
+
+    highp float scanline = sin(uv.y * ScanlineCount * 3.14159) * 0.5 + 0.5;
+    highp float scanlineDarken = 1.0 - scanline * ScanlineStrength;
+
+    highp vec2 centered = uv - vec2(0.5);
+    highp float dist = length(centered) * 1.4;
+    highp float vignette = clamp(1.0 - dist * dist * VignetteStrength, 0.0, 1.0);
+
+    highp float flicker = 1.0 + sin(TIME * 6.0) * FlickerStrength + sin(TIME * 13.7) * FlickerStrength * 0.5;
+
+    highp float brightness = scanlineDarken * flicker;
+    highp float alpha = clamp((1.0 - vignette) * 0.6 + (1.0 - scanlineDarken) * 0.5, 0.0, 0.35);
+
+    COLOR = vec4(TintColor * brightness, alpha);
+}
