@@ -50,22 +50,6 @@ public sealed class ReactorBui : BoundUserInterface
     private const string CrtShaderId = "ReactorCrt";
     private const int MaxLogLines = 80;
 
-    private readonly record struct CommandInfo(string Name, string Usage, string Description);
-
-    private static readonly CommandInfo[] Commands =
-    {
-        new("HELP", "HELP [command]", "Lists all commands, or shows detail for one command."),
-        new("START", "START", "Begins the reactor startup sequence."),
-        new("SHUTDOWN", "SHUTDOWN", "Begins a normal shutdown sequence."),
-        new("SCRAM", "SCRAM", "Emergency shutdown. Type twice to confirm."),
-        new("MODE", "MODE [AUTO|MANUAL]", "Switches between automatic and manual control, or shows the current mode if given no argument."),
-        new("FUEL", "FUEL [0-100]", "Sets the fueling (deuterium-tritium injection) rate, or shows the current/target reading if given no argument. Setting requires manual mode."),
-        new("HEAT", "HEAT [0-100]", "Sets the auxiliary heating power, or shows the current/target reading if given no argument. Setting requires manual mode."),
-        new("CURRENT", "CURRENT [0-100]", "Sets the plasma current target, or shows the current/target reading if given no argument. Setting requires manual mode."),
-        new("DIVERTOR", "DIVERTOR [0-100]", "Sets the divertor exhaust rate, or shows the current/target reading if given no argument. Setting requires manual mode."),
-        new("COIL", "COIL [index] [0-100]", "Sets one confinement coil segment's target strength. With no value, shows that coil's reading; with no arguments at all, shows every coil. Setting requires manual mode."),
-    };
-
     private enum TerminalPhase { Boot, Login, Main }
 
     [Dependency] private readonly IEntityManager _entities = default!;
@@ -86,6 +70,8 @@ public sealed class ReactorBui : BoundUserInterface
     private ReactorState? _lastState;
     private ReactorStartupStep? _lastStartupStep;
     private ReactorShutdownStep? _lastShutdownStep;
+
+    private Dictionary<string, Action<string[]>> _commandHandlers = default!;
 
     private ReactorLineChart _outputChart = default!;
     private ReactorLineChart _fuelingChart = default!;
@@ -115,6 +101,8 @@ public sealed class ReactorBui : BoundUserInterface
             _window.CommandInput.Text = string.Empty;
         };
 
+        _commandHandlers = BuildCommandHandlers();
+
         SetupCharts();
         ApplyCrtShader();
 
@@ -129,8 +117,6 @@ public sealed class ReactorBui : BoundUserInterface
         if (_window == null)
             return;
 
-        // TextureRect.Draw() bails out before ever touching ShaderOverride if Texture is null - the
-        // shader needs *something* to draw over, so give it a plain white texture to tint/replace.
         _window.CrtOverlay.Texture = Texture.White;
 
         if (_prototypes.TryIndex<ShaderPrototype>(CrtShaderId, out var proto))
@@ -156,8 +142,6 @@ public sealed class ReactorBui : BoundUserInterface
         row.AddChild(chart);
         return chart;
     }
-
-    // --- Boot sequence ---
 
     private void PlayBootSequence(int index)
     {
@@ -261,7 +245,32 @@ public sealed class ReactorBui : BoundUserInterface
         _window.LoginStatusLabel.Text = Loc.GetString("reactor-login-revoked");
     }
 
-    // --- Terminal command line ---
+    private Dictionary<string, Action<string[]>> BuildCommandHandlers()
+    {
+        return new Dictionary<string, Action<string[]>>
+        {
+            ["help"] = HandleHelp,
+            ["start"] = _ =>
+            {
+                SendMessage(new ReactorStartMsg());
+                _audio.PlayGlobal(StartSound, Filter.Local(), false);
+                Log("Startup command sent.", ResponseColor);
+            },
+            ["shutdown"] = _ =>
+            {
+                SendMessage(new ReactorShutdownMsg());
+                _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
+                Log("Shutdown command sent.", ResponseColor);
+            },
+            ["scram"] = _ => HandleScram(),
+            ["mode"] = HandleMode,
+            ["fuel"] = parts => HandleRate(parts, "FUEL", c => c.FuelingRate, c => c.FuelingTarget, v => new ReactorSetFuelingRateMsg(v)),
+            ["heat"] = parts => HandleRate(parts, "HEAT", c => c.HeatingPower, c => c.HeatingTarget, v => new ReactorSetHeatingPowerMsg(v)),
+            ["current"] = parts => HandleRate(parts, "CURRENT", c => c.PlasmaCurrent, c => c.PlasmaCurrentTarget, v => new ReactorSetPlasmaCurrentMsg(v)),
+            ["divertor"] = parts => HandleRate(parts, "DIVERTOR", c => c.DivertorRate, c => c.DivertorTarget, v => new ReactorSetDivertorRateMsg(v)),
+            ["coil"] = HandleCoil,
+        };
+    }
 
     private void ExecuteCommand(string raw)
     {
@@ -272,67 +281,33 @@ public sealed class ReactorBui : BoundUserInterface
         Log($"> {text}", EchoColor);
 
         var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var name = parts[0].ToUpperInvariant();
+        var id = parts[0].ToLowerInvariant();
 
-        if (name != "SCRAM" && _confirmScram)
+        if (id != "scram" && _confirmScram)
         {
             _confirmScram = false;
             Log("SCRAM cancelled.", ResponseColor);
         }
 
-        switch (name)
+        if (!_commandHandlers.TryGetValue(id, out var handler))
         {
-            case "HELP":
-                HandleHelp(parts);
-                break;
-            case "START":
-                SendMessage(new ReactorStartMsg());
-                _audio.PlayGlobal(StartSound, Filter.Local(), false);
-                Log("Startup command sent.", ResponseColor);
-                break;
-            case "SHUTDOWN":
-                SendMessage(new ReactorShutdownMsg());
-                _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
-                Log("Shutdown command sent.", ResponseColor);
-                break;
-            case "SCRAM":
-                HandleScram();
-                break;
-            case "MODE":
-                HandleMode(parts);
-                break;
-            case "FUEL":
-                HandleRate(parts, "FUEL", c => c.FuelingRate, c => c.FuelingTarget, v => new ReactorSetFuelingRateMsg(v));
-                break;
-            case "HEAT":
-                HandleRate(parts, "HEAT", c => c.HeatingPower, c => c.HeatingTarget, v => new ReactorSetHeatingPowerMsg(v));
-                break;
-            case "CURRENT":
-                HandleRate(parts, "CURRENT", c => c.PlasmaCurrent, c => c.PlasmaCurrentTarget, v => new ReactorSetPlasmaCurrentMsg(v));
-                break;
-            case "DIVERTOR":
-                HandleRate(parts, "DIVERTOR", c => c.DivertorRate, c => c.DivertorTarget, v => new ReactorSetDivertorRateMsg(v));
-                break;
-            case "COIL":
-                HandleCoil(parts);
-                break;
-            default:
-                PlayError();
-                Log($"Unknown command: {name}. Type HELP for a list of commands.", ErrorColor);
-                break;
+            PlayError();
+            Log($"Unknown command: {parts[0].ToUpperInvariant()}. Type HELP for a list of commands.", ErrorColor);
+            return;
         }
+
+        handler(parts);
     }
 
     private void HandleHelp(string[] parts)
     {
         if (parts.Length >= 2)
         {
-            var target = parts[1].ToUpperInvariant();
-            var info = Commands.FirstOrDefault(c => c.Name == target);
-            if (info.Name == null)
+            var target = parts[1].ToLowerInvariant();
+            if (!_prototypes.TryIndex<ReactorCommandPrototype>(target, out var info))
             {
                 PlayError();
-                Log($"No such command: {target}", ErrorColor);
+                Log($"No such command: {parts[1].ToUpperInvariant()}", ErrorColor);
                 return;
             }
 
@@ -344,9 +319,10 @@ public sealed class ReactorBui : BoundUserInterface
         _audio.PlayGlobal(HelpSound, Filter.Local(), false);
         Log("Available commands (HELP <command> for details):", ResponseColor);
 
-        var half = (Commands.Length + 1) / 2;
-        var row1 = string.Join("   ", Commands.Take(half).Select(c => c.Name));
-        var row2 = string.Join("   ", Commands.Skip(half).Select(c => c.Name));
+        var commands = _prototypes.EnumeratePrototypes<ReactorCommandPrototype>().OrderBy(c => c.Order).ToList();
+        var half = (commands.Count + 1) / 2;
+        var row1 = string.Join("   ", commands.Take(half).Select(c => c.ID.ToUpperInvariant()));
+        var row2 = string.Join("   ", commands.Skip(half).Select(c => c.ID.ToUpperInvariant()));
         Log(row1, ResponseColor);
         if (row2.Length > 0)
             Log(row2, ResponseColor);
@@ -392,12 +368,6 @@ public sealed class ReactorBui : BoundUserInterface
         Log($"Mode set to {mode.ToString().ToUpperInvariant()}.", ResponseColor);
     }
 
-    /// <summary>
-    /// Mirrors the server's own gate on manual-edit BUI messages (CanManuallyEdit in
-    /// Content.Server/_Misfits/Reactor/ReactorSystem.cs) so the terminal can tell the operator
-    /// *why* a command did nothing instead of optimistically claiming success for a message the
-    /// server is about to silently reject.
-    /// </summary>
     private bool CheckManualEditable()
     {
         if (_state == null)
@@ -555,7 +525,6 @@ public sealed class ReactorBui : BoundUserInterface
         switch (_phase)
         {
             case TerminalPhase.Boot:
-                // State pushes that arrive mid-boot are ignored; the boot sequence drives its own pacing.
                 return;
             case TerminalPhase.Login when comp.InsertedIdName != null:
                 GrantAccess(comp.InsertedIdName);
@@ -658,11 +627,6 @@ public sealed class ReactorBui : BoundUserInterface
             _confirmScram = false;
     }
 
-    /// <summary>
-    /// Prints the reactor's startup/shutdown sequence to the terminal log as it actually happens,
-    /// step by step, plus the major state transitions - so a full START/SHUTDOWN reads like a real
-    /// terminal boot log rather than a single instantaneous message.
-    /// </summary>
     private void TrackSequenceEvents(ReactorComponent comp)
     {
         var startupStep = comp.StartupStep;
@@ -722,7 +686,6 @@ public sealed class ReactorBui : BoundUserInterface
         _lastState = comp.State;
     }
 
-    /// <summary>Turns a PascalCase enum name like "SystemsCheck" into "SYSTEMS CHECK" for console output.</summary>
     private static string FormatStepName(string pascalCase)
     {
         var spaced = new System.Text.StringBuilder();
@@ -802,8 +765,8 @@ public sealed class ReactorBui : BoundUserInterface
 
     private static Color ThresholdColor(float normalized)
     {
-        if (normalized > 1f)
+        if (normalized >= 0.8f)
             return Color.Red;
-        return normalized > 0.8f ? Color.Yellow : Color.LightGreen;
+        return normalized >= 0.5f ? Color.Yellow : Color.LightGreen;
     }
 }
