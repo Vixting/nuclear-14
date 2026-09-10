@@ -89,6 +89,7 @@ namespace Content.Client.Stylesheets
         public const string StyleClassPipBoyFill = "PipBoyFill";           // flat panel background
         public const string StyleClassPipBoyHighlight = "PipBoyHighlight"; // selected/inset highlight
         public const string StyleClassPipBoyDivider = "PipBoyDivider";     // thin accent divider bar
+        public const string StyleClassPipBoyLineEdit = "PipBoyLineEdit";   // typed-value terminal input
 
         public const string StyleClassPopupMessageSmall = "PopupMessageSmall";
         public const string StyleClassPopupMessageSmallCaution = "PopupMessageSmallCaution";
@@ -838,6 +839,21 @@ namespace Content.Client.Stylesheets
                     {
                         new StyleProperty(Label.StylePropertyFont, pipBoyMono16),
                         new StyleProperty(Label.StylePropertyFontColor, PipBoyGreen),
+                    }),
+
+                Element<LineEdit>().Class(StyleClassPipBoyLineEdit)
+                    .Prop("font", pipBoyMono16)
+                    .Prop("font-color", PipBoyGreen)
+                    .Prop(LineEdit.StylePropertyCursorColor, PipBoyGreen)
+                    .Prop(LineEdit.StylePropertyStyleBox, new StyleBoxFlat
+                    {
+                        BackgroundColor = PipBoyPanelBg,
+                        BorderColor = PipBoyGreenDim,
+                        BorderThickness = new Thickness(1),
+                        ContentMarginLeftOverride = 6,
+                        ContentMarginRightOverride = 6,
+                        ContentMarginTopOverride = 2,
+                        ContentMarginBottomOverride = 2,
                     }),
 
                 // Colors for confirm buttons confirm states.

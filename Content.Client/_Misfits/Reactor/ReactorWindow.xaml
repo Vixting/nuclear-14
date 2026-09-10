@@ -1,0 +1,107 @@
+<controls:FancyWindow xmlns="https://spacestation14.io"
+                      xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
+                      Title="Fusion Reactor Control"
+                      Resizable="True"
+                      SetSize="900 620"
+                      MinSize="760 520">
+    <LayoutContainer Name="Layers" VerticalExpand="True" HorizontalExpand="True">
+
+        <!-- Boot sequence layer -->
+        <PanelContainer Name="BootLayer" Access="Public" StyleClasses="PipBoyPanel" VerticalExpand="True" HorizontalExpand="True">
+            <BoxContainer Orientation="Vertical" Margin="10" VerticalExpand="True">
+                <RichTextLabel Name="BootText" Access="Public" VerticalExpand="True"/>
+            </BoxContainer>
+        </PanelContainer>
+
+        <!-- Login / ID insertion layer -->
+        <PanelContainer Name="LoginLayer" Access="Public" StyleClasses="PipBoyPanel" VerticalExpand="True" HorizontalExpand="True" Visible="False">
+            <BoxContainer Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" SeparationOverride="8">
+                <Label Text="REACTOR CONTROL — VAULT 14" StyleClasses="PipBoyHeading" HorizontalAlignment="Center"/>
+                <PanelContainer StyleClasses="PipBoyDivider" MinSize="320 2"/>
+                <Label Name="LoginPromptLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" HorizontalAlignment="Center" Margin="0 6 0 0"/>
+                <Button Name="IdSlotButton" Access="Public" Text="[ INSERT ID CARD ]" StyleClasses="PipBoy" HorizontalAlignment="Center" MinWidth="220" Margin="0 4 0 0"/>
+                <Label Name="LoginStatusLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" HorizontalAlignment="Center" Visible="False" Margin="0 4 0 0"/>
+            </BoxContainer>
+        </PanelContainer>
+
+        <!-- Main dashboard layer -->
+        <PanelContainer Name="MainLayer" Access="Public" StyleClasses="PipBoyPanel" VerticalExpand="True" HorizontalExpand="True" Visible="False">
+            <BoxContainer Orientation="Vertical" Margin="4" SeparationOverride="4" VerticalExpand="True">
+
+                <BoxContainer Orientation="Horizontal" SeparationOverride="6">
+                    <Label Text="REACTOR CONTROL — VAULT 14" StyleClasses="PipBoyHeading" HorizontalExpand="True"/>
+                    <Label Name="OperatorLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" HorizontalAlignment="Right" Margin="0 0 8 0"/>
+                    <Label Name="StatusLabel" Access="Public" Text="OFFLINE" StyleClasses="PipBoyHeading" HorizontalAlignment="Right"/>
+                </BoxContainer>
+                <PanelContainer StyleClasses="PipBoyDivider" MinSize="0 2" HorizontalExpand="True"/>
+                <Label Name="AlarmLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" FontColorOverride="#FF5555" Visible="False"/>
+                <Label Name="SequenceLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" Visible="False"/>
+
+                <BoxContainer Orientation="Horizontal" SeparationOverride="6" VerticalExpand="True" Margin="0 2 0 0">
+
+                    <BoxContainer Name="ControlsPanel" Access="Public" Orientation="Vertical" SeparationOverride="4" MinWidth="360" VerticalExpand="True">
+
+                        <PanelContainer StyleClasses="PipBoyFill">
+                            <BoxContainer Orientation="Vertical" Margin="6" SeparationOverride="2">
+                                <Label Text="▸ STATUS" StyleClasses="PipBoyLabel" FontColorOverride="#33FF66"/>
+                                <BoxContainer Orientation="Horizontal" SeparationOverride="4">
+                                    <Label Name="OutputLabel" Access="Public" Text="OUTPUT 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
+                                    <Label Name="DemandLabel" Access="Public" Text="DEMAND 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
+                                    <Label Name="IntegrityLabel" Access="Public" Text="INTEGRITY 100%" StyleClasses="PipBoyLabel" MinWidth="115"/>
+                                </BoxContainer>
+                                <BoxContainer Orientation="Horizontal" SeparationOverride="4">
+                                    <Label Name="BetaLabel" Access="Public" Text="BETA 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
+                                    <Label Name="DensityLabel" Access="Public" Text="DENSITY 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
+                                    <Label Name="AshLabel" Access="Public" Text="ASH 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
+                                </BoxContainer>
+                            </BoxContainer>
+                        </PanelContainer>
+
+                        <PanelContainer StyleClasses="PipBoyFill">
+                            <BoxContainer Orientation="Vertical" Margin="6" SeparationOverride="2">
+                                <Label Text="▸ OPERATIONAL RATES (current / target)" StyleClasses="PipBoyLabel" FontColorOverride="#33FF66"/>
+                                <BoxContainer Orientation="Horizontal" SeparationOverride="4">
+                                    <Label Name="FuelReadout" Access="Public" Text="FUEL 0/0%" StyleClasses="PipBoyLabel" MinWidth="175"/>
+                                    <Label Name="HeatReadout" Access="Public" Text="HEAT 0/0%" StyleClasses="PipBoyLabel" MinWidth="175"/>
+                                </BoxContainer>
+                                <BoxContainer Orientation="Horizontal" SeparationOverride="4">
+                                    <Label Name="CurrentReadout" Access="Public" Text="CURRENT 0/0%" StyleClasses="PipBoyLabel" MinWidth="175"/>
+                                    <Label Name="DivertorReadout" Access="Public" Text="DIVERTOR 0/0%" StyleClasses="PipBoyLabel" MinWidth="175"/>
+                                </BoxContainer>
+                            </BoxContainer>
+                        </PanelContainer>
+
+                        <PanelContainer StyleClasses="PipBoyFill">
+                            <BoxContainer Orientation="Vertical" Margin="6" SeparationOverride="2">
+                                <Label Text="▸ CONFINEMENT COILS (current / target)" StyleClasses="PipBoyLabel" FontColorOverride="#33FF66"/>
+                                <BoxContainer Name="CoilsContainer" Access="Public" Orientation="Vertical" SeparationOverride="1"/>
+                            </BoxContainer>
+                        </PanelContainer>
+
+                        <PanelContainer StyleClasses="PipBoyFill" VerticalExpand="True">
+                            <BoxContainer Orientation="Vertical" Margin="4" SeparationOverride="2" VerticalExpand="True">
+                                <OutputPanel Name="CommandLog" Access="Public" VerticalExpand="True"/>
+                                <BoxContainer Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Text="&gt;" StyleClasses="PipBoyLabel" Margin="0 0 4 0"/>
+                                    <LineEdit Name="CommandInput" Access="Public" StyleClasses="PipBoyLineEdit" HorizontalExpand="True" PlaceHolder="type HELP for commands"/>
+                                </BoxContainer>
+                            </BoxContainer>
+                        </PanelContainer>
+
+                    </BoxContainer>
+
+                    <PanelContainer StyleClasses="PipBoyDivider" MinSize="2 0" VerticalExpand="True"/>
+
+                    <ScrollContainer HScrollEnabled="False" VerticalExpand="True" HorizontalExpand="True">
+                        <BoxContainer Name="ChartsContainer" Access="Public" Orientation="Vertical" SeparationOverride="6" Margin="0 0 0 4" HorizontalExpand="True"/>
+                    </ScrollContainer>
+
+                </BoxContainer>
+
+            </BoxContainer>
+        </PanelContainer>
+
+        <TextureRect Name="CrtOverlay" Access="Public" MouseFilter="Ignore" VerticalExpand="True" HorizontalExpand="True"/>
+
+    </LayoutContainer>
+</controls:FancyWindow>
