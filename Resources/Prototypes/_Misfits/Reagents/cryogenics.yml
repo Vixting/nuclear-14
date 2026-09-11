@@ -26,8 +26,8 @@
         maxMultiplier: 3
         damage:
           groups:
-            Brute: -10
-            Burn: -10
+            Brute: -1
+            Burn: -1
 
 - type: reagent
   id: Traumazine
@@ -48,8 +48,8 @@
         maxMultiplier: 3
         damage:
           groups:
-            Brute: -20
-            Burn: -20
+            Brute: -1
+            Burn: -1
 
 - type: reagent
   id: Toxazine
@@ -70,8 +70,8 @@
         maxMultiplier: 3
         damage:
           groups:
-            Toxin: -20
-            Genetic: -20
+            Toxin: -1
+            Genetic: -1
 
 - type: reagent
   id: Somaline
@@ -95,7 +95,7 @@
         maxMultiplier: 3
         damage:
           groups:
-            Genetic: -10
+            Genetic: -1
       - !type:RelayBodyParts
         conditions:
         - !type:ReagentThreshold
