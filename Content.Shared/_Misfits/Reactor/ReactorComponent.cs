@@ -1,4 +1,3 @@
-using Content.Shared.Containers.ItemSlots;
 using Robust.Shared.GameStates;
 
 namespace Content.Shared._Misfits.Reactor;
@@ -95,11 +94,6 @@ public sealed partial class ReactorComponent : Component
     [DataField]
     public float UpdateTimer = 1f;
 
-    public static readonly string IdCardSlotId = "reactor-id-card";
-
-    [DataField]
-    public ItemSlot IdCardSlot = new();
-
     public float UpdateAccumulator;
 
     public ReactorSeverity LastAnnouncedSeverity = ReactorSeverity.Nominal;
@@ -108,7 +102,7 @@ public sealed partial class ReactorComponent : Component
     public ReactorMode Mode = ReactorMode.Automatic;
 
     [AutoNetworkedField]
-    public ReactorState State = ReactorState.Offline;
+    public ReactorState State = ReactorState.Online;
 
     [AutoNetworkedField]
     public ReactorStartupStep StartupStep = ReactorStartupStep.None;
@@ -178,7 +172,4 @@ public sealed partial class ReactorComponent : Component
 
     [AutoNetworkedField]
     public string? Alarm;
-
-    [AutoNetworkedField]
-    public string? InsertedIdName;
 }

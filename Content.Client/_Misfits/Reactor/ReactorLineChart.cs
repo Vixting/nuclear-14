@@ -46,9 +46,17 @@ public sealed class ReactorLineChart : BoxContainer
     {
         _graph.PushSample(target, current);
         _readoutLabel.Text = $"cur {FormatPercent(current)} / tgt {FormatPercent(target)}";
+        _readoutLabel.FontColorOverride = ThresholdColor(current);
     }
 
     private static string FormatPercent(float normalized) => $"{(int) (normalized * 100)}%";
+
+    private static Color ThresholdColor(float normalized)
+    {
+        if (normalized >= 0.8f)
+            return Color.Red;
+        return normalized >= 0.5f ? Color.Yellow : Color.LightGreen;
+    }
 
     private sealed class GraphControl : Control
     {
@@ -58,7 +66,6 @@ public sealed class ReactorLineChart : BoxContainer
         private static readonly Color BgColor = Color.FromHex("#0C1F0E");
         private static readonly Color GridColor = Color.FromHex("#163E1E");
         private static readonly Color TargetColor = Color.FromHex("#1E9C3D");
-        private static readonly Color CurrentColor = Color.FromHex("#33FF66");
 
         private readonly float[] _target = new float[Capacity];
         private readonly float[] _current = new float[Capacity];
@@ -109,19 +116,21 @@ public sealed class ReactorLineChart : BoxContainer
             var spacing = width / (Capacity - 1);
             var xStart = Capacity - _count;
 
-            DrawSeries(handle, _target, xStart, spacing, height, TargetColor, dashed: true);
-            DrawSeries(handle, _current, xStart, spacing, height, CurrentColor, dashed: false);
+            DrawSeries(handle, _target, xStart, spacing, height, dashed: true, colorCoded: false);
+            DrawSeries(handle, _current, xStart, spacing, height, dashed: false, colorCoded: true);
         }
 
         private void DrawSeries(DrawingHandleScreen handle, float[] series, int xStart, float spacing,
-            float height, Color color, bool dashed)
+            float height, bool dashed, bool colorCoded)
         {
             var segment = 0;
 
             for (var i = 0; i + 1 < _count; i++)
             {
-                var v1 = new Vector2((xStart + i) * spacing, height - Math.Clamp(series[i] / Scale, 0f, 1f) * height);
-                var v2 = new Vector2((xStart + i + 1) * spacing, height - Math.Clamp(series[i + 1] / Scale, 0f, 1f) * height);
+                var n1 = Math.Clamp(series[i] / Scale, 0f, 1f);
+                var n2 = Math.Clamp(series[i + 1] / Scale, 0f, 1f);
+                var v1 = new Vector2((xStart + i) * spacing, height - n1 * height);
+                var v2 = new Vector2((xStart + i + 1) * spacing, height - n2 * height);
 
                 if (dashed)
                 {
@@ -130,6 +139,7 @@ public sealed class ReactorLineChart : BoxContainer
                         continue;
                 }
 
+                var color = colorCoded ? ThresholdColor(Math.Max(n1, n2)) : TargetColor;
                 handle.DrawLine(v1, v2, color);
             }
         }

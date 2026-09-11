@@ -4,7 +4,6 @@ using Content.Server.Explosion.EntitySystems;
 using Content.Server.Popups;
 using Content.Server.Power.Components;
 using Content.Shared._Misfits.Reactor;
-using Robust.Shared.Containers;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 
@@ -24,8 +23,6 @@ public sealed class ReactorSystem : SharedReactorSystem
         base.Initialize();
 
         SubscribeLocalEvent<ReactorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ReactorComponent, EntInsertedIntoContainerMessage>(OnIdCardChanged);
-        SubscribeLocalEvent<ReactorComponent, EntRemovedFromContainerMessage>(OnIdCardChanged);
 
         Subs.BuiEvents<ReactorComponent>(ReactorUiKey.Key, subs =>
         {
@@ -58,52 +55,15 @@ public sealed class ReactorSystem : SharedReactorSystem
         return list;
     }
 
-    private void OnIdCardChanged(Entity<ReactorComponent> ent, ref EntInsertedIntoContainerMessage args)
-    {
-        RefreshIdCard(ent);
-    }
-
-    private void OnIdCardChanged(Entity<ReactorComponent> ent, ref EntRemovedFromContainerMessage args)
-    {
-        RefreshIdCard(ent);
-    }
-
-    private void RefreshIdCard(Entity<ReactorComponent> ent)
-    {
-        var comp = ent.Comp;
-        comp.InsertedIdName = comp.IdCardSlot.Item is { Valid: true } item
-            ? MetaData(item).EntityName
-            : null;
-        Dirty(ent);
-    }
-
-    private bool IsLoggedIn(Entity<ReactorComponent> ent, EntityUid actor)
-    {
-        if (ent.Comp.InsertedIdName != null)
-            return true;
-
-        _popup.PopupEntity(Loc.GetString("reactor-popup-not-logged-in"), ent, actor);
-        return false;
-    }
-
     private void OnStart(Entity<ReactorComponent> ent, ref ReactorStartMsg args)
     {
         var comp = ent.Comp;
 
-        if (!IsLoggedIn(ent, args.Actor))
-            return;
-
         if (comp.State != ReactorState.Offline && comp.State != ReactorState.Scrammed)
-        {
-            _popup.PopupEntity(Loc.GetString("reactor-popup-already-running"), ent, args.Actor);
             return;
-        }
 
         if (comp.LockedUntil is { } lockedUntil && lockedUntil > _timing.CurTime)
-        {
-            _popup.PopupEntity(Loc.GetString("reactor-popup-locked-out"), ent, args.Actor);
             return;
-        }
 
         comp.State = ReactorState.Starting;
         comp.StartupStep = ReactorStartupStep.SystemsCheck;
@@ -123,9 +83,6 @@ public sealed class ReactorSystem : SharedReactorSystem
     {
         var comp = ent.Comp;
 
-        if (!IsLoggedIn(ent, args.Actor))
-            return;
-
         if (comp.State != ReactorState.Online)
         {
             _popup.PopupEntity(Loc.GetString("reactor-popup-not-running"), ent, args.Actor);
@@ -141,9 +98,6 @@ public sealed class ReactorSystem : SharedReactorSystem
     private void OnScram(Entity<ReactorComponent> ent, ref ReactorScramMsg args)
     {
         var comp = ent.Comp;
-
-        if (!IsLoggedIn(ent, args.Actor))
-            return;
 
         if (comp.State is not (ReactorState.Starting or ReactorState.Online or ReactorState.ShuttingDown))
             return;
@@ -188,9 +142,6 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void OnSetMode(Entity<ReactorComponent> ent, ref ReactorSetModeMsg args)
     {
-        if (!IsLoggedIn(ent, args.Actor))
-            return;
-
         if (ent.Comp.State != ReactorState.Online)
             return;
 
@@ -200,9 +151,6 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private bool CanManuallyEdit(Entity<ReactorComponent> ent, EntityUid actor)
     {
-        if (!IsLoggedIn(ent, actor))
-            return false;
-
         if (ent.Comp.State == ReactorState.Online && ent.Comp.Mode == ReactorMode.Manual)
             return true;
 

@@ -32,8 +32,8 @@ public sealed class ReactorBui : BoundUserInterface
     private static readonly SoundSpecifier ConfirmSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/confirm_blip.ogg");
     private static readonly SoundSpecifier ErrorSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_error.ogg");
     private static readonly SoundSpecifier BootSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/poweron.ogg");
-    private static readonly SoundSpecifier BootLineSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/keyboard1.ogg");
-    private static readonly SoundSpecifier LoginGrantedSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_prompt_confirm.ogg");
+    private static readonly SoundSpecifier InsertDiscSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_insert_disc.ogg");
+    private static readonly SoundSpecifier LoginGrantedSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_success.ogg");
     private static readonly SoundSpecifier LoginDeniedSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_prompt_deny.ogg");
     private static readonly SoundSpecifier StartSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_on.ogg");
     private static readonly SoundSpecifier ShutdownSound = new SoundPathSpecifier("/Audio/_Misfits/Effects/Terminal/terminal_shutdown.ogg");
@@ -52,20 +52,19 @@ public sealed class ReactorBui : BoundUserInterface
 
     private enum TerminalPhase { Boot, Login, Main }
 
-    [Dependency] private readonly IEntityManager _entities = default!;
     [Dependency] private readonly IPrototypeManager _prototypes = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
 
     private AudioSystem _audio = default!;
 
     private ReactorWindow? _window;
-    private ReactorComponent? _state;
+    private ReactorMonitorState? _state;
     private bool _confirmScram;
     private bool _welcomed;
+    private bool _authenticating;
     private int _logLineCount;
 
     private TerminalPhase _phase = TerminalPhase.Boot;
-    private string _bootBuffer = string.Empty;
 
     private ReactorState? _lastState;
     private ReactorStartupStep? _lastStartupStep;
@@ -92,7 +91,8 @@ public sealed class ReactorBui : BoundUserInterface
 
         _window = this.CreateWindow<ReactorWindow>();
 
-        _window.IdSlotButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent(ReactorComponent.IdCardSlotId));
+        _window.IdSlotButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent(ReactorMonitorConstants.IdCardSlotId));
+        _window.LogoutButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent(ReactorMonitorConstants.IdCardSlotId));
 
         _window.CommandInput.OnTextTyped += _ => PlayKeystroke();
         _window.CommandInput.OnTextEntered += args =>
@@ -106,10 +106,34 @@ public sealed class ReactorBui : BoundUserInterface
         SetupCharts();
         ApplyCrtShader();
 
+        UiSystem.TryGetUiState<ReactorMonitorState>(Owner, UiKey, out var initialState);
+        if (initialState?.InsertedIdName is { } operatorName)
+        {
+            _state = initialState;
+            _welcomed = true;
+            _phase = TerminalPhase.Main;
+            _window.OperatorLabel.Text = Loc.GetString("reactor-operator-label", ("name", operatorName));
+            SetLayerVisibility();
+            Refresh();
+            return;
+        }
+
         _phase = TerminalPhase.Boot;
         SetLayerVisibility();
+        _window.BootTextContainer.RemoveAllChildren();
         _audio.PlayGlobal(BootSound, Filter.Local(), false);
         PlayBootSequence(0);
+    }
+
+    protected override void UpdateState(BoundUserInterfaceState state)
+    {
+        base.UpdateState(state);
+
+        if (state is ReactorMonitorState monitorState)
+        {
+            _state = monitorState;
+            Refresh();
+        }
     }
 
     private void ApplyCrtShader()
@@ -150,16 +174,14 @@ public sealed class ReactorBui : BoundUserInterface
 
         if (index >= ReactorBootSequence.Lines.Length)
         {
-            EnterLogin();
+            Timer.Spawn(TimeSpan.FromSeconds(2), EnterLogin);
             return;
         }
 
         var line = ReactorBootSequence.Lines[index];
         AppendBootLine(line.Text);
-        if (line.Text.Length > 0)
-            _audio.PlayGlobal(BootLineSound, Filter.Local(), false);
 
-        var delay = TimeSpan.FromMilliseconds(line.PauseAfter ? 700 : 160);
+        var delay = TimeSpan.FromMilliseconds(line.PauseAfter ? 1400 : 320);
         Timer.Spawn(delay, () => PlayBootSequence(index + 1));
     }
 
@@ -168,19 +190,18 @@ public sealed class ReactorBui : BoundUserInterface
         if (_window == null)
             return;
 
-        _bootBuffer = _bootBuffer.Length > 0 ? $"{_bootBuffer}\n{text}" : text;
-
-        var formatted = new FormattedMessage();
-        formatted.PushColor(BootTextColor);
-        formatted.AddText(_bootBuffer);
-        formatted.Pop();
-        _window.BootText.SetMessage(formatted);
+        _window.BootTextContainer.AddChild(new Label
+        {
+            Text = text,
+            FontColorOverride = BootTextColor,
+            HorizontalAlignment = Control.HAlignment.Center,
+            StyleClasses = { "PipBoyLabel" },
+        });
     }
 
     private void EnterLogin()
     {
         _phase = TerminalPhase.Login;
-        _bootBuffer = string.Empty;
         SetLayerVisibility();
 
         if (_window != null)
@@ -202,6 +223,54 @@ public sealed class ReactorBui : BoundUserInterface
         _window.MainLayer.Visible = _phase == TerminalPhase.Main;
     }
 
+    private const int AuthenticationTicks = 7;
+
+    private void BeginAuthentication()
+    {
+        _authenticating = true;
+        if (_window != null)
+            _window.IdSlotButton.Disabled = true;
+
+        _audio.PlayGlobal(InsertDiscSound, Filter.Local(), false);
+        AnimateAuthenticating(0);
+    }
+
+    private void AnimateAuthenticating(int tick)
+    {
+        if (_window == null || !_authenticating)
+            return;
+
+        var dots = new string('.', (tick % 3) + 1);
+        _window.LoginStatusLabel.Visible = true;
+        _window.LoginStatusLabel.Text = $"AUTHENTICATING{dots}";
+
+        if (tick >= AuthenticationTicks)
+        {
+            ResolveAuthentication();
+            return;
+        }
+
+        Timer.Spawn(TimeSpan.FromMilliseconds(200), () => AnimateAuthenticating(tick + 1));
+    }
+
+    private void ResolveAuthentication()
+    {
+        if (_window == null)
+            return;
+
+        _window.IdSlotButton.Disabled = false;
+
+        if (_state?.InsertedIdName is { } name)
+        {
+            GrantAccess(name);
+            return;
+        }
+
+        _audio.PlayGlobal(LoginDeniedSound, Filter.Local(), false);
+        _window.LoginStatusLabel.Visible = true;
+        _window.LoginStatusLabel.Text = Loc.GetString("reactor-login-denied");
+    }
+
     private void GrantAccess(string name)
     {
         if (_window == null)
@@ -212,7 +281,7 @@ public sealed class ReactorBui : BoundUserInterface
         _window.LoginStatusLabel.Text = Loc.GetString("reactor-login-granted", ("name", name));
         _window.OperatorLabel.Text = Loc.GetString("reactor-operator-label", ("name", name));
 
-        Timer.Spawn(TimeSpan.FromMilliseconds(450), () =>
+        Timer.Spawn(TimeSpan.FromMilliseconds(1300), () =>
         {
             if (_window == null || _phase != TerminalPhase.Login)
                 return;
@@ -250,18 +319,8 @@ public sealed class ReactorBui : BoundUserInterface
         return new Dictionary<string, Action<string[]>>
         {
             ["help"] = HandleHelp,
-            ["start"] = _ =>
-            {
-                SendMessage(new ReactorStartMsg());
-                _audio.PlayGlobal(StartSound, Filter.Local(), false);
-                Log("Startup command sent.", ResponseColor);
-            },
-            ["shutdown"] = _ =>
-            {
-                SendMessage(new ReactorShutdownMsg());
-                _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
-                Log("Shutdown command sent.", ResponseColor);
-            },
+            ["start"] = _ => HandleStart(),
+            ["shutdown"] = _ => HandleShutdown(),
             ["scram"] = _ => HandleScram(),
             ["mode"] = HandleMode,
             ["fuel"] = parts => HandleRate(parts, "FUEL", c => c.FuelingRate, c => c.FuelingTarget, v => new ReactorSetFuelingRateMsg(v)),
@@ -269,7 +328,141 @@ public sealed class ReactorBui : BoundUserInterface
             ["current"] = parts => HandleRate(parts, "CURRENT", c => c.PlasmaCurrent, c => c.PlasmaCurrentTarget, v => new ReactorSetPlasmaCurrentMsg(v)),
             ["divertor"] = parts => HandleRate(parts, "DIVERTOR", c => c.DivertorRate, c => c.DivertorTarget, v => new ReactorSetDivertorRateMsg(v)),
             ["coil"] = HandleCoil,
+            ["reactors"] = _ => LogReactorList(),
+            ["status"] = _ => LogReactorList(),
+            ["select"] = HandleSelect,
+            ["all"] = HandleAll,
         };
+    }
+
+    private void LogReactorList()
+    {
+        var reactors = _state?.Reactors;
+        if (reactors == null || reactors.Count == 0)
+        {
+            Log("No linked reactors detected.", ResponseColor);
+            return;
+        }
+
+        Log("LINKED REACTORS:", ResponseColor);
+        for (var i = 0; i < reactors.Count; i++)
+        {
+            var r = reactors[i];
+            var outputPct = r.MaxOutput > 0f ? (int) (r.PowerOutput / r.MaxOutput * 100) : 0;
+            var marker = i + 1 == _state!.SelectedIndex ? "*" : " ";
+            var line = $"{marker}{i + 1}. {r.Name} — {r.State.ToString().ToUpperInvariant()} — {(int) r.Integrity}% INTEGRITY — {outputPct}% OUTPUT";
+            Log(line, r.Alarm != null ? ErrorColor : ResponseColor);
+        }
+    }
+
+    private void HandleSelect(string[] parts)
+    {
+        if (parts.Length < 2 || !int.TryParse(parts[1], out var index) || index < 1)
+        {
+            PlayError();
+            Log("Usage: SELECT <n> — run REACTORS first to see numbers.", ErrorColor);
+            return;
+        }
+
+        SendMessage(new ReactorMonitorSelectMsg(index));
+        PlayConfirm();
+        Log($"Connecting to reactor {index}...", ResponseColor);
+    }
+
+    private void HandleAll(string[] parts)
+    {
+        if (parts.Length < 2)
+        {
+            PlayError();
+            Log("Usage: ALL <start|shutdown|scram|mode|fuel|heat|current|divertor> [value]", ErrorColor);
+            return;
+        }
+
+        var sub = parts[1].ToLowerInvariant();
+        switch (sub)
+        {
+            case "start":
+                SendMessage(new ReactorMonitorAllMsg(ReactorMonitorAllCommand.Start));
+                _audio.PlayGlobal(StartSound, Filter.Local(), false);
+                Log("Startup command broadcast to all linked reactors.", ResponseColor);
+                break;
+            case "shutdown":
+                SendMessage(new ReactorMonitorAllMsg(ReactorMonitorAllCommand.Shutdown));
+                _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
+                Log("Shutdown command broadcast to all linked reactors.", ResponseColor);
+                break;
+            case "scram":
+                SendMessage(new ReactorMonitorAllMsg(ReactorMonitorAllCommand.Scram));
+                _audio.PlayGlobal(ScramConfirmSound, Filter.Local(), false);
+                Log("SCRAM broadcast to all linked reactors.", ErrorColor);
+                break;
+            case "mode":
+                HandleAllMode(parts);
+                break;
+            case "fuel":
+            case "heat":
+            case "current":
+            case "divertor":
+                HandleAllRate(sub, parts);
+                break;
+            default:
+                PlayError();
+                Log($"Unknown ALL sub-command: {parts[1].ToUpperInvariant()}", ErrorColor);
+                break;
+        }
+    }
+
+    private void HandleAllMode(string[] parts)
+    {
+        if (parts.Length < 3)
+        {
+            PlayError();
+            Log("Usage: ALL MODE <AUTO|MANUAL>", ErrorColor);
+            return;
+        }
+
+        ReactorMode mode;
+        switch (parts[2].ToUpperInvariant())
+        {
+            case "AUTO":
+            case "AUTOMATIC":
+                mode = ReactorMode.Automatic;
+                break;
+            case "MANUAL":
+                mode = ReactorMode.Manual;
+                break;
+            default:
+                PlayError();
+                Log($"Unknown mode: {parts[2]}. Use AUTO or MANUAL.", ErrorColor);
+                return;
+        }
+
+        SendMessage(new ReactorMonitorAllMsg(ReactorMonitorAllCommand.SetMode, mode: mode));
+        _audio.PlayGlobal(ModeSound, Filter.Local(), false);
+        Log($"Mode set to {mode.ToString().ToUpperInvariant()} on all linked reactors.", ResponseColor);
+    }
+
+    private void HandleAllRate(string sub, string[] parts)
+    {
+        if (parts.Length < 3 || !TryParsePercent(parts[2], out var value))
+        {
+            PlayError();
+            Log($"Usage: ALL {sub.ToUpperInvariant()} <0-100>", ErrorColor);
+            return;
+        }
+
+        var command = sub switch
+        {
+            "fuel" => ReactorMonitorAllCommand.SetFuelingRate,
+            "heat" => ReactorMonitorAllCommand.SetHeatingPower,
+            "current" => ReactorMonitorAllCommand.SetPlasmaCurrent,
+            "divertor" => ReactorMonitorAllCommand.SetDivertorRate,
+            _ => ReactorMonitorAllCommand.SetFuelingRate,
+        };
+
+        SendMessage(new ReactorMonitorAllMsg(command, value));
+        PlayConfirm();
+        Log($"{sub.ToUpperInvariant()} set to {(int) (value * 100)}% on all linked reactors.", ResponseColor);
     }
 
     private void ExecuteCommand(string raw)
@@ -326,6 +519,41 @@ public sealed class ReactorBui : BoundUserInterface
         Log(row1, ResponseColor);
         if (row2.Length > 0)
             Log(row2, ResponseColor);
+    }
+
+    private void HandleStart()
+    {
+        if (_state is { State: not (ReactorState.Offline or ReactorState.Scrammed) })
+        {
+            PlayError();
+            Log("REACTOR IS ALREADY RUNNING.", ErrorColor);
+            return;
+        }
+
+        if (_state is { LockedOutSeconds: > 0f } locked)
+        {
+            PlayError();
+            Log($"REACTOR LOCKED OUT — {(int) Math.Ceiling(locked.LockedOutSeconds)}s REMAINING.", ErrorColor);
+            return;
+        }
+
+        SendMessage(new ReactorStartMsg());
+        _audio.PlayGlobal(StartSound, Filter.Local(), false);
+        Log("Startup command sent.", ResponseColor);
+    }
+
+    private void HandleShutdown()
+    {
+        if (_state is { State: not ReactorState.Online })
+        {
+            PlayError();
+            Log("REACTOR ISN'T ONLINE.", ErrorColor);
+            return;
+        }
+
+        SendMessage(new ReactorShutdownMsg());
+        _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
+        Log("Shutdown command sent.", ResponseColor);
     }
 
     private void HandleMode(string[] parts)
@@ -390,8 +618,8 @@ public sealed class ReactorBui : BoundUserInterface
         return true;
     }
 
-    private void HandleRate(string[] parts, string label, Func<ReactorComponent, float> current,
-        Func<ReactorComponent, float> target, Func<float, BoundUserInterfaceMessage> makeMessage)
+    private void HandleRate(string[] parts, string label, Func<ReactorMonitorState, float> current,
+        Func<ReactorMonitorState, float> target, Func<float, BoundUserInterfaceMessage> makeMessage)
     {
         if (parts.Length < 2)
         {
@@ -516,9 +744,7 @@ public sealed class ReactorBui : BoundUserInterface
         if (_window == null)
             return;
 
-        _entities.TryGetComponent(Owner, out _state);
         var comp = _state;
-
         if (comp == null)
             return;
 
@@ -526,8 +752,11 @@ public sealed class ReactorBui : BoundUserInterface
         {
             case TerminalPhase.Boot:
                 return;
-            case TerminalPhase.Login when comp.InsertedIdName != null:
-                GrantAccess(comp.InsertedIdName);
+            case TerminalPhase.Login when comp.InsertedIdName != null && !_authenticating:
+                BeginAuthentication();
+                return;
+            case TerminalPhase.Login when comp.InsertedIdName == null:
+                _authenticating = false;
                 return;
             case TerminalPhase.Login:
                 return;
@@ -540,7 +769,7 @@ public sealed class ReactorBui : BoundUserInterface
         PushChartSamples(comp);
     }
 
-    private void PushChartSamples(ReactorComponent comp)
+    private void PushChartSamples(ReactorMonitorState comp)
     {
         _outputChart.Scale = comp.MaxOutput > 0f ? comp.MaxOutput : 1f;
         _outputChart.PushSample(comp.LoadFactor, comp.PowerOutput);
@@ -562,9 +791,18 @@ public sealed class ReactorBui : BoundUserInterface
         return total / values.Count;
     }
 
-    private void RefreshDashboard(ReactorComponent comp)
+    private void RefreshDashboard(ReactorMonitorState comp)
     {
         var window = _window!;
+
+        if (!comp.HasSelection)
+        {
+            window.StatusLabel.Text = "NO REACTOR";
+            window.StatusLabel.FontColorOverride = Color.Gray;
+            window.AlarmLabel.Visible = false;
+            window.SequenceLabel.Visible = false;
+            return;
+        }
 
         var state = comp.State;
         window.StatusLabel.Text = state.ToString().ToUpperInvariant();
@@ -613,7 +851,7 @@ public sealed class ReactorBui : BoundUserInterface
             var startupStep = comp.StartupStep;
             var shutdownStep = comp.ShutdownStep;
             var stepName = comp.State == ReactorState.Starting ? startupStep.ToString() : shutdownStep.ToString();
-            var total = (float) comp.StepDuration.TotalSeconds;
+            var total = comp.StepDurationSeconds;
             var progress = total > 0f ? (int) (comp.StepElapsed / total * 100) : 0;
             window.SequenceLabel.Visible = true;
             window.SequenceLabel.Text = Loc.GetString("reactor-sequence-step", ("step", stepName), ("progress", progress));
@@ -627,7 +865,7 @@ public sealed class ReactorBui : BoundUserInterface
             _confirmScram = false;
     }
 
-    private void TrackSequenceEvents(ReactorComponent comp)
+    private void TrackSequenceEvents(ReactorMonitorState comp)
     {
         var startupStep = comp.StartupStep;
         var shutdownStep = comp.ShutdownStep;
@@ -699,7 +937,7 @@ public sealed class ReactorBui : BoundUserInterface
         return spaced.ToString().ToUpperInvariant();
     }
 
-    private void RefreshCoils(ReactorComponent comp, BoxContainer coilsContainer)
+    private void RefreshCoils(ReactorMonitorState comp, BoxContainer coilsContainer)
     {
         coilsContainer.DisposeAllChildren();
 
@@ -725,7 +963,7 @@ public sealed class ReactorBui : BoundUserInterface
         HorizontalExpand = true,
     };
 
-    private Control BuildCoilCell(int index, ReactorComponent comp)
+    private Control BuildCoilCell(int index, ReactorMonitorState comp)
     {
         var heat = comp.CoilLocalHeat[index];
         return new Label
@@ -742,7 +980,7 @@ public sealed class ReactorBui : BoundUserInterface
 
     private static string Percent(float value) => $"{(int) (value * 100)}%";
 
-    private static Color StatusColor(ReactorComponent comp)
+    private static Color StatusColor(ReactorMonitorState comp)
     {
         return comp.State switch
         {

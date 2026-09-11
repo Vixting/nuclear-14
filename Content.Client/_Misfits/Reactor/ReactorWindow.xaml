@@ -2,24 +2,26 @@
                       xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
                       Title="Fusion Reactor Control"
                       Resizable="True"
-                      SetSize="900 620"
-                      MinSize="760 520">
+                      SetSize="1100 760"
+                      MinSize="900 620">
     <LayoutContainer Name="Layers" VerticalExpand="True" HorizontalExpand="True">
 
         <!-- Boot sequence layer -->
         <PanelContainer Name="BootLayer" Access="Public" StyleClasses="PipBoyPanel" VerticalExpand="True" HorizontalExpand="True">
-            <BoxContainer Orientation="Vertical" Margin="10" VerticalExpand="True">
-                <RichTextLabel Name="BootText" Access="Public" VerticalExpand="True"/>
+            <BoxContainer Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True" Margin="10">
+                <TextureRect Name="BootLogo" Access="Public" Stretch="KeepAspectCentered" HorizontalAlignment="Center" SetSize="220 148" Margin="0 20 0 10"/>
+                <BoxContainer Name="BootTextContainer" Access="Public" Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True"/>
             </BoxContainer>
         </PanelContainer>
 
         <!-- Login / ID insertion layer -->
         <PanelContainer Name="LoginLayer" Access="Public" StyleClasses="PipBoyPanel" VerticalExpand="True" HorizontalExpand="True" Visible="False">
             <BoxContainer Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" SeparationOverride="8">
+                <TextureRect Name="LoginLogo" Access="Public" Stretch="KeepAspectCentered" HorizontalAlignment="Center" SetSize="200 134" Margin="0 0 0 6"/>
                 <Label Text="REACTOR CONTROL — VAULT 14" StyleClasses="PipBoyHeading" HorizontalAlignment="Center"/>
                 <PanelContainer StyleClasses="PipBoyDivider" MinSize="320 2"/>
                 <Label Name="LoginPromptLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" HorizontalAlignment="Center" Margin="0 6 0 0"/>
-                <Button Name="IdSlotButton" Access="Public" Text="[ INSERT ID CARD ]" StyleClasses="PipBoy" HorizontalAlignment="Center" MinWidth="220" Margin="0 4 0 0"/>
+                <Button Name="IdSlotButton" Access="Public" Text="[ INSERT CARD ]" StyleClasses="PipBoy" HorizontalAlignment="Center" MinWidth="220" Margin="0 4 0 0"/>
                 <Label Name="LoginStatusLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" HorizontalAlignment="Center" Visible="False" Margin="0 4 0 0"/>
             </BoxContainer>
         </PanelContainer>
@@ -31,6 +33,7 @@
                 <BoxContainer Orientation="Horizontal" SeparationOverride="6">
                     <Label Text="REACTOR CONTROL — VAULT 14" StyleClasses="PipBoyHeading" HorizontalExpand="True"/>
                     <Label Name="OperatorLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" HorizontalAlignment="Right" Margin="0 0 8 0"/>
+                    <Button Name="LogoutButton" Access="Public" Text="LOGOUT" StyleClasses="PipBoy" Margin="0 0 8 0"/>
                     <Label Name="StatusLabel" Access="Public" Text="OFFLINE" StyleClasses="PipBoyHeading" HorizontalAlignment="Right"/>
                 </BoxContainer>
                 <PanelContainer StyleClasses="PipBoyDivider" MinSize="0 2" HorizontalExpand="True"/>
@@ -83,7 +86,7 @@
                                 <OutputPanel Name="CommandLog" Access="Public" VerticalExpand="True"/>
                                 <BoxContainer Orientation="Horizontal" VerticalAlignment="Center">
                                     <Label Text="&gt;" StyleClasses="PipBoyLabel" Margin="0 0 4 0"/>
-                                    <LineEdit Name="CommandInput" Access="Public" StyleClasses="PipBoyLineEdit" HorizontalExpand="True" PlaceHolder="type HELP for commands"/>
+                                    <LineEdit Name="CommandInput" Access="Public" StyleClasses="PipBoyLineEdit" HorizontalExpand="True"/>
                                 </BoxContainer>
                             </BoxContainer>
                         </PanelContainer>

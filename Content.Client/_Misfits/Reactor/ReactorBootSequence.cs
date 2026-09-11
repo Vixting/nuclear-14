@@ -6,16 +6,15 @@ public static class ReactorBootSequence
 
     public static readonly BootLine[] Lines =
     {
-        new("VAULT-TEC INDUSTRIES REACTOR CONTROL SYSTEM"),
-        new("DEPT. OF REACTOR ENGINEERING — CONSOLE FIRMWARE FORM VT-14-409"),
+        new("VAULT-TEC INDUSTRIES TERMINAL FIRMWARE VT-14-409"),
         new(""),
-        new("RUNNING POWER-ON SELF TEST..."),
-        new("CORE MEMORY CHECK.................. OK"),
-        new("CONTAINMENT DIAGNOSTIC BUS.......... OK"),
-        new("CONFINEMENT COIL ARRAY LINK......... OK"),
-        new("DIVERTOR EXHAUST TELEMETRY........... OK"),
-        new("PLASMA CURRENT SENSOR RING........... OK"),
-        new("LOADING REACTOR CONTROL KERNEL....... DONE", PauseAfter: true),
+        new("RUNNING POWER ON SELF TEST..."),
+        new("CORE MEORY CHECK.................. OK"),
+        new("SYSTEM BUS DIAGNOSTIC............... OK"),
+        new("DISPLAY ADAPTER LINK................ OK"),
+        new("NETWORK INTERFACE.................... OK"),
+        new("INPUT DEVICE RING.................... OK"),
+        new("LOADING TERMINAL KERNEL.............. DONE", PauseAfter: true),
         new(""),
         new("CONSOLE LOCKED — OPERATOR AUTHORIZATION REQUIRED"),
     };
