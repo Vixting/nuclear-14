@@ -53,6 +53,11 @@
   path: "/Textures/Shaders/camera_static.swsl"
 
 - type: shader
+  id: ReactorCrt
+  kind: source
+  path: "/Textures/Shaders/reactor_crt.swsl"
+
+- type: shader
   id: Drunk
   kind: source
   path: "/Textures/Shaders/drunk.swsl"

@@ -1,0 +1,77 @@
+- type: reactorCommand
+  id: help
+  order: 0
+  usage: "HELP [command]"
+  description: "Lists all commands, or shows detail for one command."
+
+- type: reactorCommand
+  id: start
+  order: 1
+  usage: "START"
+  description: "Begins the reactor startup sequence."
+
+- type: reactorCommand
+  id: shutdown
+  order: 2
+  usage: "SHUTDOWN"
+  description: "Begins a normal shutdown sequence."
+
+- type: reactorCommand
+  id: scram
+  order: 3
+  usage: "SCRAM"
+  description: "Emergecy shutdown. Type twice to confirm."
+
+- type: reactorCommand
+  id: mode
+  order: 4
+  usage: "MODE [AUTO|MANUAL]"
+  description: "Switches between automatic and manual control, or shows the current mode if given no argument."
+
+- type: reactorCommand
+  id: fuel
+  order: 5
+  usage: "FUEL [0-100]"
+  description: "Sets the fueling (deuterium-tritium injection) rate, or shows the current/target reading if given no argument. Setting requires manual mode."
+
+- type: reactorCommand
+  id: heat
+  order: 6
+  usage: "HEAT [0-100]"
+  description: "Sets the auxiliary heating power, or shows the current/target reading if given no argument. Setting requires manual mode."
+
+- type: reactorCommand
+  id: current
+  order: 7
+  usage: "CURRENT [0-100]"
+  description: "Sets the plasma current target, or shows the current/target reading if given no argument. Setting requires manual mode."
+
+- type: reactorCommand
+  id: divertor
+  order: 8
+  usage: "DIVERTOR [0-100]"
+  description: "Sets the divertor exhaust rate, or shows the current/target reading if given no argument. Setting requires manual mode."
+
+- type: reactorCommand
+  id: coil
+  order: 9
+  usage: "COIL [index] [0-100]"
+  description: "Sets one confinement coil segment's target strength. With no value, shows that coil's reading; with no arguments at all, shows every coil. Setting requires manual mode."
+
+- type: reactorCommand
+  id: reactors
+  order: 10
+  usage: "REACTORS"
+  description: "Lists every reactor linked to this one (by tag), numbered, with state/integrity/output. Alias: STATUS."
+
+- type: reactorCommand
+  id: select
+  order: 11
+  usage: "SELECT <n>"
+  description: "Switches this terminal to the reactor numbered n from the last REACTORS listing."
+
+- type: reactorCommand
+  id: all
+  order: 12
+  usage: "ALL <start|shutdown|scram|mode|fuel|heat|current|divertor> [value]"
+  description: "Broadcasts a control command to every reactor linked to this one, exactly as if issued individually to each."

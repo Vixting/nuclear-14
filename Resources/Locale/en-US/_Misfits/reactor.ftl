@@ -11,8 +11,6 @@ reactor-alarm-scrammed = SCRAM ENGAGED — reactor quenched, restart locked out.
 reactor-alarm-warning = WARNING — containment integrity dropping.
 reactor-alarm-critical = CRITICAL — containment failure imminent.
 
-reactor-popup-already-running = The reactor is already running or starting up.
-reactor-popup-locked-out = The reactor is locked out following an emergency shutdown.
 reactor-popup-not-running = The reactor isn't online.
 reactor-popup-not-manual = Switch to manual mode to adjust this directly.
 
@@ -31,11 +29,13 @@ reactor-terminal-welcome = Terminal ready. Type HELP for a list of commands.
 reactor-tab-controls = Controls
 reactor-tab-charts = Status Charts
 
-reactor-login-prompt = INSERT ID CARD TO AUTHENTICATE
+reactor-login-prompt = INSERT CARD TO AUTHENTICATE
 reactor-login-granted = ACCESS GRANTED — WELCOME, {$name}
-reactor-login-revoked = ACCESS REVOKED — ID CARD REMOVED
+reactor-login-denied = ACCESS DENIED — INSUFFICIENT CLEARANCE
+reactor-login-revoked = ACCESS REVOKED — CARD REMOVED
 reactor-operator-label = Operator: {$name}
 reactor-popup-not-logged-in = The console rejects the command — insert an ID card to log in first.
+reactor-popup-no-reactor-selected = No reactor is currently selected. Use SELECT or REACTORS.
 
 reactor-chart-output = OUTPUT / DEMAND
 reactor-chart-fueling = FUELING
@@ -43,8 +43,3 @@ reactor-chart-heating = HEATING
 reactor-chart-current = PLASMA CURRENT
 reactor-chart-divertor = DIVERTOR
 reactor-chart-coils = COILS (avg)
-
-reactor-monitor-title = REACTOR MONITOR
-reactor-monitor-title-vault = VAULT REACTOR MONITOR
-reactor-monitor-none = No linked reactors detected.
-reactor-monitor-connect = CONNECT

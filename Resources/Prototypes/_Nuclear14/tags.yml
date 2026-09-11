@@ -57,6 +57,9 @@
   id: IdCardVault
 
 - type: Tag
+  id: Vault14Reactor
+
+- type: Tag
   id: MisfitsPipBoy
 
 # #Cythisiax Added - lets utility belts store the N14 welding goggles

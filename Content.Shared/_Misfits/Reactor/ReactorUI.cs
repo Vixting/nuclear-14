@@ -53,39 +53,3 @@ public sealed class ReactorSetCoilTargetMsg(int index, float value) : BoundUserI
     public int Index = index;
     public float Value = value;
 }
-
-[Serializable, NetSerializable]
-public sealed class ReactorGroupStatusRequestMsg : BoundUserInterfaceMessage;
-
-[Serializable, NetSerializable]
-public sealed class ReactorGroupStatusMsg(List<ReactorMonitorEntry> reactors) : BoundUserInterfaceMessage
-{
-    public List<ReactorMonitorEntry> Reactors = reactors;
-}
-
-[Serializable, NetSerializable]
-public sealed class ReactorGroupSelectMsg(int index) : BoundUserInterfaceMessage
-{
-    public int Index = index;
-}
-
-[Serializable, NetSerializable]
-public enum ReactorGroupCommand : byte
-{
-    Start,
-    Shutdown,
-    Scram,
-    SetMode,
-    SetFuelingRate,
-    SetHeatingPower,
-    SetPlasmaCurrent,
-    SetDivertorRate,
-}
-
-[Serializable, NetSerializable]
-public sealed class ReactorGroupBroadcastMsg(ReactorGroupCommand command, float value = 0f, ReactorMode mode = ReactorMode.Automatic) : BoundUserInterfaceMessage
-{
-    public ReactorGroupCommand Command = command;
-    public float Value = value;
-    public ReactorMode Mode = mode;
-}

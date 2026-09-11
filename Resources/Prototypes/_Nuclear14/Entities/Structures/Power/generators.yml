@@ -325,8 +325,9 @@
     supplyRampTolerance: 250
 
 - type: entity
+  abstract: true
   parent: N14BaseGenerator
-  id: N14GeneratorVaultTecReactor
+  id: N14GeneratorVaultTecReactorBase
   description: A fusion reactor built by Vault-Tec.
   name: Vault-Tec reactor
   components:
@@ -350,7 +351,8 @@
     layers:
     - state: reactor
   - type: PowerSupplier
-    supplyRate: 10000
+    enabled: false
+    supplyRate: 0
     supplyRampRate: 500
     supplyRampTolerance: 500
   - type: PointLight
@@ -358,6 +360,22 @@
     energy: 4.5
     softness: 0.5
     color: "#B4FCF0"
+  - type: Reactor
+    maxOutput: 10000
+
+- type: entity
+  parent: N14GeneratorVaultTecReactorBase
+  id: N14GeneratorVaultTecReactor
+
+- type: entity
+  parent: N14GeneratorVaultTecReactorBase
+  id: N14GeneratorVaultTecReactorVault14
+  description: A fusion reactor built by Vault-Tec. Its controls are relayed to a remote monitoring terminal.
+  suffix: Vault 14, Remote
+  components:
+  - type: Tag
+    tags:
+    - Vault14Reactor
 
 - type: entity
   parent: N14GeneratorVaultTecReactor

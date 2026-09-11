@@ -80,6 +80,23 @@
     trackedTags:
     - IdCardVault
 
+- type: entity
+  id: N14ComputerVaultReactorMonitor
+  parent: N14ComputerTerminalNew
+  name: reactor monitoring terminal
+  description: A secured terminal for monitoring and remotely operating vault reactors.
+  suffix: Vault, Reactor Monitor
+  components:
+  - type: ActivatableUI
+    key: enum.ReactorMonitorUiKey.Key
+  - type: UserInterface
+    interfaces:
+      enum.ReactorMonitorUiKey.Key:
+        type: ReactorBui
+  - type: ReactorMonitor
+    trackedTags:
+    - Vault14Reactor
+
 # Camera Monitors
 ## Base
 - type: entity

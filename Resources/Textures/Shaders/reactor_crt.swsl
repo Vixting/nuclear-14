@@ -1,13 +1,17 @@
-const highp float ScanlineCount = 240.0;
-const highp float ScanlineStrength = 0.35;
-const highp float VignetteStrength = 0.55;
-const highp float FlickerStrength = 0.04;
-const highp vec3 TintColor = vec3(0.55, 1.0, 0.68);
+const highp float ScanlineCount = 100.0;
+const highp float ScanlineStrength = 0.3;
+const highp float ScanlineScrollSpeed = 4.0;
+const highp float VignetteStrength = 0.6;
+const highp float FlickerStrength = 0.02;
+const highp float SweepSpeed = 0.12;
+const highp float SweepWidth = 0.05;
+const highp float SweepStrength = 0.05;
+const highp vec3 TintColor = vec3(0.03, 0.09, 0.05);
 
 void fragment() {
     highp vec2 uv = UV;
 
-    highp float scanline = sin(uv.y * ScanlineCount * 3.14159) * 0.5 + 0.5;
+    highp float scanline = sin((uv.y * ScanlineCount - TIME * ScanlineScrollSpeed) * 3.14159) * 0.5 + 0.5;
     highp float scanlineDarken = 1.0 - scanline * ScanlineStrength;
 
     highp vec2 centered = uv - vec2(0.5);
@@ -16,8 +20,12 @@ void fragment() {
 
     highp float flicker = 1.0 + sin(TIME * 6.0) * FlickerStrength + sin(TIME * 13.7) * FlickerStrength * 0.5;
 
-    highp float brightness = scanlineDarken * flicker;
-    highp float alpha = clamp((1.0 - vignette) * 0.6 + (1.0 - scanlineDarken) * 0.5, 0.0, 0.35);
+    highp float sweepPos = fract(TIME * SweepSpeed);
+    highp float sweepDist = uv.y - sweepPos;
+    highp float sweep = SweepStrength * exp(-(sweepDist * sweepDist) / (SweepWidth * SweepWidth));
+
+    highp float brightness = scanlineDarken * flicker + sweep;
+    highp float alpha = clamp((1.0 - vignette) * 0.5 + (1.0 - scanlineDarken) * 0.35 + sweep * 0.6, 0.0, 0.26);
 
     COLOR = vec4(TintColor * brightness, alpha);
 }
