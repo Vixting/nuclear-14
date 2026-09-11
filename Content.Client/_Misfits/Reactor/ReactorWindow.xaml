@@ -101,7 +101,7 @@
             </BoxContainer>
         </PanelContainer>
 
-        <TextureRect Name="CrtOverlay" Access="Public" MouseFilter="Ignore" VerticalExpand="True" HorizontalExpand="True"/>
+        <TextureRect Name="CrtOverlay" Access="Public" Stretch="Scale" MouseFilter="Ignore" VerticalExpand="True" HorizontalExpand="True"/>
 
     </LayoutContainer>
 </controls:FancyWindow>
