@@ -8,7 +8,4 @@ public sealed partial class ReactorMonitorComponent : Component
 {
     [DataField]
     public List<ProtoId<TagPrototype>> TrackedTags = new();
-
-    [DataField]
-    public string MonitorTitle = "reactor-monitor-title";
 }

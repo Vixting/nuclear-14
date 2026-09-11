@@ -11,55 +11,75 @@ public sealed class ReactorMonitorSystem : EntitySystem
     [Dependency] private readonly ViewSubscriberSystem _viewSubscriber = default!;
     [Dependency] private readonly TagSystem _tag = default!;
 
-    private const float UpdateInterval = 1f;
-    private float _accumulator;
-
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ReactorMonitorComponent, BoundUIOpenedEvent>(OnOpened);
-        SubscribeLocalEvent<ReactorMonitorComponent, ReactorMonitorConnectMsg>(OnConnect);
+        SubscribeLocalEvent<ReactorMonitorComponent, BoundUIOpenedEvent>(OnMonitorOpened);
+
         SubscribeLocalEvent<ReactorComponent, BoundUIClosedEvent>(OnReactorUiClosed);
+        SubscribeLocalEvent<ReactorComponent, ReactorGroupStatusRequestMsg>(OnGroupStatusRequest);
+        SubscribeLocalEvent<ReactorComponent, ReactorGroupSelectMsg>(OnGroupSelect);
+        SubscribeLocalEvent<ReactorComponent, ReactorGroupBroadcastMsg>(OnGroupBroadcast);
     }
 
-    public override void Update(float frameTime)
-    {
-        base.Update(frameTime);
-
-        _accumulator += frameTime;
-        if (_accumulator < UpdateInterval)
-            return;
-
-        _accumulator = 0f;
-
-        var query = EntityQueryEnumerator<ReactorMonitorComponent>();
-        while (query.MoveNext(out var uid, out var comp))
-        {
-            RefreshUi((uid, comp));
-        }
-    }
-
-    private void OnOpened(Entity<ReactorMonitorComponent> ent, ref BoundUIOpenedEvent args)
+    private void OnMonitorOpened(Entity<ReactorMonitorComponent> ent, ref BoundUIOpenedEvent args)
     {
         if (!ReactorMonitorUiKey.Key.Equals(args.UiKey))
             return;
 
-        RefreshUi(ent);
+        _ui.CloseUi(ent.Owner, ReactorMonitorUiKey.Key, args.Actor);
+
+        var reactors = GetTrackedReactors(ent.Comp);
+        if (reactors.Count > 0)
+            ConnectTo(reactors[0], args.Actor);
     }
 
-    private void OnConnect(Entity<ReactorMonitorComponent> ent, ref ReactorMonitorConnectMsg args)
+    private void OnGroupStatusRequest(Entity<ReactorComponent> ent, ref ReactorGroupStatusRequestMsg args)
     {
-        var reactor = GetEntity(args.Reactor);
-        if (Deleted(reactor) || !HasComp<ReactorComponent>(reactor) || !MatchesTracked(ent.Comp, reactor))
+        var entries = BuildEntries(GetGroup(ent.Owner));
+        _ui.ServerSendUiMessage(ent.Owner, ReactorUiKey.Key, new ReactorGroupStatusMsg(entries), args.Actor);
+    }
+
+    private void OnGroupSelect(Entity<ReactorComponent> ent, ref ReactorGroupSelectMsg args)
+    {
+        var group = GetGroup(ent.Owner);
+        if (args.Index < 1 || args.Index > group.Count)
             return;
 
-        if (!TryComp<ActorComponent>(args.Actor, out var actorComp))
+        var target = group[args.Index - 1];
+        if (target == ent.Owner)
             return;
 
-        _viewSubscriber.AddViewSubscriber(reactor, actorComp.PlayerSession);
-        _ui.OpenUi(reactor, ReactorUiKey.Key, args.Actor);
-        _ui.CloseUi(ent.Owner, ReactorMonitorUiKey.Key, args.Actor);
+        ConnectTo(target, args.Actor);
+        _ui.CloseUi(ent.Owner, ReactorUiKey.Key, args.Actor);
+    }
+
+    private void OnGroupBroadcast(Entity<ReactorComponent> ent, ref ReactorGroupBroadcastMsg args)
+    {
+        foreach (var uid in GetGroup(ent.Owner))
+        {
+            BoundUserInterfaceMessage? msg = args.Command switch
+            {
+                ReactorGroupCommand.Start => new ReactorStartMsg(),
+                ReactorGroupCommand.Shutdown => new ReactorShutdownMsg(),
+                ReactorGroupCommand.Scram => new ReactorScramMsg(),
+                ReactorGroupCommand.SetMode => new ReactorSetModeMsg(args.Mode),
+                ReactorGroupCommand.SetFuelingRate => new ReactorSetFuelingRateMsg(args.Value),
+                ReactorGroupCommand.SetHeatingPower => new ReactorSetHeatingPowerMsg(args.Value),
+                ReactorGroupCommand.SetPlasmaCurrent => new ReactorSetPlasmaCurrentMsg(args.Value),
+                ReactorGroupCommand.SetDivertorRate => new ReactorSetDivertorRateMsg(args.Value),
+                _ => null,
+            };
+
+            if (msg == null)
+                continue;
+
+            msg.UiKey = ReactorUiKey.Key;
+            msg.Actor = args.Actor;
+
+            RaiseLocalEvent(uid, msg);
+        }
     }
 
     private void OnReactorUiClosed(Entity<ReactorComponent> ent, ref BoundUIClosedEvent args)
@@ -71,28 +91,71 @@ public sealed class ReactorMonitorSystem : EntitySystem
             _viewSubscriber.RemoveViewSubscriber(ent.Owner, actorComp.PlayerSession);
     }
 
-    private bool MatchesTracked(ReactorMonitorComponent comp, EntityUid reactor)
+    private void ConnectTo(EntityUid reactor, EntityUid actor)
     {
-        if (comp.TrackedTags.Count == 0)
-            return false;
+        if (!TryComp<ActorComponent>(actor, out var actorComp))
+            return;
 
-        foreach (var tag in comp.TrackedTags)
-        {
-            if (_tag.HasTag(reactor, tag))
-                return true;
-        }
-
-        return false;
+        _viewSubscriber.AddViewSubscriber(reactor, actorComp.PlayerSession);
+        _ui.OpenUi(reactor, ReactorUiKey.Key, actor);
     }
 
-    private void RefreshUi(Entity<ReactorMonitorComponent> ent)
+    private List<EntityUid> GetTrackedReactors(ReactorMonitorComponent comp)
     {
-        var entries = new List<ReactorMonitorEntry>();
+        var reactors = new List<EntityUid>();
+        if (comp.TrackedTags.Count == 0)
+            return reactors;
 
         var query = EntityQueryEnumerator<ReactorComponent>();
-        while (query.MoveNext(out var uid, out var reactor))
+        while (query.MoveNext(out var uid, out _))
         {
-            if (!MatchesTracked(ent.Comp, uid))
+            foreach (var tag in comp.TrackedTags)
+            {
+                if (_tag.HasTag(uid, tag))
+                {
+                    reactors.Add(uid);
+                    break;
+                }
+            }
+        }
+
+        SortByName(reactors);
+        return reactors;
+    }
+
+    private List<EntityUid> GetGroup(EntityUid reactor)
+    {
+        var group = new List<EntityUid> { reactor };
+
+        if (!TryComp<TagComponent>(reactor, out var tags) || tags.Tags.Count == 0)
+            return group;
+
+        var query = EntityQueryEnumerator<ReactorComponent, TagComponent>();
+        while (query.MoveNext(out var uid, out _, out var otherTags))
+        {
+            if (uid == reactor)
+                continue;
+
+            foreach (var tag in otherTags.Tags)
+            {
+                if (tags.Tags.Contains(tag))
+                {
+                    group.Add(uid);
+                    break;
+                }
+            }
+        }
+
+        SortByName(group);
+        return group;
+    }
+
+    private List<ReactorMonitorEntry> BuildEntries(List<EntityUid> reactors)
+    {
+        var entries = new List<ReactorMonitorEntry>();
+        foreach (var uid in reactors)
+        {
+            if (!TryComp<ReactorComponent>(uid, out var reactor))
                 continue;
 
             entries.Add(new ReactorMonitorEntry(
@@ -105,8 +168,11 @@ public sealed class ReactorMonitorSystem : EntitySystem
                 reactor.Alarm));
         }
 
-        entries.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
+        return entries;
+    }
 
-        _ui.SetUiState(ent.Owner, ReactorMonitorUiKey.Key, new ReactorMonitorState(Loc.GetString(ent.Comp.MonitorTitle), entries));
+    private void SortByName(List<EntityUid> uids)
+    {
+        uids.Sort((a, b) => string.Compare(MetaData(a).EntityName, MetaData(b).EntityName, StringComparison.OrdinalIgnoreCase));
     }
 }
