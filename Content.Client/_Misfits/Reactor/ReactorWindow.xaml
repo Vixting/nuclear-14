@@ -57,6 +57,8 @@
                                     <Label Name="DensityLabel" Access="Public" Text="DENSITY 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
                                     <Label Name="AshLabel" Access="Public" Text="ASH 0%" StyleClasses="PipBoyLabel" MinWidth="115"/>
                                 </BoxContainer>
+                                <Label Name="FaultsLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" FontColorOverride="#FF5555" Visible="False"/>
+                                <Label Name="AutoDeratedLabel" Access="Public" Text="" StyleClasses="PipBoyLabel" FontColorOverride="#FFAA33" Visible="False"/>
                             </BoxContainer>
                         </PanelContainer>
 

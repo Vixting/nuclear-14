@@ -69,6 +69,8 @@ public sealed class ReactorMonitorState : BoundUserInterfaceState
     public readonly float LoadFactor;
     public readonly float MaxOutput;
     public readonly string? Alarm;
+    public readonly bool AutoDerated;
+    public readonly List<string> ActiveFaults;
 
     public readonly float LockedOutSeconds;
 
@@ -103,6 +105,8 @@ public sealed class ReactorMonitorState : BoundUserInterfaceState
         float loadFactor,
         float maxOutput,
         string? alarm,
+        bool autoDerated = false,
+        List<string>? activeFaults = null,
         float lockedOutSeconds = 0f)
     {
         InsertedIdName = insertedIdName;
@@ -135,6 +139,8 @@ public sealed class ReactorMonitorState : BoundUserInterfaceState
         LoadFactor = loadFactor;
         MaxOutput = maxOutput;
         Alarm = alarm;
+        AutoDerated = autoDerated;
+        ActiveFaults = activeFaults ?? new List<string>();
         LockedOutSeconds = lockedOutSeconds;
     }
 }

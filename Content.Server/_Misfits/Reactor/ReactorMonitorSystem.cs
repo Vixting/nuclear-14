@@ -279,6 +279,8 @@ public sealed class ReactorMonitorSystem : EntitySystem
                 loadFactor: sel.LoadFactor,
                 maxOutput: sel.MaxOutput,
                 alarm: sel.Alarm,
+                autoDerated: sel.AutoDerated,
+                activeFaults: new List<string>(sel.ActiveFaults),
                 lockedOutSeconds: lockedOutSeconds);
         }
 

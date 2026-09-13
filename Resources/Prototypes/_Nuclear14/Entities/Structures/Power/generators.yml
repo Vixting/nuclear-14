@@ -362,6 +362,11 @@
     color: "#B4FCF0"
   - type: Reactor
     maxOutput: 10000
+  - type: Explosive
+    explosionType: N14DefaultStructural
+    totalIntensity: 12000
+    intensitySlope: 5
+    maxIntensity: 40
 
 - type: entity
   parent: N14GeneratorVaultTecReactorBase

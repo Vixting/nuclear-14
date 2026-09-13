@@ -83,6 +83,12 @@ public sealed partial class ReactorComponent : Component
     public float AutomaticSafetyMargin = 0.70f;
 
     [DataField]
+    public float MinAutomaticOutput = 0.2f;
+
+    [DataField]
+    public float MaxLeakRadiation = 6f;
+
+    [DataField]
     public float RateRampRate = 0.04f;
 
     [DataField]
@@ -172,4 +178,10 @@ public sealed partial class ReactorComponent : Component
 
     [AutoNetworkedField]
     public string? Alarm;
+
+    [AutoNetworkedField]
+    public bool AutoDerated;
+
+    [AutoNetworkedField]
+    public List<string> ActiveFaults = new();
 }

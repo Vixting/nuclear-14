@@ -14,6 +14,11 @@ reactor-alarm-critical = CRITICAL — containment failure imminent.
 reactor-popup-not-running = The reactor isn't online.
 reactor-popup-not-manual = Switch to manual mode to adjust this directly.
 
+reactor-fault-beta = BETA LIMIT EXCEEDED
+reactor-fault-density = DENSITY LIMIT EXCEEDED
+reactor-fault-coil = COIL {$index} OVERHEATING
+reactor-auto-derated = AUTO OUTPUT CAPPED — LOW INTEGRITY
+
 reactor-output = OUTPUT {$value}%
 reactor-demand = DEMAND {$value}%
 reactor-beta = BETA {$value}%
@@ -43,3 +48,5 @@ reactor-chart-heating = HEATING
 reactor-chart-current = PLASMA CURRENT
 reactor-chart-divertor = DIVERTOR
 reactor-chart-coils = COILS (avg)
+reactor-chart-beta = BETA (vs limit)
+reactor-chart-density = DENSITY (vs limit)

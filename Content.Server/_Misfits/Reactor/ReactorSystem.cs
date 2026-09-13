@@ -4,6 +4,7 @@ using Content.Server.Explosion.EntitySystems;
 using Content.Server.Popups;
 using Content.Server.Power.Components;
 using Content.Shared._Misfits.Reactor;
+using Content.Shared.Radiation.Components;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 
@@ -234,6 +235,7 @@ public sealed class ReactorSystem : SharedReactorSystem
             case ReactorState.Scrammed:
                 supplier.Enabled = false;
                 supplier.MaxSupply = 0f;
+                SetRadiationLeak(uid, 0f);
                 return;
             case ReactorState.Melted:
                 return;
@@ -259,6 +261,11 @@ public sealed class ReactorSystem : SharedReactorSystem
         RunPhysics(ent, dt);
         ApplyDamage(ent, dt);
         UpdateAlarm(ent);
+
+        var leakFraction = comp.Integrity < WarningIntegrity
+            ? Math.Clamp((WarningIntegrity - comp.Integrity) / WarningIntegrity, 0f, 1f)
+            : 0f;
+        SetRadiationLeak(uid, comp.MaxLeakRadiation * leakFraction);
 
         supplier.Enabled = comp.State == ReactorState.Online;
         supplier.MaxSupply = comp.PowerOutput;
@@ -371,14 +378,21 @@ public sealed class ReactorSystem : SharedReactorSystem
     private void RunAutomaticControl(Entity<ReactorComponent> ent, float dt)
     {
         var comp = ent.Comp;
+        var integrityDerate = comp.Integrity >= WarningIntegrity
+            ? 1f
+            : Math.Clamp(comp.Integrity / WarningIntegrity, comp.MinAutomaticOutput, 1f);
+        comp.AutoDerated = integrityDerate < 1f;
 
         var demandFraction = comp.MaxOutput > 0f ? Math.Clamp(comp.LoadFactor / comp.MaxOutput, 0f, 1f) : 0f;
-        var target = Math.Clamp(demandFraction + 0.15f, 0f, comp.AutomaticSafetyMargin);
+        var margin = comp.AutomaticSafetyMargin * integrityDerate;
+        var target = Math.Clamp(demandFraction + 0.15f, 0f, margin);
 
         comp.FuelingTarget = target;
         comp.HeatingTarget = target;
         comp.PlasmaCurrentTarget = Math.Clamp(target + 0.2f, 0f, 1f);
-        comp.DivertorTarget = Math.Clamp(comp.FuelingRate * comp.HeatingPower + 0.2f, 0f, 1f);
+
+        var divertorNeed = comp.AshLevel * 0.6f + Math.Max(0f, (comp.Temperature - comp.IgnitionTemperature) / 100f) * 0.5f;
+        comp.DivertorTarget = Math.Clamp(0.2f + divertorNeed, 0f, 1f);
 
         var coilTarget = Math.Clamp(target + 0.25f, 0f, 1f);
         for (var i = 0; i < comp.CoilTargets.Count; i++)
@@ -441,20 +455,45 @@ public sealed class ReactorSystem : SharedReactorSystem
     private void ApplyDamage(Entity<ReactorComponent> ent, float dt)
     {
         var comp = ent.Comp;
+        comp.ActiveFaults.Clear();
 
         if (comp.Beta > 1f)
+        {
             comp.Integrity -= comp.BetaDamageRate * (comp.Beta - 1f) * dt;
+            comp.ActiveFaults.Add("beta");
+        }
 
         if (comp.Density > 1f)
-            comp.Integrity -= comp.DensityDamageRate * (comp.Density - 1f) * dt;
-
-        foreach (var localHeat in comp.CoilLocalHeat)
         {
+            comp.Integrity -= comp.DensityDamageRate * (comp.Density - 1f) * dt;
+            comp.ActiveFaults.Add("density");
+        }
+
+        for (var i = 0; i < comp.CoilLocalHeat.Count; i++)
+        {
+            var localHeat = comp.CoilLocalHeat[i];
             if (localHeat > 0.5f)
+            {
                 comp.Integrity -= comp.CoilImbalanceDamageRate * (localHeat - 0.5f) * dt;
+                comp.ActiveFaults.Add($"coil-{i + 1}");
+            }
         }
 
         comp.Integrity = Math.Clamp(comp.Integrity, 0f, 100f);
+    }
+
+    private void SetRadiationLeak(EntityUid uid, float intensity)
+    {
+        if (intensity <= 0f)
+        {
+            if (TryComp<RadiationSourceComponent>(uid, out var existing))
+                existing.Enabled = false;
+            return;
+        }
+
+        var radiation = EnsureComp<RadiationSourceComponent>(uid);
+        radiation.Enabled = true;
+        radiation.Intensity = intensity;
     }
 
     private void UpdateAlarm(Entity<ReactorComponent> ent)

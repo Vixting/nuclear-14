@@ -78,6 +78,10 @@ public sealed class ReactorBui : BoundUserInterface
     private ReactorLineChart _currentChart = default!;
     private ReactorLineChart _divertorChart = default!;
     private ReactorLineChart _coilChart = default!;
+    private ReactorLineChart _betaChart = default!;
+    private ReactorLineChart _densityChart = default!;
+
+    private const float StabilityChartScale = 1.5f;
 
     public ReactorBui(EntityUid owner, Enum uiKey) : base(owner, uiKey)
     {
@@ -153,6 +157,10 @@ public sealed class ReactorBui : BoundUserInterface
             return;
 
         _outputChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-output"));
+        _betaChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-beta"));
+        _betaChart.Scale = StabilityChartScale;
+        _densityChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-density"));
+        _densityChart.Scale = StabilityChartScale;
         _fuelingChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-fueling"));
         _heatingChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-heating"));
         _currentChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-current"));
@@ -773,6 +781,8 @@ public sealed class ReactorBui : BoundUserInterface
     {
         _outputChart.Scale = comp.MaxOutput > 0f ? comp.MaxOutput : 1f;
         _outputChart.PushSample(comp.LoadFactor, comp.PowerOutput);
+        _betaChart.PushSample(1f, comp.Beta);
+        _densityChart.PushSample(1f, comp.Density);
         _fuelingChart.PushSample(comp.FuelingTarget, comp.FuelingRate);
         _heatingChart.PushSample(comp.HeatingTarget, comp.HeatingPower);
         _currentChart.PushSample(comp.PlasmaCurrentTarget, comp.PlasmaCurrent);
@@ -833,6 +843,20 @@ public sealed class ReactorBui : BoundUserInterface
         window.AshLabel.FontColorOverride = ThresholdColor(comp.AshLevel);
         window.IntegrityLabel.Text = Loc.GetString("reactor-integrity", ("value", (int) comp.Integrity));
         window.IntegrityLabel.FontColorOverride = SeverityColor(SharedReactorSystem.GetSeverity(comp.Integrity));
+
+        if (comp.ActiveFaults.Count > 0)
+        {
+            window.FaultsLabel.Visible = true;
+            window.FaultsLabel.Text = string.Join("   ", comp.ActiveFaults.Select(FormatFault));
+        }
+        else
+        {
+            window.FaultsLabel.Visible = false;
+        }
+
+        window.AutoDeratedLabel.Visible = comp.AutoDerated;
+        if (comp.AutoDerated)
+            window.AutoDeratedLabel.Text = Loc.GetString("reactor-auto-derated");
 
         window.FuelReadout.Text = $"FUEL {Percent(comp.FuelingRate)}/{Percent(comp.FuelingTarget)}";
         window.FuelReadout.FontColorOverride = ThresholdColor(comp.FuelingRate);
@@ -976,6 +1000,17 @@ public sealed class ReactorBui : BoundUserInterface
             StyleClasses = { "PipBoyLabel" },
             FontColorOverride = ThresholdColor(heat),
         };
+    }
+
+    private static string FormatFault(string code)
+    {
+        if (code.StartsWith("coil-", StringComparison.Ordinal) &&
+            int.TryParse(code.AsSpan("coil-".Length), out var index))
+        {
+            return Loc.GetString("reactor-fault-coil", ("index", index));
+        }
+
+        return Loc.GetString($"reactor-fault-{code}");
     }
 
     private static string Percent(float value) => $"{(int) (value * 100)}%";

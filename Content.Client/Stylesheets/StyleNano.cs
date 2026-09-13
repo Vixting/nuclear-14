@@ -89,7 +89,7 @@ namespace Content.Client.Stylesheets
         public const string StyleClassPipBoyFill = "PipBoyFill";           // flat panel background
         public const string StyleClassPipBoyHighlight = "PipBoyHighlight"; // selected/inset highlight
         public const string StyleClassPipBoyDivider = "PipBoyDivider";     // thin accent divider bar
-        public const string StyleClassPipBoyLineEdit = "PipBoyLineEdit";   // typed-value terminal input
+        public const string StyleClassPipBoyLineEdit = "PipBoyLineEdit";   // typed value terminal input
 
         public const string StyleClassPopupMessageSmall = "PopupMessageSmall";
         public const string StyleClassPopupMessageSmallCaution = "PopupMessageSmallCaution";
