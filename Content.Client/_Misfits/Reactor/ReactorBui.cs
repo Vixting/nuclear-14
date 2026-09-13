@@ -340,7 +340,34 @@ public sealed class ReactorBui : BoundUserInterface
             ["status"] = _ => LogReactorList(),
             ["select"] = HandleSelect,
             ["all"] = HandleAll,
+            ["print"] = HandlePrint,
         };
+    }
+
+    private void HandlePrint(string[] parts)
+    {
+        if (parts.Length < 2)
+        {
+            PlayError();
+            Log("Usage: PRINT <report> — supported reports: STATUS", ErrorColor);
+            return;
+        }
+
+        ReactorPrintReport report;
+        switch (parts[1].ToUpperInvariant())
+        {
+            case "STATUS":
+                report = ReactorPrintReport.Status;
+                break;
+            default:
+                PlayError();
+                Log($"Unknown report: {parts[1].ToUpperInvariant()}", ErrorColor);
+                return;
+        }
+
+        SendMessage(new ReactorMonitorPrintMsg(report));
+        PlayConfirm();
+        Log($"Print job sent: {report.ToString().ToUpperInvariant()}.", ResponseColor);
     }
 
     private void LogReactorList()
@@ -609,6 +636,9 @@ public sealed class ReactorBui : BoundUserInterface
         if (_state == null)
             return false;
 
+        if (_state.State == ReactorState.Starting)
+            return true;
+
         if (_state.State != ReactorState.Online)
         {
             PlayError();
@@ -870,7 +900,13 @@ public sealed class ReactorBui : BoundUserInterface
         RefreshCoils(comp, window.CoilsContainer);
         TrackSequenceEvents(comp);
 
-        if (comp.State is ReactorState.Starting or ReactorState.ShuttingDown)
+        if (comp.State == ReactorState.Starting && SharedReactorSystem.GetStartupStepCommand(comp.StartupStep) is { } awaitedCommand)
+        {
+            window.SequenceLabel.Visible = true;
+            window.SequenceLabel.Text = Loc.GetString("reactor-sequence-awaiting",
+                ("step", FormatStepName(comp.StartupStep.ToString())), ("command", awaitedCommand));
+        }
+        else if (comp.State is ReactorState.Starting or ReactorState.ShuttingDown)
         {
             var startupStep = comp.StartupStep;
             var shutdownStep = comp.ShutdownStep;
@@ -900,8 +936,20 @@ public sealed class ReactorBui : BoundUserInterface
             {
                 if (_lastStartupStep is { } prev && prev != ReactorStartupStep.None)
                     Log($"{FormatStepName(prev.ToString())}... OK", ResponseColor);
+
                 if (startupStep != ReactorStartupStep.None)
-                    Log($"{FormatStepName(startupStep.ToString())}...", ResponseColor);
+                {
+                    var command = SharedReactorSystem.GetStartupStepCommand(startupStep);
+                    Log(command != null
+                        ? $"{FormatStepName(startupStep.ToString())}... ISSUE {command} TO PROCEED."
+                        : $"{FormatStepName(startupStep.ToString())}...", ResponseColor);
+
+                    var hint = SharedReactorSystem.GetStartupHint(startupStep, comp.PlasmaCurrentTarget,
+                        comp.FuelingTarget, comp.CoilTargets, comp.IgnitionTemperature);
+                    if (hint != null)
+                        Log(hint, ResponseColor);
+                }
+
                 _lastStartupStep = startupStep;
             }
         }

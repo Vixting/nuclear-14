@@ -71,6 +71,7 @@ public sealed class ReactorMonitorState : BoundUserInterfaceState
     public readonly string? Alarm;
     public readonly bool AutoDerated;
     public readonly List<string> ActiveFaults;
+    public readonly float IgnitionTemperature;
 
     public readonly float LockedOutSeconds;
 
@@ -107,6 +108,7 @@ public sealed class ReactorMonitorState : BoundUserInterfaceState
         string? alarm,
         bool autoDerated = false,
         List<string>? activeFaults = null,
+        float ignitionTemperature = 40f,
         float lockedOutSeconds = 0f)
     {
         InsertedIdName = insertedIdName;
@@ -141,6 +143,7 @@ public sealed class ReactorMonitorState : BoundUserInterfaceState
         Alarm = alarm;
         AutoDerated = autoDerated;
         ActiveFaults = activeFaults ?? new List<string>();
+        IgnitionTemperature = ignitionTemperature;
         LockedOutSeconds = lockedOutSeconds;
     }
 }
@@ -170,4 +173,16 @@ public sealed class ReactorMonitorAllMsg(ReactorMonitorAllCommand command, float
     public ReactorMonitorAllCommand Command = command;
     public float Value = value;
     public ReactorMode Mode = mode;
+}
+
+[Serializable, NetSerializable]
+public enum ReactorPrintReport : byte
+{
+    Status,
+}
+
+[Serializable, NetSerializable]
+public sealed class ReactorMonitorPrintMsg(ReactorPrintReport report) : BoundUserInterfaceMessage
+{
+    public ReactorPrintReport Report = report;
 }

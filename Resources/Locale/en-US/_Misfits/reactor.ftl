@@ -13,6 +13,9 @@ reactor-alarm-critical = CRITICAL — containment failure imminent.
 
 reactor-popup-not-running = The reactor isn't online.
 reactor-popup-not-manual = Switch to manual mode to adjust this directly.
+reactor-popup-wrong-startup-step = Startup sequence expects {$command} next.
+reactor-popup-no-printer-linked = No printer is linked to this console.
+reactor-popup-printed = The printer chatters out a fresh page.
 
 reactor-fault-beta = BETA LIMIT EXCEEDED
 reactor-fault-density = DENSITY LIMIT EXCEEDED
@@ -28,6 +31,7 @@ reactor-integrity = INTEGRITY {$value}%
 reactor-coil-readout = COIL {$index}  {$current}/{$target}%
 
 reactor-sequence-step = {$step} — {$progress}%
+reactor-sequence-awaiting = {$step} — AWAITING {$command} COMMAND
 
 reactor-terminal-welcome = Terminal ready. Type HELP for a list of commands.
 
@@ -50,3 +54,9 @@ reactor-chart-divertor = DIVERTOR
 reactor-chart-coils = COILS (avg)
 reactor-chart-beta = BETA (vs limit)
 reactor-chart-density = DENSITY (vs limit)
+
+signal-port-name-reactor-printer-sender = Reactor printer
+signal-port-description-reactor-printer-sender = Reactor printer signal sender
+
+signal-port-name-reactor-printer-receiver = Reactor printer
+signal-port-description-reactor-printer-receiver = Reactor printer signal receiver

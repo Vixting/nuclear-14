@@ -1,0 +1,4 @@
+- type: sourcePort
+  id: ReactorPrinterSender
+  name: signal-port-name-reactor-printer-sender
+  description: signal-port-description-reactor-printer-sender

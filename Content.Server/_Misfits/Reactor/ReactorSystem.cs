@@ -161,6 +161,13 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void OnSetFuelingRate(Entity<ReactorComponent> ent, ref ReactorSetFuelingRateMsg args)
     {
+        if (ent.Comp.State == ReactorState.Starting)
+        {
+            var value = Math.Clamp(args.Value, 0f, 1f);
+            HandleStartupCommand(ent, args.Actor, ReactorStartupStep.Fueling, comp => comp.FuelingTarget = value);
+            return;
+        }
+
         if (!CanManuallyEdit(ent, args.Actor))
             return;
 
@@ -170,6 +177,22 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void OnSetHeatingPower(Entity<ReactorComponent> ent, ref ReactorSetHeatingPowerMsg args)
     {
+        var comp = ent.Comp;
+
+        if (comp.State == ReactorState.Starting &&
+            comp.StartupStep is ReactorStartupStep.HeatingIgnition or ReactorStartupStep.RampToOperating)
+        {
+            comp.HeatingTarget = Math.Clamp(args.Value, 0f, 1f);
+            if (comp.StartupStep == ReactorStartupStep.HeatingIgnition)
+            {
+                comp.StepElapsed = 0f;
+                comp.StartupStep = ReactorStartupStep.RampToOperating;
+            }
+
+            Dirty(ent);
+            return;
+        }
+
         if (!CanManuallyEdit(ent, args.Actor))
             return;
 
@@ -179,6 +202,13 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void OnSetPlasmaCurrent(Entity<ReactorComponent> ent, ref ReactorSetPlasmaCurrentMsg args)
     {
+        if (ent.Comp.State == ReactorState.Starting)
+        {
+            var value = Math.Clamp(args.Value, 0f, 1f);
+            HandleStartupCommand(ent, args.Actor, ReactorStartupStep.CurrentRamp, comp => comp.PlasmaCurrentTarget = value);
+            return;
+        }
+
         if (!CanManuallyEdit(ent, args.Actor))
             return;
 
@@ -188,6 +218,17 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void OnSetDivertorRate(Entity<ReactorComponent> ent, ref ReactorSetDivertorRateMsg args)
     {
+        if (ent.Comp.State == ReactorState.Starting)
+        {
+            var value = Math.Clamp(args.Value, 0f, 1f);
+            HandleStartupCommand(ent, args.Actor, ReactorStartupStep.EvacuateAsh, comp =>
+            {
+                comp.DivertorTarget = value;
+                comp.AshLevel = 0f;
+            });
+            return;
+        }
+
         if (!CanManuallyEdit(ent, args.Actor))
             return;
 
@@ -197,6 +238,17 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void OnSetCoilTarget(Entity<ReactorComponent> ent, ref ReactorSetCoilTargetMsg args)
     {
+        if (ent.Comp.State == ReactorState.Starting)
+        {
+            var value = Math.Clamp(args.Value, 0f, 1f);
+            HandleStartupCommand(ent, args.Actor, ReactorStartupStep.ConfinementField, comp =>
+            {
+                for (var i = 0; i < comp.CoilTargets.Count; i++)
+                    comp.CoilTargets[i] = value;
+            });
+            return;
+        }
+
         if (!CanManuallyEdit(ent, args.Actor))
             return;
 
@@ -205,6 +257,36 @@ public sealed class ReactorSystem : SharedReactorSystem
 
         ent.Comp.CoilTargets[args.Index] = Math.Clamp(args.Value, 0f, 1f);
         Dirty(ent);
+    }
+
+    private void HandleStartupCommand(Entity<ReactorComponent> ent, EntityUid actor, ReactorStartupStep step, Action<ReactorComponent> apply)
+    {
+        var comp = ent.Comp;
+
+        if (comp.StartupStep != step)
+        {
+            var expected = GetStartupStepCommand(comp.StartupStep) ?? "—";
+            _popup.PopupEntity(Loc.GetString("reactor-popup-wrong-startup-step", ("command", expected)), ent, actor);
+            return;
+        }
+
+        apply(comp);
+        comp.StepElapsed = 0f;
+        comp.StartupStep = NextStartupStep(step);
+        Dirty(ent);
+    }
+
+    private static ReactorStartupStep NextStartupStep(ReactorStartupStep step)
+    {
+        return step switch
+        {
+            ReactorStartupStep.EvacuateAsh => ReactorStartupStep.ConfinementField,
+            ReactorStartupStep.ConfinementField => ReactorStartupStep.CurrentRamp,
+            ReactorStartupStep.CurrentRamp => ReactorStartupStep.Fueling,
+            ReactorStartupStep.Fueling => ReactorStartupStep.HeatingIgnition,
+            ReactorStartupStep.HeatingIgnition => ReactorStartupStep.RampToOperating,
+            _ => step,
+        };
     }
 
     public override void Update(float frameTime)
@@ -296,44 +378,29 @@ public sealed class ReactorSystem : SharedReactorSystem
     private void ProcessStartup(Entity<ReactorComponent> ent, float dt)
     {
         var comp = ent.Comp;
-        comp.StepElapsed += dt;
-        if (comp.StepElapsed < (float) comp.StepDuration.TotalSeconds)
-            return;
-
-        comp.StepElapsed = 0f;
 
         switch (comp.StartupStep)
         {
             case ReactorStartupStep.SystemsCheck:
+                comp.StepElapsed += dt;
+                if (comp.StepElapsed < (float) comp.StepDuration.TotalSeconds)
+                    return;
+
+                comp.StepElapsed = 0f;
                 comp.StartupStep = ReactorStartupStep.EvacuateAsh;
                 break;
-            case ReactorStartupStep.EvacuateAsh:
-                comp.AshLevel = 0f;
-                comp.StartupStep = ReactorStartupStep.ConfinementField;
-                break;
-            case ReactorStartupStep.ConfinementField:
-                for (var i = 0; i < comp.CoilTargets.Count; i++)
-                    comp.CoilTargets[i] = 0.3f;
-                comp.StartupStep = ReactorStartupStep.CurrentRamp;
-                break;
-            case ReactorStartupStep.CurrentRamp:
-                comp.PlasmaCurrentTarget = 0.25f;
-                comp.StartupStep = ReactorStartupStep.Fueling;
-                break;
-            case ReactorStartupStep.Fueling:
-                comp.FuelingTarget = 0.15f;
-                comp.DivertorTarget = 0.2f;
-                comp.StartupStep = ReactorStartupStep.HeatingIgnition;
-                break;
-            case ReactorStartupStep.HeatingIgnition:
-                comp.HeatingTarget = 0.6f;
-                comp.StartupStep = ReactorStartupStep.RampToOperating;
-                break;
+
             case ReactorStartupStep.RampToOperating:
+                if (comp.Temperature < comp.IgnitionTemperature)
+                    return;
+
                 comp.StartupStep = ReactorStartupStep.None;
                 comp.State = ReactorState.Online;
                 _chat.DispatchStationAnnouncement(ent, Loc.GetString("reactor-announcement-online"),
                     Loc.GetString("reactor-announcer"), colorOverride: Color.LightGreen);
+                break;
+
+            default:
                 break;
         }
     }

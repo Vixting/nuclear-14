@@ -5,7 +5,7 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Server._Misfits.Reactor;
 
-[RegisterComponent, Access(typeof(ReactorMonitorSystem))]
+[RegisterComponent, Access(typeof(ReactorMonitorSystem), typeof(ReactorPrinterLinkSystem))]
 public sealed partial class ReactorMonitorComponent : Component
 {
     [DataField]
@@ -19,4 +19,6 @@ public sealed partial class ReactorMonitorComponent : Component
     public string? InsertedIdName;
 
     public EntityUid? Selected;
+
+    public EntityUid? LinkedPrinter;
 }

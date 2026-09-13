@@ -1,0 +1,9 @@
+- type: entity
+  id: PaperReactorPrintout
+  name: reactor printout
+  categories: [ HideSpawnMenu ]
+  parent: Paper
+  components:
+  - type: PaperVisuals
+    headerImagePath: "/Textures/_Misfits/Interface/Paper/paper_heading_vault14.png"
+    headerMargin: 0.0, 0.0, 0.0, 8.0

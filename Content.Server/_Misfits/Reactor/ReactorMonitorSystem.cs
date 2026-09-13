@@ -1,3 +1,5 @@
+using Content.Server.GameTicking;
+using Content.Server.Paper;
 using Content.Server.Popups;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Access;
@@ -8,6 +10,7 @@ using Robust.Server.GameObjects;
 using Robust.Shared.Containers;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
+using Robust.Shared.Utility;
 
 namespace Content.Server._Misfits.Reactor;
 
@@ -19,6 +22,8 @@ public sealed class ReactorMonitorSystem : EntitySystem
     [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
     [Dependency] private readonly PopupSystem _popup = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private readonly PaperSystem _paper = default!;
+    [Dependency] private readonly GameTicker _gameTicker = default!;
 
     private static readonly ProtoId<AccessLevelPrototype> RequiredAccess = "VaultEngineer";
 
@@ -48,6 +53,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
             subs.Event<ReactorSetCoilTargetMsg>(Forward);
             subs.Event<ReactorMonitorSelectMsg>(OnSelect);
             subs.Event<ReactorMonitorAllMsg>(OnAll);
+            subs.Event<ReactorMonitorPrintMsg>(OnPrint);
         });
     }
 
@@ -190,6 +196,78 @@ public sealed class ReactorMonitorSystem : EntitySystem
         RefreshUi(ent);
     }
 
+    private void OnPrint(Entity<ReactorMonitorComponent> ent, ref ReactorMonitorPrintMsg msg)
+    {
+        if (!IsLoggedIn(ent, msg.Actor))
+            return;
+
+        if (ent.Comp.LinkedPrinter is not { } printer || !TryComp<ReactorPrinterComponent>(printer, out var printerComp))
+        {
+            _popup.PopupEntity(Loc.GetString("reactor-popup-no-printer-linked"), ent, msg.Actor);
+            return;
+        }
+
+        if (ent.Comp.Selected is not { } reactorUid || !TryComp<ReactorComponent>(reactorUid, out var reactor))
+        {
+            _popup.PopupEntity(Loc.GetString("reactor-popup-no-reactor-selected"), ent, msg.Actor);
+            return;
+        }
+
+        var content = msg.Report switch
+        {
+            ReactorPrintReport.Status => BuildStatusReportContent(reactorUid, reactor),
+            _ => null,
+        };
+
+        if (content == null)
+            return;
+
+        var paper = Spawn(printerComp.PaperPrototype, Transform(printer).Coordinates);
+        _paper.SetContent(paper, content);
+
+        _popup.PopupEntity(Loc.GetString("reactor-popup-printed"), ent, msg.Actor);
+    }
+
+    private string BuildStatusReportContent(EntityUid uid, ReactorComponent reactor)
+    {
+        var name = MetaData(uid).EntityName;
+        var outputPct = reactor.MaxOutput > 0f ? (int) (reactor.PowerOutput / reactor.MaxOutput * 100) : 0;
+        var roundTime = _gameTicker.RoundDuration().ToString(@"hh\:mm\:ss");
+
+        var msg = new FormattedMessage();
+        msg.AddMarkupOrThrow("[head=2]Reactor Status Report[/head]\n");
+        msg.AddMarkupOrThrow("[color=#1b4f9c]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬[/color]\n");
+        msg.AddMarkupOrThrow($"[bold]Form:[/bold] [color=#e8c547]VT-14-240[/color]\n");
+        msg.AddMarkupOrThrow("[color=#AAAAAA][italic]Vault 14 — Office of Reactor Commissioning[/italic][/color]\n");
+        msg.AddMarkupOrThrow("[color=#1b4f9c]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬[/color]\n\n");
+
+        msg.AddMarkupOrThrow($"[bold]Reactor:[/bold] {FormattedMessage.EscapeText(name)}\n");
+        msg.AddMarkupOrThrow($"[bold]State:[/bold] {reactor.State} ({reactor.Mode})\n");
+        msg.AddMarkupOrThrow($"[bold]Integrity:[/bold] {(int) reactor.Integrity}%\n");
+        msg.AddMarkupOrThrow($"[bold]Output:[/bold] {(int) reactor.PowerOutput}/{(int) reactor.MaxOutput} ({outputPct}%)\n\n");
+
+        msg.AddMarkupOrThrow("[bold]Readouts:[/bold]\n");
+        msg.AddMarkupOrThrow($"[bullet/] Fuel: {Pct(reactor.FuelingRate)}/{Pct(reactor.FuelingTarget)}\n");
+        msg.AddMarkupOrThrow($"[bullet/] Heat: {Pct(reactor.HeatingPower)}/{Pct(reactor.HeatingTarget)}\n");
+        msg.AddMarkupOrThrow($"[bullet/] Current: {Pct(reactor.PlasmaCurrent)}/{Pct(reactor.PlasmaCurrentTarget)}\n");
+        msg.AddMarkupOrThrow($"[bullet/] Divertor: {Pct(reactor.DivertorRate)}/{Pct(reactor.DivertorTarget)}\n");
+        msg.AddMarkupOrThrow($"[bullet/] Beta: {Pct(reactor.Beta)}   Density: {Pct(reactor.Density)}   Ash: {Pct(reactor.AshLevel)}\n\n");
+
+        if (reactor.ActiveFaults.Count > 0)
+        {
+            msg.AddMarkupOrThrow("[bold][color=#ff0000]Active Faults:[/color][/bold]\n");
+            foreach (var fault in reactor.ActiveFaults)
+                msg.AddMarkupOrThrow($"[bullet/] [color=#ff0000]{FormattedMessage.EscapeText(fault)}[/color]\n");
+            msg.AddMarkupOrThrow("\n");
+        }
+
+        msg.AddMarkupOrThrow($"[italic][color=#AAAAAA]Printed at T+{roundTime}. Vault-Tec accepts no liability for conditions that changed between printing and reading.[/color][/italic]");
+
+        return msg.ToMarkup();
+    }
+
+    private static string Pct(float value) => $"{(int) (value * 100)}%";
+
     private List<EntityUid> GetTrackedReactors(ReactorMonitorComponent comp)
     {
         var reactors = new List<EntityUid>();
@@ -281,6 +359,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
                 alarm: sel.Alarm,
                 autoDerated: sel.AutoDerated,
                 activeFaults: new List<string>(sel.ActiveFaults),
+                ignitionTemperature: sel.IgnitionTemperature,
                 lockedOutSeconds: lockedOutSeconds);
         }
 

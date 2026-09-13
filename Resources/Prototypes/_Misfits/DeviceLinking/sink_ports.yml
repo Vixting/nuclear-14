@@ -1,0 +1,4 @@
+- type: sinkPort
+  id: ReactorPrinterReceiver
+  name: signal-port-name-reactor-printer-receiver
+  description: signal-port-description-reactor-printer-receiver

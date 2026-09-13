@@ -96,6 +96,12 @@
   - type: ReactorMonitor
     trackedTags:
     - Vault14Reactor
+  - type: DeviceNetwork
+    deviceNetId: Wired
+  - type: DeviceLinkSource
+    range: 4
+    ports:
+    - ReactorPrinterSender
 
 # Camera Monitors
 ## Base
