@@ -140,6 +140,22 @@ public sealed class ReactorBui : BoundUserInterface
         }
     }
 
+    protected override void ReceiveMessage(BoundUserInterfaceMessage message)
+    {
+        base.ReceiveMessage(message);
+
+        if (message is not ReactorMonitorNoticeMsg notice)
+            return;
+
+        var args = notice.LocArgs.Select(kv => (kv.Key, (object) kv.Value)).ToArray();
+        Log(Loc.GetString(notice.LocId, args), notice.IsError ? ErrorColor : ResponseColor);
+
+        if (notice.IsError)
+            PlayError();
+        else
+            PlayConfirm();
+    }
+
     private void ApplyCrtShader()
     {
         if (_window == null)

@@ -186,3 +186,11 @@ public sealed class ReactorMonitorPrintMsg(ReactorPrintReport report) : BoundUse
 {
     public ReactorPrintReport Report = report;
 }
+
+[Serializable, NetSerializable]
+public sealed class ReactorMonitorNoticeMsg(string locId, bool isError = true, Dictionary<string, string>? locArgs = null) : BoundUserInterfaceMessage
+{
+    public string LocId = locId;
+    public bool IsError = isError;
+    public Dictionary<string, string> LocArgs = locArgs ?? new Dictionary<string, string>();
+}

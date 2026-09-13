@@ -1,7 +1,6 @@
 using Content.Server.Chat.Systems;
 using Content.Server.Explosion.Components;
 using Content.Server.Explosion.EntitySystems;
-using Content.Server.Popups;
 using Content.Server.Power.Components;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Radiation.Components;
@@ -14,7 +13,6 @@ public sealed class ReactorSystem : SharedReactorSystem
 {
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly ExplosionSystem _explosion = default!;
-    [Dependency] private readonly PopupSystem _popup = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
 
     private static readonly EntProtoId DestroyedReactorProto = "N14GeneratorReactorFloorDestroyed";
@@ -86,7 +84,7 @@ public sealed class ReactorSystem : SharedReactorSystem
 
         if (comp.State != ReactorState.Online)
         {
-            _popup.PopupEntity(Loc.GetString("reactor-popup-not-running"), ent, args.Actor);
+            RaiseLocalEvent(ent.Owner, new ReactorCommandRejectedEvent(args.Actor, "reactor-popup-not-running"));
             return;
         }
 
@@ -155,7 +153,7 @@ public sealed class ReactorSystem : SharedReactorSystem
         if (ent.Comp.State == ReactorState.Online && ent.Comp.Mode == ReactorMode.Manual)
             return true;
 
-        _popup.PopupEntity(Loc.GetString("reactor-popup-not-manual"), ent, actor);
+        RaiseLocalEvent(ent.Owner, new ReactorCommandRejectedEvent(actor, "reactor-popup-not-manual"));
         return false;
     }
 
@@ -266,7 +264,8 @@ public sealed class ReactorSystem : SharedReactorSystem
         if (comp.StartupStep != step)
         {
             var expected = GetStartupStepCommand(comp.StartupStep) ?? "—";
-            _popup.PopupEntity(Loc.GetString("reactor-popup-wrong-startup-step", ("command", expected)), ent, actor);
+            RaiseLocalEvent(ent.Owner, new ReactorCommandRejectedEvent(actor, "reactor-popup-wrong-startup-step",
+                new Dictionary<string, string> { ["command"] = expected }));
             return;
         }
 

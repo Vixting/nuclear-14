@@ -1,6 +1,5 @@
 using Content.Server.GameTicking;
 using Content.Server.Paper;
-using Content.Server.Popups;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Access;
 using Content.Shared.Access.Systems;
@@ -20,7 +19,6 @@ public sealed class ReactorMonitorSystem : EntitySystem
     [Dependency] private readonly TagSystem _tag = default!;
     [Dependency] private readonly AccessReaderSystem _access = default!;
     [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
-    [Dependency] private readonly PopupSystem _popup = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly PaperSystem _paper = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!;
@@ -39,6 +37,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
         SubscribeLocalEvent<ReactorMonitorComponent, EntInsertedIntoContainerMessage>(OnItemInserted);
         SubscribeLocalEvent<ReactorMonitorComponent, EntRemovedFromContainerMessage>(OnItemRemoved);
         SubscribeLocalEvent<ReactorMonitorComponent, BoundUIOpenedEvent>(OnOpened);
+        SubscribeLocalEvent<ReactorComponent, ReactorCommandRejectedEvent>(OnCommandRejected);
 
         Subs.BuiEvents<ReactorMonitorComponent>(ReactorMonitorUiKey.Key, subs =>
         {
@@ -129,12 +128,28 @@ public sealed class ReactorMonitorSystem : EntitySystem
         RefreshUi(ent);
     }
 
+    private void Notify(Entity<ReactorMonitorComponent> ent, EntityUid actor, string locId, bool isError = true,
+        Dictionary<string, string>? locArgs = null)
+    {
+        _ui.ServerSendUiMessage(ent.Owner, ReactorMonitorUiKey.Key, new ReactorMonitorNoticeMsg(locId, isError, locArgs), actor);
+    }
+
+    private void OnCommandRejected(Entity<ReactorComponent> ent, ref ReactorCommandRejectedEvent args)
+    {
+        var consoles = EntityQueryEnumerator<ReactorMonitorComponent>();
+        while (consoles.MoveNext(out var uid, out var comp))
+        {
+            if (comp.Selected == ent.Owner)
+                Notify((uid, comp), args.Actor, args.LocId, locArgs: args.LocArgs);
+        }
+    }
+
     private bool IsLoggedIn(Entity<ReactorMonitorComponent> ent, EntityUid actor)
     {
         if (ent.Comp.InsertedIdName != null)
             return true;
 
-        _popup.PopupEntity(Loc.GetString("reactor-popup-not-logged-in"), ent, actor);
+        Notify(ent, actor, "reactor-popup-not-logged-in");
         return false;
     }
 
@@ -145,7 +160,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
 
         if (ent.Comp.Selected is not { } reactor || !HasComp<ReactorComponent>(reactor))
         {
-            _popup.PopupEntity(Loc.GetString("reactor-popup-no-reactor-selected"), ent, msg.Actor);
+            Notify(ent, msg.Actor, "reactor-popup-no-reactor-selected");
             return;
         }
 
@@ -203,13 +218,13 @@ public sealed class ReactorMonitorSystem : EntitySystem
 
         if (ent.Comp.LinkedPrinter is not { } printer || !TryComp<ReactorPrinterComponent>(printer, out var printerComp))
         {
-            _popup.PopupEntity(Loc.GetString("reactor-popup-no-printer-linked"), ent, msg.Actor);
+            Notify(ent, msg.Actor, "reactor-popup-no-printer-linked");
             return;
         }
 
         if (ent.Comp.Selected is not { } reactorUid || !TryComp<ReactorComponent>(reactorUid, out var reactor))
         {
-            _popup.PopupEntity(Loc.GetString("reactor-popup-no-reactor-selected"), ent, msg.Actor);
+            Notify(ent, msg.Actor, "reactor-popup-no-reactor-selected");
             return;
         }
 
@@ -225,7 +240,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
         var paper = Spawn(printerComp.PaperPrototype, Transform(printer).Coordinates);
         _paper.SetContent(paper, content);
 
-        _popup.PopupEntity(Loc.GetString("reactor-popup-printed"), ent, msg.Actor);
+        Notify(ent, msg.Actor, "reactor-popup-printed", isError: false);
     }
 
     private string BuildStatusReportContent(EntityUid uid, ReactorComponent reactor)
