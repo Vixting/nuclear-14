@@ -1,6 +1,7 @@
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Tag;
+using Content.Shared.Whitelist;
 using Robust.Shared.Prototypes;
 
 namespace Content.Server._Misfits.Reactor;
@@ -14,7 +15,10 @@ public sealed partial class ReactorMonitorComponent : Component
     public static readonly string IdCardSlotId = ReactorMonitorConstants.IdCardSlotId;
 
     [DataField]
-    public ItemSlot IdCardSlot = new();
+    public ItemSlot IdCardSlot = new()
+    {
+        Whitelist = new EntityWhitelist { Components = new[] { "IdCard" } },
+    };
 
     public string? InsertedIdName;
 
