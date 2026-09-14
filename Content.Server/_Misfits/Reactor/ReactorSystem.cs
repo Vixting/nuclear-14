@@ -4,7 +4,6 @@ using Content.Server.Explosion.Components;
 using Content.Server.Explosion.EntitySystems;
 using Content.Server.NodeContainer.EntitySystems;
 using Content.Server.Power.Components;
-using Content.Server.Power.Nodes;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Radiation.Components;
 using Robust.Shared.Prototypes;
@@ -150,14 +149,15 @@ public sealed class ReactorSystem : SharedReactorSystem
 
     private void TriggerScramEmp(Entity<ReactorComponent> ent)
     {
-        if (!_nodeContainer.TryGetNode<CableDeviceNode>(ent.Owner, "output", out var node) || node.NodeGroup == null)
+        var members = ReactorPowerNetworkHelper.GetNetworkMembers(EntityManager, _nodeContainer, ent.Owner);
+        if (members.Count == 0)
         {
             _emp.TryEmpEffects(ent.Owner, ent.Comp.ScramEmpEnergyConsumption, ent.Comp.ScramEmpDuration);
             return;
         }
 
-        foreach (var member in node.NodeGroup.Nodes)
-            _emp.TryEmpEffects(member.Owner, ent.Comp.ScramEmpEnergyConsumption, ent.Comp.ScramEmpDuration);
+        foreach (var member in members)
+            _emp.TryEmpEffects(member, ent.Comp.ScramEmpEnergyConsumption, ent.Comp.ScramEmpDuration);
     }
 
     private void OnSetMode(Entity<ReactorComponent> ent, ref ReactorSetModeMsg args)
@@ -472,7 +472,10 @@ public sealed class ReactorSystem : SharedReactorSystem
 
         var demandFraction = comp.MaxOutput > 0f ? Math.Clamp(comp.LoadFactor / comp.MaxOutput, 0f, 1f) : 0f;
         var margin = comp.AutomaticSafetyMargin * integrityDerate;
-        var target = Math.Clamp(demandFraction + 0.15f, 0f, margin);
+        var demandTarget = Math.Clamp(demandFraction + 0.15f, 0f, margin);
+
+        var ignitionFloor = Math.Clamp(comp.IgnitionTemperature / 70f + 0.1f, 0f, 1f);
+        var target = Math.Clamp(Math.Max(demandTarget, ignitionFloor), 0f, margin);
 
         comp.FuelingTarget = target;
         comp.HeatingTarget = target;
