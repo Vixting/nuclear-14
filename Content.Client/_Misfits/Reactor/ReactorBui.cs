@@ -60,6 +60,7 @@ public sealed class ReactorBui : BoundUserInterface
     private ReactorWindow? _window;
     private ReactorMonitorState? _state;
     private bool _confirmScram;
+    private bool _confirmDischarge;
     private bool _welcomed;
     private bool _authenticating;
     private int _logLineCount;
@@ -368,6 +369,7 @@ public sealed class ReactorBui : BoundUserInterface
 
         _audio.PlayGlobal(LoginDeniedSound, Filter.Local(), false);
         _confirmScram = false;
+        _confirmDischarge = false;
         _phase = TerminalPhase.Login;
         SetLayerVisibility();
 
@@ -395,6 +397,7 @@ public sealed class ReactorBui : BoundUserInterface
             ["select"] = HandleSelect,
             ["all"] = HandleAll,
             ["print"] = HandlePrint,
+            ["discharge"] = _ => HandleDischarge(),
         };
     }
 
@@ -569,6 +572,12 @@ public sealed class ReactorBui : BoundUserInterface
         {
             _confirmScram = false;
             Log("SCRAM cancelled.", ResponseColor);
+        }
+
+        if (id != "discharge" && _confirmDischarge)
+        {
+            _confirmDischarge = false;
+            Log("DISCHARGE cancelled.", ResponseColor);
         }
 
         if (!_commandHandlers.TryGetValue(id, out var handler))
@@ -792,6 +801,22 @@ public sealed class ReactorBui : BoundUserInterface
         SendMessage(new ReactorScramMsg());
         _audio.PlayGlobal(ScramConfirmSound, Filter.Local(), false);
         Log("SCRAM CONFIRMED. Emergency shutdown executing.", ErrorColor);
+    }
+
+    private void HandleDischarge()
+    {
+        if (!_confirmDischarge)
+        {
+            _confirmDischarge = true;
+            _audio.PlayGlobal(ScramArmSound, Filter.Local(), false);
+            Log("DISCHARGE ARMED. Type DISCHARGE again to dump every battery on this grid to zero.", ErrorColor);
+            return;
+        }
+
+        _confirmDischarge = false;
+        SendMessage(new ReactorMonitorDischargeMsg());
+        PlayConfirm();
+        Log("Discharge command sent.", ResponseColor);
     }
 
     private static bool TryParsePercent(string text, out float normalized)

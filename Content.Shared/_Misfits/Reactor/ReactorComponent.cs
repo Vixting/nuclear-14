@@ -80,6 +80,12 @@ public sealed partial class ReactorComponent : Component
     public float ScramIntegrityCost = 20f;
 
     [DataField]
+    public float ScramEmpEnergyConsumption = 100000f;
+
+    [DataField]
+    public float ScramEmpDuration = 20f;
+
+    [DataField]
     public float AshAccumulationRate = 0.06f;
 
     [DataField]

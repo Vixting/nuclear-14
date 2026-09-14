@@ -16,6 +16,8 @@ reactor-popup-not-manual = Switch to manual mode to adjust this directly.
 reactor-popup-wrong-startup-step = Startup sequence expects {$command} next.
 reactor-popup-no-printer-linked = No printer is linked to this console.
 reactor-popup-printed = The printer chatters out a fresh page.
+reactor-popup-discharged = Discharge complete — {$count} batteries on this grid dumped to zero.
+reactor-popup-discharge-none = No charged batteries found on this reactor's grid.
 
 reactor-fault-beta = BETA LIMIT EXCEEDED
 reactor-fault-density = DENSITY LIMIT EXCEEDED

@@ -1,7 +1,10 @@
 using Content.Server.Chat.Systems;
+using Content.Server.Emp;
 using Content.Server.Explosion.Components;
 using Content.Server.Explosion.EntitySystems;
+using Content.Server.NodeContainer.EntitySystems;
 using Content.Server.Power.Components;
+using Content.Server.Power.Nodes;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Radiation.Components;
 using Robust.Shared.Prototypes;
@@ -16,6 +19,8 @@ public sealed class ReactorSystem : SharedReactorSystem
     [Dependency] private readonly ExplosionSystem _explosion = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly EmpSystem _emp = default!;
+    [Dependency] private readonly NodeContainerSystem _nodeContainer = default!;
 
     private static readonly EntProtoId DestroyedReactorProto = "N14GeneratorReactorFloorDestroyed";
 
@@ -135,10 +140,24 @@ public sealed class ReactorSystem : SharedReactorSystem
         _chat.DispatchStationAnnouncement(ent, Loc.GetString("reactor-announcement-scram"),
             Loc.GetString("reactor-announcer"), colorOverride: Color.Orange);
 
+        TriggerScramEmp(ent);
+
         Dirty(ent);
 
         if (comp.Integrity <= 0f)
             Disrupt(ent);
+    }
+
+    private void TriggerScramEmp(Entity<ReactorComponent> ent)
+    {
+        if (!_nodeContainer.TryGetNode<CableDeviceNode>(ent.Owner, "output", out var node) || node.NodeGroup == null)
+        {
+            _emp.TryEmpEffects(ent.Owner, ent.Comp.ScramEmpEnergyConsumption, ent.Comp.ScramEmpDuration);
+            return;
+        }
+
+        foreach (var member in node.NodeGroup.Nodes)
+            _emp.TryEmpEffects(member.Owner, ent.Comp.ScramEmpEnergyConsumption, ent.Comp.ScramEmpDuration);
     }
 
     private void OnSetMode(Entity<ReactorComponent> ent, ref ReactorSetModeMsg args)

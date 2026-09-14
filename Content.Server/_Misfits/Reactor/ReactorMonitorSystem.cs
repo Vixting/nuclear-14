@@ -1,5 +1,9 @@
 using Content.Server.GameTicking;
+using Content.Server.NodeContainer.EntitySystems;
 using Content.Server.Paper;
+using Content.Server.Power.Components;
+using Content.Server.Power.EntitySystems;
+using Content.Server.Power.Nodes;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Access;
 using Content.Shared.Access.Systems;
@@ -22,6 +26,8 @@ public sealed class ReactorMonitorSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly PaperSystem _paper = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!;
+    [Dependency] private readonly NodeContainerSystem _nodeContainer = default!;
+    [Dependency] private readonly BatterySystem _battery = default!;
 
     private static readonly ProtoId<AccessLevelPrototype> RequiredAccess = "VaultEngineer";
 
@@ -53,6 +59,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
             subs.Event<ReactorMonitorSelectMsg>(OnSelect);
             subs.Event<ReactorMonitorAllMsg>(OnAll);
             subs.Event<ReactorMonitorPrintMsg>(OnPrint);
+            subs.Event<ReactorMonitorDischargeMsg>(OnDischarge);
         });
     }
 
@@ -241,6 +248,46 @@ public sealed class ReactorMonitorSystem : EntitySystem
         _paper.SetContent(paper, content);
 
         Notify(ent, msg.Actor, "reactor-popup-printed", isError: false);
+    }
+
+    private void OnDischarge(Entity<ReactorMonitorComponent> ent, ref ReactorMonitorDischargeMsg msg)
+    {
+        if (!IsLoggedIn(ent, msg.Actor))
+            return;
+
+        if (ent.Comp.Selected is not { } reactorUid || !HasComp<ReactorComponent>(reactorUid))
+        {
+            Notify(ent, msg.Actor, "reactor-popup-no-reactor-selected");
+            return;
+        }
+
+        var drained = DischargeNetworkBatteries(reactorUid);
+        if (drained <= 0)
+        {
+            Notify(ent, msg.Actor, "reactor-popup-discharge-none");
+            return;
+        }
+
+        Notify(ent, msg.Actor, "reactor-popup-discharged", isError: false,
+            locArgs: new Dictionary<string, string> { ["count"] = drained.ToString() });
+    }
+
+    private int DischargeNetworkBatteries(EntityUid reactorUid)
+    {
+        if (!_nodeContainer.TryGetNode<CableDeviceNode>(reactorUid, "output", out var node) || node.NodeGroup == null)
+            return 0;
+
+        var count = 0;
+        foreach (var member in node.NodeGroup.Nodes)
+        {
+            if (!TryComp<BatteryComponent>(member.Owner, out var battery) || battery.CurrentCharge <= 0f)
+                continue;
+
+            _battery.SetCharge(member.Owner, 0f, battery);
+            count++;
+        }
+
+        return count;
     }
 
     private string BuildStatusReportContent(EntityUid uid, ReactorComponent reactor)

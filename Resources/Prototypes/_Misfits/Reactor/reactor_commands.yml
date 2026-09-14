@@ -75,3 +75,9 @@
   order: 12
   usage: "ALL <start|shutdown|scram|mode|fuel|heat|current|divertor> [value]"
   description: "Broadcasts a control command to every reactor linked to this one."
+
+- type: reactorCommand
+  id: discharge
+  order: 13
+  usage: "DISCHARGE"
+  description: "Dumps every battery on this reactors power grid to zero charge. Type twice to confirm."

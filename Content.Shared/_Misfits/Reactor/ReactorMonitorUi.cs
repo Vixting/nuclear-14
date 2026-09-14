@@ -194,3 +194,6 @@ public sealed class ReactorMonitorNoticeMsg(string locId, bool isError = true, D
     public bool IsError = isError;
     public Dictionary<string, string> LocArgs = locArgs ?? new Dictionary<string, string>();
 }
+
+[Serializable, NetSerializable]
+public sealed class ReactorMonitorDischargeMsg : BoundUserInterfaceMessage;
