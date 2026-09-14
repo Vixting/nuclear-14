@@ -56,6 +56,15 @@ public sealed partial class ReactorComponent : Component
     public float MaxCoilRampRate = 0.1f;
 
     [DataField]
+    public float CoilDriftRate = 0.4f;
+
+    [DataField]
+    public float AutomaticCoilCorrectionMultiplier = 3f;
+
+    [DataField]
+    public float CosmeticFluctuationMagnitude = 0.01f;
+
+    [DataField]
     public float IgnitionTemperature = 40f;
 
     [DataField]

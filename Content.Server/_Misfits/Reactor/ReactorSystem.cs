@@ -5,6 +5,7 @@ using Content.Server.Power.Components;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Radiation.Components;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 using Robust.Shared.Timing;
 
 namespace Content.Server._Misfits.Reactor;
@@ -14,6 +15,7 @@ public sealed class ReactorSystem : SharedReactorSystem
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly ExplosionSystem _explosion = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     private static readonly EntProtoId DestroyedReactorProto = "N14GeneratorReactorFloorDestroyed";
 
@@ -476,8 +478,29 @@ public sealed class ReactorSystem : SharedReactorSystem
 
         comp.PlasmaCurrent = MoveToward(comp.PlasmaCurrent, comp.PlasmaCurrentTarget, comp.MaxCurrentRampRate * dt);
 
+        if (comp.State == ReactorState.Online)
+        {
+            comp.FuelingRate = ApplyCosmeticNoise(comp.FuelingRate, comp.CosmeticFluctuationMagnitude, dt);
+            comp.HeatingPower = ApplyCosmeticNoise(comp.HeatingPower, comp.CosmeticFluctuationMagnitude, dt);
+            comp.DivertorRate = ApplyCosmeticNoise(comp.DivertorRate, comp.CosmeticFluctuationMagnitude, dt);
+            comp.PlasmaCurrent = ApplyCosmeticNoise(comp.PlasmaCurrent, comp.CosmeticFluctuationMagnitude, dt);
+        }
+
+        var instabilityFactor = 1f + (1f - Math.Clamp(comp.Integrity, 0f, 100f) / 100f) * 1.5f;
+        var driftMagnitude = comp.State == ReactorState.Online
+            ? comp.CoilDriftRate * (0.2f + Math.Clamp(comp.Beta, 0f, 2f) * 0.4f) * instabilityFactor
+            : 0f;
+
+        var coilCorrectionRate = comp.MaxCoilRampRate *
+            (comp.Mode == ReactorMode.Automatic ? comp.AutomaticCoilCorrectionMultiplier : 1f);
+
         for (var i = 0; i < comp.CoilStrength.Count; i++)
-            comp.CoilStrength[i] = MoveToward(comp.CoilStrength[i], comp.CoilTargets[i], comp.MaxCoilRampRate * dt);
+        {
+            comp.CoilStrength[i] = MoveToward(comp.CoilStrength[i], comp.CoilTargets[i], coilCorrectionRate * dt);
+
+            if (driftMagnitude > 0f)
+                comp.CoilStrength[i] = Math.Clamp(comp.CoilStrength[i] + (_random.NextFloat() * 2f - 1f) * driftMagnitude * dt, 0f, 1f);
+        }
 
         var avgCoil = 0f;
         foreach (var coil in comp.CoilStrength)
@@ -535,14 +558,10 @@ public sealed class ReactorSystem : SharedReactorSystem
             comp.ActiveFaults.Add("density");
         }
 
-        for (var i = 0; i < comp.CoilLocalHeat.Count; i++)
+        foreach (var localHeat in comp.CoilLocalHeat)
         {
-            var localHeat = comp.CoilLocalHeat[i];
             if (localHeat > 0.5f)
-            {
                 comp.Integrity -= comp.CoilImbalanceDamageRate * (localHeat - 0.5f) * dt;
-                comp.ActiveFaults.Add($"coil-{i + 1}");
-            }
         }
 
         comp.Integrity = Math.Clamp(comp.Integrity, 0f, 100f);
@@ -618,5 +637,10 @@ public sealed class ReactorSystem : SharedReactorSystem
         return current < target
             ? Math.Min(current + maxDelta, target)
             : Math.Max(current - maxDelta, target);
+    }
+
+    private float ApplyCosmeticNoise(float value, float magnitude, float dt)
+    {
+        return Math.Clamp(value + (_random.NextFloat() * 2f - 1f) * magnitude * dt, 0f, 1f);
     }
 }

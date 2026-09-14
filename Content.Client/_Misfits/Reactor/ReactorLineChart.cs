@@ -20,6 +20,13 @@ public sealed class ReactorLineChart : BoxContainer
     {
         Orientation = LayoutOrientation.Vertical;
         HorizontalExpand = true;
+        SeparationOverride = 1;
+
+        var header = new BoxContainer
+        {
+            Orientation = LayoutOrientation.Horizontal,
+            HorizontalExpand = true,
+        };
 
         var titleLabel = new Label
         {
@@ -27,16 +34,20 @@ public sealed class ReactorLineChart : BoxContainer
             StyleClasses = { "PipBoyLabel" },
             FontColorOverride = Color.FromHex("#33FF66"),
             ClipText = true,
+            HorizontalExpand = true,
         };
-        AddChild(titleLabel);
+        header.AddChild(titleLabel);
 
         _readoutLabel = new Label
         {
             Text = string.Empty,
             StyleClasses = { "PipBoyLabel" },
             ClipText = true,
+            HorizontalAlignment = HAlignment.Right,
         };
-        AddChild(_readoutLabel);
+        header.AddChild(_readoutLabel);
+
+        AddChild(header);
 
         _graph = new GraphControl();
         AddChild(_graph);
@@ -45,7 +56,7 @@ public sealed class ReactorLineChart : BoxContainer
     public void PushSample(float target, float current)
     {
         _graph.PushSample(target, current);
-        _readoutLabel.Text = $"cur {FormatPercent(current)} / tgt {FormatPercent(target)}";
+        _readoutLabel.Text = $"{FormatPercent(current)}/{FormatPercent(target)}";
         _readoutLabel.FontColorOverride = ThresholdColor(current);
     }
 
@@ -61,7 +72,7 @@ public sealed class ReactorLineChart : BoxContainer
     private sealed class GraphControl : Control
     {
         private const int Capacity = 120;
-        private const int GraphHeight = 56;
+        private const int GraphHeight = 32;
 
         private static readonly Color BgColor = Color.FromHex("#0C1F0E");
         private static readonly Color GridColor = Color.FromHex("#163E1E");

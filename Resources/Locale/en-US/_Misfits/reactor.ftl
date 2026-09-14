@@ -19,7 +19,6 @@ reactor-popup-printed = The printer chatters out a fresh page.
 
 reactor-fault-beta = BETA LIMIT EXCEEDED
 reactor-fault-density = DENSITY LIMIT EXCEEDED
-reactor-fault-coil = COIL {$index} OVERHEATING
 reactor-auto-derated = AUTO OUTPUT CAPPED — LOW INTEGRITY
 
 reactor-output = OUTPUT {$value}%
@@ -51,7 +50,8 @@ reactor-chart-fueling = FUELING
 reactor-chart-heating = HEATING
 reactor-chart-current = PLASMA CURRENT
 reactor-chart-divertor = DIVERTOR
-reactor-chart-coils = COILS (avg)
+reactor-chart-coil-segment = COIL {$index}
+reactor-chart-coil-average = COIL AVG
 reactor-chart-beta = BETA (vs limit)
 reactor-chart-density = DENSITY (vs limit)
 

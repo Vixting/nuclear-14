@@ -77,9 +77,13 @@ public sealed class ReactorBui : BoundUserInterface
     private ReactorLineChart _heatingChart = default!;
     private ReactorLineChart _currentChart = default!;
     private ReactorLineChart _divertorChart = default!;
-    private ReactorLineChart _coilChart = default!;
     private ReactorLineChart _betaChart = default!;
     private ReactorLineChart _densityChart = default!;
+
+    private BoxContainer _coilChartColumn = default!;
+    private readonly List<ReactorLineChart> _coilCharts = new();
+    private ReactorLineChart _coilAverageChart = default!;
+    private int _coilChartCount = -1;
 
     private const float StabilityChartScale = 1.5f;
 
@@ -172,23 +176,57 @@ public sealed class ReactorBui : BoundUserInterface
         if (_window == null)
             return;
 
-        _outputChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-output"));
-        _betaChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-beta"));
+        var statsColumn = NewChartColumn(_window.ChartsContainer);
+        _outputChart = NewChart(statsColumn, Loc.GetString("reactor-chart-output"));
+        _betaChart = NewChart(statsColumn, Loc.GetString("reactor-chart-beta"));
         _betaChart.Scale = StabilityChartScale;
-        _densityChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-density"));
+        _densityChart = NewChart(statsColumn, Loc.GetString("reactor-chart-density"));
         _densityChart.Scale = StabilityChartScale;
-        _fuelingChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-fueling"));
-        _heatingChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-heating"));
-        _currentChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-current"));
-        _divertorChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-divertor"));
-        _coilChart = NewChart(_window.ChartsContainer, Loc.GetString("reactor-chart-coils"));
+        _fuelingChart = NewChart(statsColumn, Loc.GetString("reactor-chart-fueling"));
+        _heatingChart = NewChart(statsColumn, Loc.GetString("reactor-chart-heating"));
+        _currentChart = NewChart(statsColumn, Loc.GetString("reactor-chart-current"));
+        _divertorChart = NewChart(statsColumn, Loc.GetString("reactor-chart-divertor"));
+
+        _coilChartColumn = NewChartColumn(_window.ChartsContainer);
     }
 
-    private static ReactorLineChart NewChart(BoxContainer row, string title)
+    private static BoxContainer NewChartColumn(BoxContainer parent)
+    {
+        var column = new BoxContainer
+        {
+            Orientation = BoxContainer.LayoutOrientation.Vertical,
+            HorizontalExpand = true,
+            SeparationOverride = 3,
+        };
+        parent.AddChild(column);
+        return column;
+    }
+
+    private static ReactorLineChart NewChart(BoxContainer column, string title)
     {
         var chart = new ReactorLineChart(title);
-        row.AddChild(chart);
+        column.AddChild(chart);
         return chart;
+    }
+
+    /// <summary>
+    ///     Rebuilds the per-coil chart list only when the selected reactor's segment count actually
+    ///     changes, so existing charts (and their sample history) aren't thrown away every refresh.
+    /// </summary>
+    private void EnsureCoilCharts(int count)
+    {
+        if (count == _coilChartCount)
+            return;
+
+        _coilChartColumn.DisposeAllChildren();
+        _coilCharts.Clear();
+
+        for (var i = 0; i < count; i++)
+            _coilCharts.Add(NewChart(_coilChartColumn, Loc.GetString("reactor-chart-coil-segment", ("index", i + 1))));
+
+        _coilAverageChart = NewChart(_coilChartColumn, Loc.GetString("reactor-chart-coil-average"));
+
+        _coilChartCount = count;
     }
 
     private void PlayBootSequence(int index)
@@ -833,7 +871,11 @@ public sealed class ReactorBui : BoundUserInterface
         _heatingChart.PushSample(comp.HeatingTarget, comp.HeatingPower);
         _currentChart.PushSample(comp.PlasmaCurrentTarget, comp.PlasmaCurrent);
         _divertorChart.PushSample(comp.DivertorTarget, comp.DivertorRate);
-        _coilChart.PushSample(Average(comp.CoilTargets), Average(comp.CoilStrength));
+
+        EnsureCoilCharts(comp.CoilTargets.Count);
+        for (var i = 0; i < _coilCharts.Count; i++)
+            _coilCharts[i].PushSample(comp.CoilTargets[i], comp.CoilStrength[i]);
+        _coilAverageChart.PushSample(Average(comp.CoilTargets), Average(comp.CoilStrength));
     }
 
     private static float Average(List<float> values)
@@ -1066,16 +1108,7 @@ public sealed class ReactorBui : BoundUserInterface
         };
     }
 
-    private static string FormatFault(string code)
-    {
-        if (code.StartsWith("coil-", StringComparison.Ordinal) &&
-            int.TryParse(code.AsSpan("coil-".Length), out var index))
-        {
-            return Loc.GetString("reactor-fault-coil", ("index", index));
-        }
-
-        return Loc.GetString($"reactor-fault-{code}");
-    }
+    private static string FormatFault(string code) => Loc.GetString($"reactor-fault-{code}");
 
     private static string Percent(float value) => $"{(int) (value * 100)}%";
 

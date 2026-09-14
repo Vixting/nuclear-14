@@ -98,7 +98,7 @@
                     <PanelContainer StyleClasses="PipBoyDivider" MinSize="2 0" VerticalExpand="True"/>
 
                     <ScrollContainer HScrollEnabled="False" VerticalExpand="True" HorizontalExpand="True">
-                        <BoxContainer Name="ChartsContainer" Access="Public" Orientation="Vertical" SeparationOverride="6" Margin="0 0 0 4" HorizontalExpand="True"/>
+                        <BoxContainer Name="ChartsContainer" Access="Public" Orientation="Horizontal" SeparationOverride="6" Margin="0 0 0 2" HorizontalExpand="True"/>
                     </ScrollContainer>
 
                 </BoxContainer>

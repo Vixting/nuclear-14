@@ -32,37 +32,37 @@
   id: fuel
   order: 5
   usage: "FUEL [0-100]"
-  description: "Sets the fueling (deuterium-tritium injection) rate, or shows the current/target reading if given no argument. Setting requires manual mode."
+  description: "Sets the fueling rate, or shows the current/target reading if given no argument."
 
 - type: reactorCommand
   id: heat
   order: 6
   usage: "HEAT [0-100]"
-  description: "Sets the auxiliary heating power, or shows the current/target reading if given no argument. Setting requires manual mode."
+  description: "Sets the auxiliary heating power, or shows the current/target reading if given no argument."
 
 - type: reactorCommand
   id: current
   order: 7
   usage: "CURRENT [0-100]"
-  description: "Sets the plasma current target, or shows the current/target reading if given no argument. Setting requires manual mode."
+  description: "Sets the plasma current target, or shows the current/target reading if given no argument."
 
 - type: reactorCommand
   id: divertor
   order: 8
   usage: "DIVERTOR [0-100]"
-  description: "Sets the divertor exhaust rate, or shows the current/target reading if given no argument. Setting requires manual mode."
+  description: "Sets the divertor exhaust rate, or shows the current/target reading if given no argument."
 
 - type: reactorCommand
   id: coil
   order: 9
   usage: "COIL [index] [0-100]"
-  description: "Sets one confinement coil segment's target strength. With no value, shows that coil's reading; with no arguments at all, shows every coil. Setting requires manual mode."
+  description: "Sets one confinement coil segment's target strength."
 
 - type: reactorCommand
   id: reactors
   order: 10
   usage: "REACTORS"
-  description: "Lists every reactor linked to this one (by tag), numbered, with state/integrity/output. Alias: STATUS."
+  description: "Lists every reactor linked to this one."
 
 - type: reactorCommand
   id: select
@@ -74,4 +74,4 @@
   id: all
   order: 12
   usage: "ALL <start|shutdown|scram|mode|fuel|heat|current|divertor> [value]"
-  description: "Broadcasts a control command to every reactor linked to this one, exactly as if issued individually to each."
+  description: "Broadcasts a control command to every reactor linked to this one."
