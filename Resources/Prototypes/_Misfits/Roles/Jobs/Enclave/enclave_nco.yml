@@ -6,7 +6,6 @@
   jobWhitelistBypassesRoleTimers: true # #Misfits Change
   weight: 105
   displayWeight: 123
-  showBorder: true
   overrideConsoleVisibility: false
   canBeAntag: false
   name: job-name-enclave-nco
@@ -19,7 +18,7 @@
       - Ghoul
     - !type:CharacterDepartmentTimeRequirement # #Misfits Tweak
       department: Enclave
-      min: 216000 # 60 hours
+      min: 28800 # 8 hours
   startingGear: EnclaveNCOGear
   icon: "JobIconEnclaveNCO"
   supervisors: job-supervisors-enclave-nco
@@ -44,7 +43,7 @@
     head: N14ClothingHeadHatEnclavePeacekeeperCap
     back: N14ClothingBackpackMilitary
     jumpsuit: N14ClothingUniformJumpsuitEnclave
-    outerClothing: N14ClothingOuterPowerArmorAdvanced1
+    outerClothing: N14ClothingOuterPowerArmorAdvanced2
     shoes: N14ClothingBootsCombatFilled
     gloves: N14ClothingHandsGlovesCombat
     belt: ClothingBeltMilitary

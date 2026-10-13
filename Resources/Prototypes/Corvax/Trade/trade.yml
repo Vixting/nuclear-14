@@ -774,6 +774,8 @@
     price: 5
   - proto: N14FloraWildCoyoteTobaccoClippingSeed
     price: 5
+  - proto: N14FloraWildCannabisClippingSeed
+    price: 5
   - proto: N14FloraDaturaClippingSeed
     price: 5
   - proto: N14FloraWildGlowpepperClippingSeed
@@ -803,6 +805,14 @@
   - proto: N14FloraWildWhiteHorsenettleClippingSeed
     price: 5
   - proto: N14FloraWildXanderRootClippingSeed
+    price: 5
+  - proto: CocoaSeeds
+    price: 5
+  - proto: RiceSeeds
+    price: 5
+  - proto: SugarcaneSeeds
+    price: 5
+  - proto: GarlicSeeds
     price: 5
 
 - type: storeCategoryStructured
@@ -871,6 +881,8 @@
   - CaravanBuy2_Plushies
   - CaravanBuy2_Sprouts
   - CaravanBuy2_Currency
+  - WasterBuy2_Food # if this shouldnt be here give me a 10 page design doc and 13 reasons why
+                    # Waster trade doesnt seem to be mapped in
 
 # ----------------------------
 # caravan_sell2 categories
@@ -1091,6 +1103,8 @@
     price: 55
   - proto: N14WeaponRifle308SniperRifle
     price: 275
+  - proto: N14WeaponSniperPaciencia
+    price: 20
 
 - type: storeCategoryStructured
   id: CaravanSell2_EnergyWeapons

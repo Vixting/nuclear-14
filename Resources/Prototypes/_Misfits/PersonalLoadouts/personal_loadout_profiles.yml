@@ -46,3 +46,25 @@
     - EnclaveReformer
     outerSprite: _Misfits/Clothing/OuterClothing/PowerArmor/jacksontownley_pa.rsi
     helmetSprite: _Misfits/Clothing/Head/PowerArmorHelmets/jacksontownley_helmet.rsi
+    # NCR Heavy helmets normally request equipped-HELMET. The Townley RSI uses
+    # the hardsuit-light naming contract, so explicitly select its unlit base.
+    helmetClothingVisuals:
+      head:
+      - state: off-equipped-HELMET
+
+- type: personalLoadoutProfile
+  id: MisfitsPersonalLoadoutEmissarius
+  accountNames:
+  - Barkuaad
+  characterNames:
+  - Valere Fallax
+  equipment:
+  - jobs:
+    - CaesarLegionFrumentarii
+    replacements:
+      head: MisfitsEmissariushood
+      jumpsuit: MisfitsEmissariusCloth
+      gloves: MisfitsEmissariusGloves
+      outerClothing: MisfitsEmissariusOuter
+      mask: MisfitsEmissariusMask
+      shoes: MisfitsEmissariusBoots

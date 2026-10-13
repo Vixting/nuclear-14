@@ -256,7 +256,7 @@
   name: recharger rifle
   parent: BaseWeaponBattery
   id: N14WeaponLaserRifleRecharger
-  description: The first model for a self-charging laser rifle, its low energy consumption and advanced internal battery lets this gun last for centuries without recharging.
+  description: The first model for a self-charging laser rifle, its low energy consumption and advanced internal battery lets this gun last for centuries without recharging. The narrow orange beam it fires lacks the punch of standard laser weapons.
   components:
   - type: Wieldable
   - type: GunWieldBonus
@@ -286,7 +286,7 @@
     availableModes:
     - SemiAuto
   - type: HitscanBatteryAmmoProvider
-    proto: RedLaser
+    proto: N14RechargerLaserOrange
     fireCost: 50
   - type: FollowDistance
     backStrength: 5
@@ -297,7 +297,7 @@
   name: recharger pistol
   parent: BaseWeaponBatterySmall
   id: N14WeaponLaserPistolRecharger
-  description: The upgraded version of the recharger rifle, compact but maintaining the same power, its low energy consumption and advanced internal battery makes this gun last for centuries without recharging.
+  description: The upgraded version of the recharger rifle, compact but maintaining the same power, its low energy consumption and advanced internal battery makes this gun last for centuries without recharging. The narrow orange beam it fires lacks the punch of standard laser weapons.
   components:
   - type: Sprite
     sprite: _Nuclear14/Objects/Weapons/Guns/Battery/recharger_pistol.rsi
@@ -313,11 +313,11 @@
     soundGunshot:
       collection: N14RechargerPistolGunshot
   - type: HitscanBatteryAmmoProvider
-    proto: RedLaser
+    proto: N14RechargerLaserOrange
     fireCost: 50
   - type: BatterySelfRecharger
     autoRecharge: true
-    autoRechargeRate: 20
+    autoRechargeRate: 25
   - type: MagazineVisuals
     magState: mag
     steps: 5
@@ -480,7 +480,7 @@
           tags:
             - N14MicrofusionCell
   - type: Gun
-    fireRate: 2.75
+    fireRate: 4
     soundGunshot:
       collection: N14LaserAutoRifleGunshot
     selectedMode: FullAuto
@@ -590,12 +590,12 @@
           tags:
             - N14MicrofusionCell
   - type: Gun
-    fireRate: 2.5 # Low ROF compensates for highest damage output
+    fireRate: 4
     soundGunshot:
       collection: N14LaserAutoRifleGunshot
-    selectedMode: SemiAuto
+    selectedMode: FullAuto
     availableModes:
-    - SemiAuto
+    - FullAuto
   # Weapon profile controls damage and beam color; MFC supplies charge.
   - type: GunDamageBonus
     hitscanProtoOverride: N14MFLaserViolet
@@ -898,8 +898,9 @@
     fireRate: 2.5
     soundGunshot:
       collection: N14PlasmaAutoRifleGunshot
-    selectedMode: SemiAuto
+    selectedMode: FullAuto
     availableModes:
+    - FullAuto
     - SemiAuto
   - type: FollowDistance
     backStrength: 5
@@ -1000,7 +1001,7 @@
           tags:
             - N14MicrofusionCell
   - type: Gun
-    fireRate: 2
+    fireRate: 1
     soundGunshot:
       collection: N14WattzGunshot
     selectedMode: SemiAuto
@@ -1015,7 +1016,7 @@
     hitscanProtoOverride: N14MFLaserYellow
     bonusDamage:
       types:
-        Heat: 28
+        Shock: 15
     fireCostMultiplier: 2.0
 
 - type: entity
@@ -1057,7 +1058,7 @@
           tags:
             - N14MicrofusionCell
   - type: Gun
-    fireRate: 1.5
+    fireRate: 1
     soundGunshot:
       collection: N14WattzGunshot
     selectedMode: SemiAuto
@@ -1072,7 +1073,7 @@
     hitscanProtoOverride: N14MFLaserYellow
     bonusDamage:
       types:
-        Heat: 18
+        Shock: 10
     fireCostMultiplier: 2.0
 
 #MARK: Heavy
@@ -1126,6 +1127,9 @@
     - FullAuto
   - type: Appearance
   - type: MultiHandedItem
+  - type: WieldDelay # Misfits-change
+    baseDelay: 2.5
+    preventFiring: true
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
@@ -1205,6 +1209,9 @@
     hitscanProtoOverride: N14MFLaserRed
   - type: Appearance
   - type: MultiHandedItem
+  - type: WieldDelay # Misfits-change
+    baseDelay: 2.5
+    preventFiring: true
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9

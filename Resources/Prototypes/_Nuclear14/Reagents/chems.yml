@@ -279,6 +279,7 @@
         damage:
           groups:
             Brute: -0.3
+            Burn: -0.3
       - !type:HealthChange #Misfits Change /Add:/ Overdose — suffocates the player when stacking too much Buffout
         conditions:
         - !type:ReagentThreshold
@@ -599,3 +600,16 @@
       - !type:GenericStatusEffect
         key: SlurredSpeech
         component: TelepathicRepeater
+
+- type: reagent
+  id: BubGames
+  name: reagent-name-mourning-poultice
+  physicalDesc: reagent-physical-desc-murky
+  desc: reagent-desc-mourning-poultice
+  recognizable: false
+  metabolisms:
+    Medicine:
+      metabolismRate: 0.2 # Effectively once every 5 seconds.
+      effects:
+      - !type:SpecialStatBoostEffect
+        strengthBoost: 1

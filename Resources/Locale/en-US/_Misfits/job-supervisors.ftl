@@ -1,5 +1,6 @@
 # #Misfits Add - NCR role rehaul supervisor strings.
 job-supervisors-ncr-commander = NCR high command and your mission
+job-supervisors-ncr-ltcol = NCR high command and your mission
 job-supervisors-ncr-nco = the NCR officers and your chain of command
 # #Misfits Add - Vertibird pilot supervisor strings.
 job-supervisors-ncr-vertibird-pilot = the NCR officers and the airframe you are trusted with
@@ -21,6 +22,7 @@ job-supervisors-synthetic = your programming and your own best judgement
 
 # #Misfits Add - Rangers admin-only leadership role.
 job-supervisors-chief-ranger = the Ranger code and your own judgment
+job-supervisors-ncr-dagger = NCR High Command and the Ranger code
 job-supervisors-ncr-ranger-recruit = The major, the Patrol Rangers, and Field Rangers above you
 job-supervisors-supermutant = your instincts and the strongest among you
 job-supervisors-sentient-deathclaw = your own instincts and the whispers of the loa
@@ -50,6 +52,7 @@ job-supervisors-follower-head = yourself and the Followers' founding charter
 job-supervisors-follower-doctor = the Follower Head and the Followers' medical mission
 job-supervisors-follower-guard = the Follower Head and the doctors you are protecting
 job-supervisors-follower-volunteer = the Follower Doctors and Follower Head above you
+job-supervisors-follower-director = the Follower Directors and the Followers' training program
 
 # #Misfits Add - NCR Office of Science and Industry (OSI) supervisor strings.
 job-supervisors-osi-chief-scientist = NCR high command and your research mandate
