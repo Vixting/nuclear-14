@@ -11,7 +11,7 @@ reactor-alarm-scrammed = SCRAM ENGAGED — reactor quenched, restart locked out.
 reactor-alarm-warning = WARNING — containment integrity dropping.
 reactor-alarm-critical = CRITICAL — containment failure imminent.
 
-reactor-popup-not-running = The reactor isn't online.
+reactor-popup-not-running = The reactor isn't running.
 reactor-popup-not-manual = Switch to manual mode to adjust this directly.
 reactor-popup-wrong-startup-step = Startup sequence expects {$command} next.
 reactor-popup-no-printer-linked = No printer is linked to this console.

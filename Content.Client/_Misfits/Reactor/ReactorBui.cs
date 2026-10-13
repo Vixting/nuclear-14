@@ -100,7 +100,13 @@ public sealed class ReactorBui : BoundUserInterface
 
         _window = this.CreateWindow<ReactorWindow>();
 
-        _window.IdSlotButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent(ReactorMonitorConstants.IdCardSlotId));
+        _window.IdSlotButton.OnPressed += _ =>
+        {
+            SendMessage(new ItemSlotButtonPressedEvent(ReactorMonitorConstants.IdCardSlotId));
+
+            if (_phase == TerminalPhase.Login && !_authenticating && _state?.InsertedIdName == null)
+                BeginAuthentication();
+        };
         _window.LogoutButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent(ReactorMonitorConstants.IdCardSlotId));
 
         _window.CommandInput.OnTextTyped += _ => PlayKeystroke();
@@ -329,6 +335,7 @@ public sealed class ReactorBui : BoundUserInterface
             return;
         }
 
+        _authenticating = false;
         _audio.PlayGlobal(LoginDeniedSound, Filter.Local(), false);
         _window.LoginStatusLabel.Visible = true;
         _window.LoginStatusLabel.Text = Loc.GetString("reactor-login-denied");
@@ -346,6 +353,8 @@ public sealed class ReactorBui : BoundUserInterface
 
         Timer.Spawn(TimeSpan.FromMilliseconds(1300), () =>
         {
+            _authenticating = false;
+
             if (_window == null || _phase != TerminalPhase.Login)
                 return;
 
@@ -368,6 +377,7 @@ public sealed class ReactorBui : BoundUserInterface
             return;
 
         _audio.PlayGlobal(LoginDeniedSound, Filter.Local(), false);
+        _authenticating = false;
         _confirmScram = false;
         _confirmDischarge = false;
         _phase = TerminalPhase.Login;
@@ -642,16 +652,18 @@ public sealed class ReactorBui : BoundUserInterface
 
     private void HandleShutdown()
     {
-        if (_state is { State: not ReactorState.Online })
+        if (_state is { State: not (ReactorState.Online or ReactorState.Starting) })
         {
             PlayError();
-            Log("REACTOR ISN'T ONLINE.", ErrorColor);
+            Log("REACTOR ISN'T RUNNING.", ErrorColor);
             return;
         }
 
         SendMessage(new ReactorShutdownMsg());
         _audio.PlayGlobal(ShutdownSound, Filter.Local(), false);
-        Log("Shutdown command sent.", ResponseColor);
+        Log(_state is { State: ReactorState.Starting }
+            ? "Startup aborted. Shutdown command sent."
+            : "Shutdown command sent.", ResponseColor);
     }
 
     private void HandleMode(string[] parts)
@@ -742,12 +754,38 @@ public sealed class ReactorBui : BoundUserInterface
         SendMessage(makeMessage(normalized));
         PlayConfirm();
         Log($"{label} set to {(int) (normalized * 100)}%.", ResponseColor);
+
+        if (label == "HEAT" && _state is { State: ReactorState.Starting } starting &&
+            starting.StartupStep is ReactorStartupStep.HeatingIgnition or ReactorStartupStep.RampToOperating)
+        {
+            var settled = SharedReactorSystem.GetSettledTemperature(normalized, starting.DivertorTarget);
+            if (settled < starting.IgnitionTemperature)
+            {
+                PlayError();
+                Log($"WARNING: plasma will settle near {settled:0} degrees, below the {starting.IgnitionTemperature:0} degree ignition point. Raise HEAT or SHUTDOWN to abort.", ErrorColor);
+            }
+        }
     }
 
     private void HandleCoil(string[] parts)
     {
         var comp = _state;
         var coilCount = comp?.CoilTargets.Count ?? 0;
+
+        if (comp is { State: ReactorState.Starting } && parts.Length >= 2)
+        {
+            if (!TryParsePercent(parts[^1], out var all))
+            {
+                PlayError();
+                Log("Usage during startup: COIL <0-100> (sets every segment)", ErrorColor);
+                return;
+            }
+
+            SendMessage(new ReactorSetCoilTargetMsg(0, all));
+            PlayConfirm();
+            Log($"All coil targets set to {(int) (all * 100)}%.", ResponseColor);
+            return;
+        }
 
         if (parts.Length < 2)
         {
@@ -871,9 +909,6 @@ public sealed class ReactorBui : BoundUserInterface
                 return;
             case TerminalPhase.Login when comp.InsertedIdName != null && !_authenticating:
                 BeginAuthentication();
-                return;
-            case TerminalPhase.Login when comp.InsertedIdName == null:
-                _authenticating = false;
                 return;
             case TerminalPhase.Login:
                 return;
@@ -1028,7 +1063,7 @@ public sealed class ReactorBui : BoundUserInterface
                         : $"{FormatStepName(startupStep.ToString())}...", ResponseColor);
 
                     var hint = SharedReactorSystem.GetStartupHint(startupStep, comp.PlasmaCurrentTarget,
-                        comp.FuelingTarget, comp.CoilTargets, comp.IgnitionTemperature);
+                        comp.FuelingTarget, comp.CoilTargets, comp.DivertorTarget, comp.IgnitionTemperature);
                     if (hint != null)
                         Log(hint, ResponseColor);
                 }

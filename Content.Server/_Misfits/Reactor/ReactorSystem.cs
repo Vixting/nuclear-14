@@ -4,6 +4,7 @@ using Content.Server.Explosion.Components;
 using Content.Server.Explosion.EntitySystems;
 using Content.Server.NodeContainer.EntitySystems;
 using Content.Server.Power.Components;
+using Content.Server.Power.EntitySystems;
 using Content.Shared._Misfits.Reactor;
 using Content.Shared.Radiation.Components;
 using Robust.Shared.Prototypes;
@@ -20,6 +21,7 @@ public sealed class ReactorSystem : SharedReactorSystem
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly EmpSystem _emp = default!;
     [Dependency] private readonly NodeContainerSystem _nodeContainer = default!;
+    [Dependency] private readonly PowerNetSystem _powerNet = default!;
 
     private static readonly EntProtoId DestroyedReactorProto = "N14GeneratorReactorFloorDestroyed";
 
@@ -27,7 +29,7 @@ public sealed class ReactorSystem : SharedReactorSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ReactorComponent, MapInitEvent>(OnMapInit);
+        SubscribeLocalEvent<ReactorComponent, ComponentInit>(OnComponentInit);
 
         Subs.BuiEvents<ReactorComponent>(ReactorUiKey.Key, subs =>
         {
@@ -43,21 +45,66 @@ public sealed class ReactorSystem : SharedReactorSystem
         });
     }
 
-    private void OnMapInit(Entity<ReactorComponent> ent, ref MapInitEvent args)
+    private void OnComponentInit(Entity<ReactorComponent> ent, ref ComponentInit args)
     {
+        // Done on init rather than map init so reactors loaded from an already-initialized map still get
+        // one entry per coil segment instead of empty lists.
         var comp = ent.Comp;
-        comp.CoilTargets = NewList(comp.CoilSegmentCount, 0f);
-        comp.CoilStrength = NewList(comp.CoilSegmentCount, 0f);
-        comp.CoilLocalHeat = NewList(comp.CoilSegmentCount, 0f);
-        Dirty(ent);
+        ResizeList(comp.CoilTargets, comp.CoilSegmentCount);
+        ResizeList(comp.CoilStrength, comp.CoilSegmentCount);
+        ResizeList(comp.CoilLocalHeat, comp.CoilSegmentCount);
     }
 
-    private static List<float> NewList(int count, float value)
+    private static void ResizeList(List<float> list, int count)
     {
-        var list = new List<float>(count);
-        for (var i = 0; i < count; i++)
-            list.Add(value);
-        return list;
+        if (list.Count > count)
+            list.RemoveRange(count, list.Count - count);
+
+        while (list.Count < count)
+            list.Add(0f);
+    }
+
+    /// <summary>
+    ///     Zeroes every control and plasma readout so an offline reactor doesn't keep showing its last live values.
+    /// </summary>
+    private static void ResetOperatingState(ReactorComponent comp, bool clearAsh)
+    {
+        comp.FuelingRate = 0f;
+        comp.FuelingTarget = 0f;
+        comp.HeatingPower = 0f;
+        comp.HeatingTarget = 0f;
+        comp.PlasmaCurrent = 0f;
+        comp.PlasmaCurrentTarget = 0f;
+        comp.DivertorRate = 0f;
+        comp.DivertorTarget = 0f;
+
+        for (var i = 0; i < comp.CoilTargets.Count; i++)
+            comp.CoilTargets[i] = 0f;
+        for (var i = 0; i < comp.CoilStrength.Count; i++)
+            comp.CoilStrength[i] = 0f;
+        for (var i = 0; i < comp.CoilLocalHeat.Count; i++)
+            comp.CoilLocalHeat[i] = 0f;
+
+        comp.Density = 0f;
+        comp.Temperature = 0f;
+        comp.Beta = 0f;
+        comp.PowerOutput = 0f;
+        comp.LoadFactor = 0f;
+        comp.AutoDerated = false;
+        comp.ActiveFaults.Clear();
+
+        if (clearAsh)
+            comp.AshLevel = 0f;
+    }
+
+    private static string? GetAlarm(ReactorSeverity severity)
+    {
+        return severity switch
+        {
+            ReactorSeverity.Warning => "reactor-alarm-warning",
+            ReactorSeverity.Critical => "reactor-alarm-critical",
+            _ => null,
+        };
     }
 
     private void OnStart(Entity<ReactorComponent> ent, ref ReactorStartMsg args)
@@ -70,16 +117,15 @@ public sealed class ReactorSystem : SharedReactorSystem
         if (comp.LockedUntil is { } lockedUntil && lockedUntil > _timing.CurTime)
             return;
 
+        ResetOperatingState(comp, clearAsh: false);
         comp.State = ReactorState.Starting;
         comp.StartupStep = ReactorStartupStep.SystemsCheck;
+        comp.Mode = ReactorMode.Automatic;
         comp.StepElapsed = 0f;
-        comp.Alarm = null;
-        comp.FuelingTarget = 0f;
-        comp.HeatingTarget = 0f;
-        comp.DivertorTarget = 0f;
-        comp.PlasmaCurrentTarget = 0f;
-        for (var i = 0; i < comp.CoilTargets.Count; i++)
-            comp.CoilTargets[i] = 0f;
+
+        // Integrity carries over between runs, so re-raise any standing alarm without re-announcing it.
+        comp.LastAnnouncedSeverity = GetSeverity(comp.Integrity);
+        comp.Alarm = GetAlarm(comp.LastAnnouncedSeverity);
 
         Dirty(ent);
     }
@@ -88,13 +134,15 @@ public sealed class ReactorSystem : SharedReactorSystem
     {
         var comp = ent.Comp;
 
-        if (comp.State != ReactorState.Online)
+        // Shutting down from Starting aborts the startup, so a stalled ignition doesn't force a SCRAM.
+        if (comp.State is not (ReactorState.Online or ReactorState.Starting))
         {
             RaiseLocalEvent(ent.Owner, new ReactorCommandRejectedEvent(args.Actor, "reactor-popup-not-running"));
             return;
         }
 
         comp.State = ReactorState.ShuttingDown;
+        comp.StartupStep = ReactorStartupStep.None;
         comp.ShutdownStep = ReactorShutdownStep.Taper;
         comp.StepElapsed = 0f;
         Dirty(ent);
@@ -107,27 +155,15 @@ public sealed class ReactorSystem : SharedReactorSystem
         if (comp.State is not (ReactorState.Starting or ReactorState.Online or ReactorState.ShuttingDown))
             return;
 
-        comp.FuelingRate = 0f;
-        comp.FuelingTarget = 0f;
-        comp.HeatingPower = 0f;
-        comp.HeatingTarget = 0f;
-        comp.PlasmaCurrentTarget = 0f;
-        comp.PlasmaCurrent = 0f;
-        comp.DivertorRate = 0f;
-        comp.DivertorTarget = 0f;
-        for (var i = 0; i < comp.CoilTargets.Count; i++)
-        {
-            comp.CoilTargets[i] = 0f;
-            comp.CoilStrength[i] = 0f;
-            comp.CoilLocalHeat[i] = 0f;
-        }
+        ResetOperatingState(comp, clearAsh: false);
 
-        comp.Integrity = MathF.Max(0f, comp.Integrity - comp.ScramIntegrityCost);
+        // A SCRAM is the emergency stop, so it must never be the thing that finishes the reactor off.
+        comp.Integrity = MathF.Max(MathF.Min(comp.Integrity, 1f), comp.Integrity - comp.ScramIntegrityCost);
         comp.State = ReactorState.Scrammed;
+        comp.Mode = ReactorMode.Automatic;
         comp.StartupStep = ReactorStartupStep.None;
         comp.ShutdownStep = ReactorShutdownStep.None;
         comp.LockedUntil = _timing.CurTime + comp.ScramLockout;
-        comp.PowerOutput = 0f;
         comp.Alarm = "reactor-alarm-scrammed";
 
         if (TryComp<PowerSupplierComponent>(ent, out var supplier))
@@ -142,9 +178,6 @@ public sealed class ReactorSystem : SharedReactorSystem
         TriggerScramEmp(ent);
 
         Dirty(ent);
-
-        if (comp.Integrity <= 0f)
-            Disrupt(ent);
     }
 
     private void TriggerScramEmp(Entity<ReactorComponent> ent)
@@ -355,7 +388,7 @@ public sealed class ReactorSystem : SharedReactorSystem
             return;
         }
 
-        comp.LoadFactor = GetGridDemand(uid);
+        comp.LoadFactor = GetNetworkDemand(supplier);
 
         if (comp.State == ReactorState.Online && comp.Mode == ReactorMode.Automatic)
             RunAutomaticControl(ent, dt);
@@ -369,7 +402,8 @@ public sealed class ReactorSystem : SharedReactorSystem
             : 0f;
         SetRadiationLeak(uid, comp.MaxLeakRadiation * leakFraction);
 
-        supplier.Enabled = comp.State == ReactorState.Online;
+        // Keep supplying through the shutdown sequence so the taper actually ramps the grid down.
+        supplier.Enabled = comp.State is ReactorState.Online or ReactorState.ShuttingDown;
         supplier.MaxSupply = comp.PowerOutput;
 
         Dirty(ent);
@@ -378,21 +412,12 @@ public sealed class ReactorSystem : SharedReactorSystem
             Disrupt(ent);
     }
 
-    private float GetGridDemand(EntityUid uid)
+    private float GetNetworkDemand(PowerSupplierComponent supplier)
     {
-        var grid = Transform(uid).GridUid;
-        if (grid == null)
+        if (supplier.Net is not { } net)
             return 0f;
 
-        var total = 0f;
-        var query = EntityQueryEnumerator<PowerConsumerComponent, TransformComponent>();
-        while (query.MoveNext(out _, out var consumer, out var xform))
-        {
-            if (xform.GridUid == grid)
-                total += consumer.DrawRate;
-        }
-
-        return total;
+        return _powerNet.GetNetworkStatistics(net.NetworkNode).Consumption;
     }
 
     private void ProcessStartup(Entity<ReactorComponent> ent, float dt)
@@ -451,10 +476,7 @@ public sealed class ReactorSystem : SharedReactorSystem
                 comp.ShutdownStep = ReactorShutdownStep.Purge;
                 break;
             case ReactorShutdownStep.Purge:
-                comp.DivertorRate = 0f;
-                comp.DivertorTarget = 0f;
-                comp.AshLevel = 0f;
-                comp.Temperature = 0f;
+                ResetOperatingState(comp, clearAsh: true);
                 comp.ShutdownStep = ReactorShutdownStep.None;
                 comp.State = ReactorState.Offline;
                 comp.Mode = ReactorMode.Automatic;
@@ -471,22 +493,46 @@ public sealed class ReactorSystem : SharedReactorSystem
         comp.AutoDerated = integrityDerate < 1f;
 
         var demandFraction = comp.MaxOutput > 0f ? Math.Clamp(comp.LoadFactor / comp.MaxOutput, 0f, 1f) : 0f;
-        var margin = comp.AutomaticSafetyMargin * integrityDerate;
-        var demandTarget = Math.Clamp(demandFraction + 0.15f, 0f, margin);
+        var outputTarget = Math.Clamp(demandFraction + comp.AutomaticDemandHeadroom, comp.MinAutomaticOutput, integrityDerate);
 
-        var ignitionFloor = Math.Clamp(comp.IgnitionTemperature / 70f + 0.1f, 0f, 1f);
-        var target = Math.Clamp(Math.Max(demandTarget, ignitionFloor), 0f, margin);
-
-        comp.FuelingTarget = target;
-        comp.HeatingTarget = target;
-        comp.PlasmaCurrentTarget = Math.Clamp(target + 0.2f, 0f, 1f);
-
-        var divertorNeed = comp.AshLevel * 0.6f + Math.Max(0f, (comp.Temperature - comp.IgnitionTemperature) / 100f) * 0.5f;
-        comp.DivertorTarget = Math.Clamp(0.2f + divertorNeed, 0f, 1f);
-
-        var coilTarget = Math.Clamp(target + 0.25f, 0f, 1f);
+        comp.PlasmaCurrentTarget = comp.AutomaticCurrentTarget;
         for (var i = 0; i < comp.CoilTargets.Count; i++)
-            comp.CoilTargets[i] = coilTarget;
+            comp.CoilTargets[i] = comp.AutomaticCoilTarget;
+
+        // Ash is cleared at a fixed rate per divertor percent, so match the production rate and lean on any backlog.
+        var ashBalance = comp.AshClearRate > 0f ? comp.AshAccumulationRate / comp.AshClearRate : 1f;
+        comp.DivertorTarget = Math.Clamp(ashBalance * comp.FuelingRate * comp.HeatingPower + comp.AshLevel * 2f, 0.1f, 1f);
+
+        // Work back from the output we want to the reaction power, then to a density and temperature that give it.
+        var ashMultiplier = Math.Max(1f - comp.AshLevel * comp.AshOutputPenalty, 0.05f);
+        var reactionTarget = outputTarget * comp.FullOutputReactionPower / ashMultiplier;
+
+        var densityTarget = comp.AutomaticSafetyMargin;
+        var minReactionTemperature = comp.IgnitionTemperature + comp.AutomaticIgnitionMargin;
+        var reactionTemperature = comp.IgnitionTemperature + reactionTarget / (densityTarget * ReactionCoefficient);
+
+        // At low demand, thin the plasma rather than letting it cool towards ignition and quench.
+        if (reactionTemperature < minReactionTemperature)
+        {
+            reactionTemperature = minReactionTemperature;
+            densityTarget = Math.Clamp(reactionTarget / (comp.AutomaticIgnitionMargin * ReactionCoefficient),
+                0.1f, comp.AutomaticSafetyMargin);
+        }
+
+        // Keep beta inside the safety margin for the coil strength we actually have right now.
+        var betaTemperature = comp.AutomaticSafetyMargin * 100f * Math.Max(Average(comp.CoilStrength), 0.05f) / densityTarget;
+        reactionTemperature = Math.Min(reactionTemperature, Math.Max(minReactionTemperature, betaTemperature));
+
+        // The reaction sees the plasma after heating but before cooling, so offset the target to the settled readout.
+        var reactionPower = (reactionTemperature - comp.IgnitionTemperature) * densityTarget * ReactionCoefficient;
+        var settledTemperature = reactionTemperature + (reactionPower - GetCoolingRate(comp.DivertorRate)) * dt;
+
+        comp.FuelingTarget = Math.Clamp(
+            densityTarget * GetDensityLimit(comp.PlasmaCurrent) / (1f + comp.AshLevel * AshDensityFactor), 0f, 1f);
+
+        comp.HeatingTarget = Math.Clamp(
+            GetEquilibriumHeat(settledTemperature, comp.DivertorRate, reactionPower) +
+            (settledTemperature - comp.Temperature) * comp.AutomaticTemperatureGain, 0f, 1f);
     }
 
     private void RunPhysics(Entity<ReactorComponent> ent, float dt)
@@ -524,27 +570,22 @@ public sealed class ReactorSystem : SharedReactorSystem
                 comp.CoilStrength[i] = Math.Clamp(comp.CoilStrength[i] + (_random.NextFloat() * 2f - 1f) * driftMagnitude * dt, 0f, 1f);
         }
 
-        var avgCoil = 0f;
-        foreach (var coil in comp.CoilStrength)
-            avgCoil += coil;
-        avgCoil = comp.CoilStrength.Count > 0 ? avgCoil / comp.CoilStrength.Count : 0f;
+        var avgCoil = Average(comp.CoilStrength);
 
-        var densityLimit = 0.35f + comp.PlasmaCurrent * 0.9f;
-        var rawDensity = comp.FuelingRate * (1f + comp.AshLevel * 0.5f);
-        comp.Density = rawDensity / densityLimit;
+        var rawDensity = comp.FuelingRate * (1f + comp.AshLevel * AshDensityFactor);
+        comp.Density = rawDensity / GetDensityLimit(comp.PlasmaCurrent);
 
-        var targetTemp = comp.HeatingPower * 70f;
-        comp.Temperature += (targetTemp - comp.Temperature) * dt * 0.25f;
+        var targetTemp = comp.HeatingPower * HeatingTemperatureScale;
+        comp.Temperature += (targetTemp - comp.Temperature) * dt * HeatingResponse;
 
         var reactionPower = 0f;
         if (comp.Temperature > comp.IgnitionTemperature && comp.Density > 0f)
         {
-            reactionPower = (comp.Temperature - comp.IgnitionTemperature) * comp.Density * 0.03f;
+            reactionPower = (comp.Temperature - comp.IgnitionTemperature) * comp.Density * ReactionCoefficient;
             comp.Temperature += reactionPower * dt;
         }
 
-        var cooling = comp.DivertorRate * 35f + 4f;
-        comp.Temperature = Math.Clamp(comp.Temperature - cooling * dt * 0.2f, 0f, 200f);
+        comp.Temperature = Math.Clamp(comp.Temperature - GetCoolingRate(comp.DivertorRate) * dt, 0f, 200f);
 
         var pressure = comp.Density * comp.Temperature / 100f;
         comp.Beta = pressure / Math.Max(avgCoil, 0.05f);
@@ -553,7 +594,9 @@ public sealed class ReactorSystem : SharedReactorSystem
             comp.AshLevel + comp.AshAccumulationRate * (comp.FuelingRate * comp.HeatingPower) * dt - comp.AshClearRate * comp.DivertorRate * dt,
             0f, 1f);
 
-        var outputFraction = Math.Clamp(reactionPower * (1f - comp.AshLevel * comp.AshOutputPenalty), 0f, 1f);
+        var outputFraction = comp.FullOutputReactionPower > 0f
+            ? Math.Clamp(reactionPower / comp.FullOutputReactionPower * (1f - comp.AshLevel * comp.AshOutputPenalty), 0f, 1f)
+            : 0f;
         comp.PowerOutput = outputFraction * comp.MaxOutput;
 
         for (var i = 0; i < comp.CoilLocalHeat.Count; i++)
@@ -612,20 +655,17 @@ public sealed class ReactorSystem : SharedReactorSystem
 
         comp.LastAnnouncedSeverity = severity;
 
+        comp.Alarm = GetAlarm(severity);
+
         switch (severity)
         {
             case ReactorSeverity.Warning:
-                comp.Alarm = "reactor-alarm-warning";
                 _chat.DispatchStationAnnouncement(ent, Loc.GetString("reactor-announcement-warning"),
                     Loc.GetString("reactor-announcer"), colorOverride: Color.Yellow);
                 break;
             case ReactorSeverity.Critical:
-                comp.Alarm = "reactor-alarm-critical";
                 _chat.DispatchStationAnnouncement(ent, Loc.GetString("reactor-announcement-critical"),
                     Loc.GetString("reactor-announcer"), colorOverride: Color.Red);
-                break;
-            default:
-                comp.Alarm = null;
                 break;
         }
     }
@@ -659,6 +699,17 @@ public sealed class ReactorSystem : SharedReactorSystem
         return current < target
             ? Math.Min(current + maxDelta, target)
             : Math.Max(current - maxDelta, target);
+    }
+
+    private static float Average(List<float> values)
+    {
+        if (values.Count == 0)
+            return 0f;
+
+        var total = 0f;
+        foreach (var value in values)
+            total += value;
+        return total / values.Count;
     }
 
     private float ApplyCosmeticNoise(float value, float magnitude, float dt)

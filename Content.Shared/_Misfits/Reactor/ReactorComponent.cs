@@ -101,6 +101,24 @@ public sealed partial class ReactorComponent : Component
     public float MinAutomaticOutput = 0.2f;
 
     [DataField]
+    public float AutomaticDemandHeadroom = 0.15f;
+
+    [DataField]
+    public float AutomaticIgnitionMargin = 5f;
+
+    [DataField]
+    public float AutomaticCurrentTarget = 0.9f;
+
+    [DataField]
+    public float AutomaticCoilTarget = 0.9f;
+
+    [DataField]
+    public float AutomaticTemperatureGain = 0.02f;
+
+    [DataField]
+    public float FullOutputReactionPower = 0.3f;
+
+    [DataField]
     public float MaxLeakRadiation = 6f;
 
     [DataField]

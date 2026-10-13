@@ -14,7 +14,7 @@
   id: shutdown
   order: 2
   usage: "SHUTDOWN"
-  description: "Begins a normal shutdown sequence."
+  description: "Begins a normal shutdown sequence. During startup, aborts the sequence."
 
 - type: reactorCommand
   id: scram
@@ -55,8 +55,8 @@
 - type: reactorCommand
   id: coil
   order: 9
-  usage: "COIL [index] [0-100]"
-  description: "Sets one confinement coil segment's target strength."
+  usage: "COIL [index] [0-100]  (startup: COIL <0-100>)"
+  description: "Sets one confinement coil segment's target strength. During startup a single value sets every segment."
 
 - type: reactorCommand
   id: reactors

@@ -40,6 +40,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
 
         SubscribeLocalEvent<ReactorMonitorComponent, ComponentInit>(OnComponentInit);
         SubscribeLocalEvent<ReactorMonitorComponent, ComponentRemove>(OnComponentRemove);
+        SubscribeLocalEvent<ReactorMonitorComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);
         SubscribeLocalEvent<ReactorMonitorComponent, EntInsertedIntoContainerMessage>(OnItemInserted);
         SubscribeLocalEvent<ReactorMonitorComponent, EntRemovedFromContainerMessage>(OnItemRemoved);
         SubscribeLocalEvent<ReactorMonitorComponent, BoundUIOpenedEvent>(OnOpened);
@@ -75,7 +76,10 @@ public sealed class ReactorMonitorSystem : EntitySystem
 
         var query = EntityQueryEnumerator<ReactorMonitorComponent>();
         while (query.MoveNext(out var uid, out var comp))
-            RefreshUi((uid, comp));
+        {
+            if (_ui.IsUiOpen(uid, ReactorMonitorUiKey.Key))
+                RefreshUi((uid, comp));
+        }
     }
 
     private void OnComponentInit(Entity<ReactorMonitorComponent> ent, ref ComponentInit args)
@@ -88,16 +92,18 @@ public sealed class ReactorMonitorSystem : EntitySystem
         _itemSlots.RemoveItemSlot(ent, ent.Comp.IdCardSlot);
     }
 
+    private void OnInsertAttempt(Entity<ReactorMonitorComponent> ent, ref ItemSlotInsertAttemptEvent args)
+    {
+        if (args.Slot != ent.Comp.IdCardSlot || HasRequiredAccess(args.Item))
+            return;
+
+        args.Cancelled = true;
+    }
+
     private void OnItemInserted(Entity<ReactorMonitorComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ReactorMonitorComponent.IdCardSlotId)
             return;
-
-        if (!HasRequiredAccess(args.Entity))
-        {
-            _itemSlots.TryEject(ent, ent.Comp.IdCardSlot, null, out _);
-            return;
-        }
 
         RefreshIdCard(ent);
     }
@@ -118,7 +124,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
 
     private void RefreshIdCard(Entity<ReactorMonitorComponent> ent)
     {
-        ent.Comp.InsertedIdName = ent.Comp.IdCardSlot.Item is { Valid: true } item
+        ent.Comp.InsertedIdName = ent.Comp.IdCardSlot.Item is { Valid: true } item && HasRequiredAccess(item)
             ? MetaData(item).EntityName
             : null;
         RefreshUi(ent);
@@ -153,7 +159,7 @@ public sealed class ReactorMonitorSystem : EntitySystem
 
     private bool IsLoggedIn(Entity<ReactorMonitorComponent> ent, EntityUid actor)
     {
-        if (ent.Comp.InsertedIdName != null)
+        if (ent.Comp.IdCardSlot.Item is { Valid: true } card && HasRequiredAccess(card))
             return true;
 
         Notify(ent, actor, "reactor-popup-not-logged-in");
